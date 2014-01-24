@@ -1,0 +1,31 @@
+8
+
+dir
+36
+svn://svn.berlios.de/ethercatmaster/trunk/include/ethercat/arch-eCos
+svn://svn.berlios.de/ethercatmaster
+
+
+
+2007-02-21T10:11:52.852569Z
+14
+tompanis
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+be314430-c70c-0410-b12c-c5f3897c1eda
+
+ethercat
+dir
+

@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/wg-ros-pkg/!svn/ver/54197/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware
+END
+manifest.xml
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/wg-ros-pkg/!svn/ver/52243/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/manifest.xml
+END
+actuators.conf
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/wg-ros-pkg/!svn/ver/52109/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/actuators.conf
+END
+mainpage.dox
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/mainpage.dox
+END
+ethercat_device_plugin.xml
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/wg-ros-pkg/!svn/ver/51409/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/ethercat_device_plugin.xml
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/wg-ros-pkg/!svn/ver/54009/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/CMakeLists.txt
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/Makefile
+END
+actuators_alpha.conf
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/actuators_alpha.conf
+END

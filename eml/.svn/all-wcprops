@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/wg-ros-pkg/!svn/ver/53421/stacks/pr2_ethercat_drivers/trunk/eml
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/wg-ros-pkg/!svn/ver/53421/stacks/pr2_ethercat_drivers/trunk/eml/Makefile
+END
+eml-r36.patch
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/wg-ros-pkg/!svn/ver/53332/stacks/pr2_ethercat_drivers/trunk/eml/eml-r36.patch
+END
+manifest.xml
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/eml/manifest.xml
+END

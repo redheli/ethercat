@@ -1,0 +1,11 @@
+K 13
+svn:mergeinfo
+V 847
+/branches/arm_planning_branch/stacks/pr2_ethercat_drivers/ethercat_hardware/actuators_alpha.conf:27259-27893
+/branches/dking/pr2_ethercat_drivers_timing/ethercat_hardware/actuators_alpha.conf:40165
+/pkg/branches/gazebo-branch-merge/drivers/motor/ethercat_hardware/actuators.conf:15683-15684,15739-15794,15797-15820,15822-15839,15852-15870,15983-16008,16010-16016,16129-16141,16145-16169,16245-16262,16274-16334
+/stacks/pr2_ethercat_drivers/branches/pr2_ethercat_drivers-1.0/ethercat_hardware/actuators_alpha.conf:36940
+/stacks/pr2_ethercat_drivers/branches/pr2_ethercat_drivers-1.2/ethercat_hardware/actuators_alpha.conf:46108
+/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/actuators_alpha.conf:44849,45265-45323,45766,45773,45904-46068
+/tags/controller_manager_rename/stacks/pr2_ethercat_drivers/ethercat_hardware/actuators.conf:25336-25352
+END

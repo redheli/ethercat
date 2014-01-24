@@ -1,0 +1,49 @@
+8
+
+dir
+36
+svn://svn.berlios.de/ethercatmaster/trunk/tests
+svn://svn.berlios.de/ethercatmaster
+
+
+
+2008-05-15T12:03:40.574237Z
+36
+kgadeyne
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+be314430-c70c-0410-b12c-c5f3897c1eda
+
+posix
+dir
+
+ecos
+dir
+
+rtnet
+dir
+
+CMakeLists.txt
+file
+
+
+
+
+2008-10-22T03:54:03.000000Z
+c627a98b2df57614ce00654d4adf6b08
+2008-04-07T11:38:10.370921Z
+32
+kgadeyne
+

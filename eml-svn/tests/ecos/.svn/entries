@@ -1,0 +1,82 @@
+8
+
+dir
+36
+svn://svn.berlios.de/ethercatmaster/trunk/tests/ecos
+svn://svn.berlios.de/ethercatmaster
+
+
+
+2007-01-05T12:33:39.616898Z
+8
+kgadeyne
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+be314430-c70c-0410-b12c-c5f3897c1eda
+
+ecos-i386
+dir
+
+ethercat.cxx
+file
+
+
+
+
+2008-10-22T03:54:03.000000Z
+9755ee857714efd899b136c049ddde7d
+2006-12-21T15:25:00.872285Z
+2
+kgadeyne
+
+src
+dir
+
+ChangeLog
+file
+
+
+
+
+2008-10-22T03:54:03.000000Z
+b4725fbf0da1c2111fd3df54de39447e
+2006-12-21T15:25:00.872285Z
+2
+kgadeyne
+
+ProjectSources.txt
+file
+
+
+
+
+2008-10-22T03:54:03.000000Z
+68dd220837ecbb8ff9966067dd8c8730
+2006-12-21T15:25:00.872285Z
+2
+kgadeyne
+
+CMakeLists.txt
+file
+
+
+
+
+2008-10-22T03:54:03.000000Z
+61e9188ad1d685c17db1de22fb58c268
+2006-12-22T16:16:54.713927Z
+5
+kgadeyne
+

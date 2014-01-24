@@ -1,0 +1,19 @@
+(cl:defpackage ethercat_hardware-msg
+  (:use )
+  (:export
+   "<MOTORTRACESAMPLE>"
+   "MOTORTRACESAMPLE"
+   "<MOTORTEMPERATURE>"
+   "MOTORTEMPERATURE"
+   "<BOARDINFO>"
+   "BOARDINFO"
+   "<RAWFTDATASAMPLE>"
+   "RAWFTDATASAMPLE"
+   "<MOTORTRACE>"
+   "MOTORTRACE"
+   "<ACTUATORINFO>"
+   "ACTUATORINFO"
+   "<RAWFTDATA>"
+   "RAWFTDATA"
+  ))
+

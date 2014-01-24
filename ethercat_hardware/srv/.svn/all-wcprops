@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/wg-ros-pkg/!svn/ver/53406/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/srv
+END
+SoftProcessorReset.srv
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/wg-ros-pkg/!svn/ver/53406/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/srv/SoftProcessorReset.srv
+END
+SoftProcessorFirmwareWrite.srv
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/wg-ros-pkg/!svn/ver/53406/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/srv/SoftProcessorFirmwareWrite.srv
+END
+SoftProcessorFirmwareRead.srv
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/wg-ros-pkg/!svn/ver/53406/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/srv/SoftProcessorFirmwareRead.srv
+END

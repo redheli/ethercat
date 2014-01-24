@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/wg-ros-pkg/!svn/ver/53932/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware
+END
+wg05.h
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/wg-ros-pkg/!svn/ver/51349/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg05.h
+END
+wg06.h
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/wg-ros-pkg/!svn/ver/53932/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg06.h
+END
+wg_eeprom.h
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/wg-ros-pkg/!svn/ver/53418/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg_eeprom.h
+END
+wg0x.h
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/wg-ros-pkg/!svn/ver/53417/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg0x.h
+END
+wg_mailbox.h
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/wg-ros-pkg/!svn/ver/53418/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg_mailbox.h
+END
+ethercat_com.h
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/ethercat_com.h
+END
+wg021.h
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/wg-ros-pkg/!svn/ver/51384/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg021.h
+END
+wg014.h
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg014.h
+END
+ek1122.h
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/ek1122.h
+END
+wg_soft_processor.h
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/wg-ros-pkg/!svn/ver/53423/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg_soft_processor.h
+END
+ethernet_interface_info.h
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/ethernet_interface_info.h
+END
+wg_util.h
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/wg-ros-pkg/!svn/ver/53407/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/wg_util.h
+END
+ethercat_hardware.h
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/wg-ros-pkg/!svn/ver/53753/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/ethercat_hardware.h
+END
+ethercat_device.h
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/wg-ros-pkg/!svn/ver/52122/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/ethercat_device.h
+END
+motor_heating_model.h
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/wg-ros-pkg/!svn/ver/52406/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/motor_heating_model.h
+END
+motor_model.h
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/wg-ros-pkg/!svn/ver/52109/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/include/ethercat_hardware/motor_model.h
+END

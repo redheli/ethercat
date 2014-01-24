@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/wg-ros-pkg/!svn/ver/52109/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg
+END
+MotorTrace.msg
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg/MotorTrace.msg
+END
+RawFTDataSample.msg
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/wg-ros-pkg/!svn/ver/51167/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg/RawFTDataSample.msg
+END
+MotorTraceSample.msg
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg/MotorTraceSample.msg
+END
+BoardInfo.msg
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg/BoardInfo.msg
+END
+RawFTData.msg
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/wg-ros-pkg/!svn/ver/51162/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg/RawFTData.msg
+END
+ActuatorInfo.msg
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/wg-ros-pkg/!svn/ver/48574/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg/ActuatorInfo.msg
+END
+MotorTemperature.msg
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/wg-ros-pkg/!svn/ver/52109/stacks/pr2_ethercat_drivers/trunk/ethercat_hardware/msg/MotorTemperature.msg
+END
