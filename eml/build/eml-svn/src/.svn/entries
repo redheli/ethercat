@@ -1,49 +1,0 @@
-8
-
-dir
-36
-svn://svn.berlios.de/ethercatmaster/trunk/src
-svn://svn.berlios.de/ethercatmaster
-
-
-
-2008-05-15T12:03:40.574237Z
-36
-kgadeyne
-
-
-svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-be314430-c70c-0410-b12c-c5f3897c1eda
-
-dll
-dir
-
-al
-dir
-
-arch
-dir
-
-CMakeLists.txt
-file
-
-
-
-
-2009-03-17T20:38:08.000000Z
-f5035ee6bb15eddfdd3336df1b2486a2
-2008-04-07T11:38:10.370921Z
-32
-kgadeyne
-
