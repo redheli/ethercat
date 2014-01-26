@@ -61,6 +61,7 @@
 
 void init(char *interface)
 {
+//   getchar();
   // open temporary socket to use with ioctl
   int sock = socket(PF_INET, SOCK_DGRAM, 0);
   if (sock < 0) {
@@ -112,20 +113,24 @@ void init(char *interface)
   }
   ROS_INFO("Initialize Application Layer (AL) ok");
 
-//  uint32_t num_slaves = al->get_num_slaves();
-//  if (num_slaves == 0)
-//  {
-//    fprintf(stderr, "Unable to locate any slaves\n");
-//    exit(-1);
-//  }
+  uint32_t num_slaves = al->get_num_slaves();
+  if (num_slaves == 0)
+  {
+    fprintf(stderr, "Unable to locate any slaves\n");
+    exit(-1);
+  }
 
-//  // Initialize Master
-//  EtherCAT_Master *em;
-//  if ((em = EtherCAT_Master::instance()) == NULL)
-//  {
-//    fprintf(stderr, "Unable to initialize EtherCAT_Master: %p", em);
-//    exit(-1);
-//  }
+  ROS_INFO("find slave ok: %d",num_slaves);
+
+  // Initialize Master
+  EtherCAT_Master *em;
+  if ((em = EtherCAT_Master::instance()) == NULL)
+  {
+    fprintf(stderr, "Unable to initialize EtherCAT_Master: %p", em);
+    exit(-1);
+  }
+
+  ROS_INFO("Initialize Master ok");
 
 //  static int start_address = 0x00010000;
 
