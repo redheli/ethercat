@@ -125,7 +125,9 @@ EtherCAT_AL::scan_slaves(void)
   unsigned char a[1] = { 0x00 };
   APRD_Telegram counter_tg(m_logic_instance->get_idx(),0x0000,0x0000,
 			   m_logic_instance->get_wkc(),0x01,a);
+//  counter_tg.next =
   EC_Ethernet_Frame counter_frame(&counter_tg);
+//  counter_frame.get_telegram();
   bool succeed = m_dll_instance->txandrx(&counter_frame);
   if (succeed == false){
     ec_log(EC_LOG_FATAL,"Error sending counter frame\n");

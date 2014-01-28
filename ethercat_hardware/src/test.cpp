@@ -132,18 +132,25 @@ void init(char *interface)
 
   ROS_INFO("Initialize Master ok");
 
-//  static int start_address = 0x00010000;
+  static int start_address = 0x00010000;
 
-//  for (unsigned int slave = 0; slave < num_slaves; ++slave)
-//  {
-//    EC_FixedStationAddress fsa(slave + 1);
-//    EtherCAT_SlaveHandler *sh = em->get_slave_handler(fsa);
-//    if (sh == NULL)
-//    {
-//      fprintf(stderr, "Unable to get slave handler #%d", slave);
-//      exit(-1);
-//    }
+  for (unsigned int slave = 0; slave < num_slaves; ++slave)
+  {
+    EC_FixedStationAddress fsa(slave + 1);
+    EtherCAT_SlaveHandler *sh = em->get_slave_handler(fsa);
+    if (sh == NULL)
+    {
+      fprintf(stderr, "Unable to get slave handler #%d", slave);
+      exit(-1);
+    }
+    ROS_INFO("get slave <%d> product code: %d",slave,sh->get_product_code());
 
+    if (sh->get_product_code() == WG05::PRODUCT_CODE)
+    {
+      WG05 *dev = new WG05();
+      dev->construct(sh, start_address);
+      devices.push_back(dev);
+    }
 //    if (sh->get_product_code() == WG05::PRODUCT_CODE)
 //    {
 //      WG05 *dev = new WG05();
@@ -172,7 +179,9 @@ void init(char *interface)
 //    {
 //      devices.push_back(NULL);
 //    }
-//  }
+  }
+
+  ROS_INFO("go through slaves ok");
 
 //  BOOST_FOREACH(EthercatDevice *device, devices)
 //  {
