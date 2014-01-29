@@ -30,7 +30,7 @@
 //	Automation GmbH, Eiserstrasse 5, D-33415 Verl, Germany.
 //===========================================================================
 
- 
+#include "ethercat/ethercat_log.h"
 #include <assert.h>
 #include "dll/ethercat_device_addressed_telegram.h"
 // --------------------------------------------------
@@ -284,6 +284,15 @@ NPRW_Telegram::dump_command_field(unsigned char * a_buffer) const
 const unsigned char * NPRW_Telegram::build_command_field(const unsigned char * a_buffer)
 {
   assert(a_buffer[0] == NPRW);
+
+  const unsigned char* p;
+  printf("NPRW_Telegram:");
+  for ( p = a_buffer; *p; ++p)
+  {
+      printf("%x", *p);
+  }
+  printf("\n");
+
   return ++a_buffer;
 }
 

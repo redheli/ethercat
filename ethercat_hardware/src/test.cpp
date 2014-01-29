@@ -51,6 +51,8 @@
 #include <ethercat_hardware/wg06.h>
 #include <ethercat_hardware/wg021.h>
 #include <ethercat_hardware/wg014.h>
+#include "duet_fl.h"
+#include <dll/ethercat_device_addressed_telegram.h>
 
 #include <boost/crc.hpp>
 #include <boost/foreach.hpp>
@@ -58,6 +60,26 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
+
+vector<EthercatDevice *> devices;
+
+DUET_FL *dev = NULL;
+void myPrint(unsigned char *buf)
+{
+    for (unsigned char* p = buf; *p; ++p)
+    {
+        printf("%02x", *p);
+    }
+    printf("\n");
+}
+void myPrint(const unsigned char *buf)
+{
+    for (const unsigned char* p = buf; *p; ++p)
+    {
+        printf("%02x", *p);
+    }
+    printf("\n");
+}
 
 void init(char *interface)
 {
@@ -145,59 +167,107 @@ void init(char *interface)
     }
     ROS_INFO("get slave <%d> product code: %d",slave,sh->get_product_code());
 
-    if (sh->get_product_code() == WG05::PRODUCT_CODE)
+    if (sh->get_product_code() == DUET_FL::PRODUCT_CODE)
     {
-      WG05 *dev = new WG05();
-      dev->construct(sh, start_address);
-      devices.push_back(dev);
+        dev = new DUET_FL();
+        dev->construct(sh, start_address);
+        devices.push_back(dev);
     }
 //    if (sh->get_product_code() == WG05::PRODUCT_CODE)
 //    {
 //      WG05 *dev = new WG05();
 //      dev->construct(sh, start_address);
 //      devices.push_back(dev);
-//    }
-//    else if (sh->get_product_code() == WG06::PRODUCT_CODE)
-//    {
-//      WG06 *dev = new WG06();
-//      dev->construct(sh, start_address);
-//      devices.push_back(dev);
-//    }
-//    else if (sh->get_product_code() == WG021::PRODUCT_CODE)
-//    {
-//      WG021 *dev = new WG021();
-//      dev->construct(sh, start_address);
-//      devices.push_back(dev);
-//    }
-//    else if (sh->get_product_code() == WG014::PRODUCT_CODE)
-//    {
-//      WG014 *dev = new WG014();
-//      dev->construct(sh, start_address);
-//      devices.push_back(dev);
-//    }
-//    else
-//    {
-//      devices.push_back(NULL);
-//    }
+
   }
 
   ROS_INFO("go through slaves ok");
 
-//  BOOST_FOREACH(EthercatDevice *device, devices)
-//  {
-//    if (!device) continue;
-//    if (!device->sh_->to_state(EC_OP_STATE))
-//    {
-//      fprintf(stderr, "Unable set device %d into OP_STATE", device->sh_->get_ring_position());
-//    }
-//  }
+  BOOST_FOREACH(EthercatDevice *device, devices)
+  {
+    if (!device) continue;
+    if (!device->sh_->to_state(EC_OP_STATE))
+    {
+      fprintf(stderr, "Unable set device %d into OP_STATE", device->sh_->get_ring_position());
+    }
+  }
 
-//  BOOST_FOREACH(EthercatDevice *device, devices)
+  BOOST_FOREACH(EthercatDevice *device, devices)
+  {
+    if (!device) continue;
+    device->use_ros_ = true;
+    device->initialize(NULL, true);
+  }
+
+#if 0
+  // test get heart beat
+  // get producer_hearbeat_time
+  if(dev)
+  {
+      // Send NPRD telegram
+      EC_Logic *logic = EC_Logic::instance();
+      unsigned char buf[4] = { 0x40,0x17,0x10,0x00 };
+      EC_UINT address = 0x0000;
+      NPRD_Telegram nprd_telegram(logic->get_idx(),
+                                  dev->sh_->get_station_address(),
+                                  address,
+                                  logic->get_wkc(),
+                                  sizeof(buf),
+                                  buf);
+    //  counter_tg.next =
+      EC_Ethernet_Frame heartTimeFrame(&nprd_telegram);
+    //  counter_frame.get_telegram();
+      bool succeed = EtherCAT_DataLinkLayer::instance()->txandrx(&heartTimeFrame);
+      if (succeed == false){
+        ec_log(EC_LOG_FATAL,"Error sending counter frame\n");
+        exit(-1);
+      }
+
+      NPRD_Telegram *tele = (NPRD_Telegram *)heartTimeFrame.get_telegram();
+      const unsigned char *hearTime = tele->get_data();
+      ROS_INFO("get produce_heartbeat_time <%x>",*hearTime);
+
+  }//if dev
+#else
+  dev->sh_->m_router_instance.
+//  // test get modes_of_operation_display
+//  if(dev)
 //  {
-//    if (!device) continue;
-//    device->use_ros_ = false;
-//    device->initialize(NULL, true);
-//  }
+//      // Send NPRD telegram
+//      EC_Logic *logic = EC_Logic::instance();
+//      unsigned char buf[7] = { 0x06,0x00,0x04,0x40,0x61,0x60,0x00 };
+////      unsigned char buf[4] = { 0x40,0x61,0x60,0x00 };
+
+//      ROS_INFO("buf length %d:",sizeof(buf));
+//      ROS_INFO("buf ori :");
+//      myPrint(buf);
+
+//      EC_UINT address = 0x0000;
+//      NPRD_Telegram nprd_telegram(logic->get_idx(),
+//                                  dev->sh_->get_station_address(),
+//                                  address,
+//                                  logic->get_wkc(),
+//                                  sizeof(buf),
+//                                  buf);
+////      const unsigned char *hearTime1 = nprd_telegram.get_data();
+
+//      ROS_INFO("wkc: %d",logic->get_wkc());
+//    //  counter_tg.next =
+//      EC_Ethernet_Frame frame(&nprd_telegram);
+//    //  counter_frame.get_telegram();
+//      bool succeed = EtherCAT_DataLinkLayer::instance()->txandrx(&frame);
+//      if (succeed == false){
+//        ec_log(EC_LOG_FATAL,"Error sending modes_of_operation_display frame\n");
+//        exit(-1);
+//      }
+
+//      NPRD_Telegram *tele = (NPRD_Telegram *)frame.get_telegram();
+//      const unsigned char *modes_of_operation_display = tele->get_data();
+//      ROS_INFO("get modes_of_operation_display:");
+//      myPrint(modes_of_operation_display);
+//        ROS_INFO("wkc new: %d",tele->get_wkc());
+//  }//if dev
+#endif
 }
 
 int main(int argc, char *argv[])

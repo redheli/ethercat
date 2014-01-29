@@ -109,13 +109,36 @@ unsigned char * EC_Telegram::dump(unsigned char * a_buffer) const
 
 const unsigned char * EC_Telegram::build(const unsigned char * buffer)
 {
+//    const unsigned char* p;
+//    printf("m1:");
+//    for (p = buffer; *p; ++p)
+//    {
+//        printf("%x", *p);
+//    }
+//    printf("\n");
   // Build and check first 6 bytes of header
   buffer = this->build_header_head(buffer);
+
+//  printf("m2:");
+//  for ( p = buffer; *p; ++p)
+//  {
+//      printf("%x", *p);
+//  }
+//  printf("\n");
+
   if (buffer != NULL){
     // Check 4 remaining bytes of header
     if (check_lennext(buffer) == true)
       buffer += sizeof(EC_UINT);
     else return NULL;
+
+//    printf("m3:");
+//    for ( p = buffer; *p; ++p)
+//    {
+//        printf("%x", *p);
+//    }
+//    printf("\n");
+
     // IRQ is currently not used
     EC_UINT irq;
     buffer = nw2host(buffer, irq);
@@ -124,6 +147,14 @@ const unsigned char * EC_Telegram::build(const unsigned char * buffer)
     buffer = this->build_body(buffer);
     // build tail
     buffer = nw2host(buffer,m_wkc);
+
+//    printf("m4:");
+//    for ( p = buffer; *p; ++p)
+//    {
+//        printf("%x", *p);
+//    }
+//    printf("\n");
+
     return buffer;
   }
   else return NULL;

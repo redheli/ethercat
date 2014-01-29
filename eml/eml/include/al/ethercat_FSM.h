@@ -68,7 +68,7 @@ class EC_ESM_Ops
   bool stop_output_update();
 
   virtual ~EC_ESM_Ops(){};
- protected:
+ public:
   /// Constructor
   /** @param a_SH pointer to slave handler
    */

@@ -37,6 +37,8 @@ rosbuild_add_executable(mytest
   include/ethercat_hardware/ethercat_hardware.h
   include/ethercat_hardware/ethercat_device.h
   include/ethercat_hardware/ethercat_com.h
+  src/duet_fl.h
+  src/duet_fl.cpp
   )
 
 target_link_libraries(motorconf rt tinyxml ${LOG4CXX_LIBRARY})

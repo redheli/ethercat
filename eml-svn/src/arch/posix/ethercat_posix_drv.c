@@ -299,6 +299,17 @@ static int low_level_output(struct EtherCAT_Frame * frame, struct netif * netif)
 	struct eth_msg msg_to_send;
   memset(msg_to_send.data, 0x00, MAX_ETH_DATA);
 	int len_dump = framedump(frame, msg_to_send.data, MAX_ETH_DATA);
+    //
+    printf("low_level_output:");
+    unsigned char* p = msg_to_send.data;
+    int i;
+    for (i=0;i<len_dump;++i)
+    {
+        printf("0x%02x ", *p);
+        p++;
+    }
+    printf("\n");
+
   if(len_dump==0) {
     ec_log(EC_LOG_FATAL, "%s: message buffer overflow\n", __func__);
     ++ni->counters.tx_error;
@@ -788,7 +799,17 @@ static int low_level_dequeue(struct EtherCAT_Frame * frame, struct netif * ni, i
     
   // Mare outstanding pkt as unused
   init_pkt(pkt);
-    
+  // check data
+  printf("low_level_dequeue:");
+  unsigned char* p = msg_received->data;
+  int i;
+  for (i = 0;i < 30;++i)
+  {
+      printf("0x%02x ", *p);
+      p++;
+  }
+  printf("\n");
+
   int success = framebuild(frame,msg_received->data);
   if (success != 0){
 		// FIXME decent error handling here
