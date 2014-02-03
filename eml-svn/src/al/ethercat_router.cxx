@@ -111,6 +111,7 @@ EtherCAT_Router::check_mbx(const EtherCAT_SlaveHandler * sh) const
     if (m_dll_instance->txandrx(&chk_mbx_frame)){
       // If slave posted something, wkc has increased
       if (chk_mbx_tg.get_wkc() == 0x1){
+          ec_log(EC_LOG_INFO, "Router: slave posted something \n");
 	EtherCAT_MbxMsg msg(chk_mbx_tg.get_data());
 	return (post_mbxmsg(&msg,sh));
       }
@@ -126,9 +127,13 @@ EtherCAT_Router::check_mbx(const EtherCAT_SlaveHandler * sh) const
 bool
 EtherCAT_Router::post_mbxmsg(EtherCAT_MbxMsg * msg, const EtherCAT_SlaveHandler * from_sh) const
 {
+    printf("post_mbxmsg\n");
   EC_FixedStationAddress dest_addr = msg->m_hdr.m_address;
-  EtherCAT_SlaveHandler * dest_sh = m_al_instance->get_slave_handler(dest_addr);
+  printf("post_mbxmsg 1 <%d>\n",dest_addr.length());
+  const EtherCAT_SlaveHandler * dest_sh = from_sh;//m_al_instance->get_slave_handler(dest_addr);
+  printf("post_mbxmsg 2\n");
   if (dest_sh->is_complex()){
+      printf("post_mbxmsg 3\n");
     // Check if MBX sizes correspond...
     const EC_UINT datalen = dest_sh->get_mbx_config()->SM0.Length;
     unsigned char mbx_data[datalen];
@@ -148,6 +153,16 @@ EtherCAT_Router::post_mbxmsg(EtherCAT_MbxMsg * msg, const EtherCAT_SlaveHandler 
       // the slave accepts the command (could be \inf loop!).
       while (succeed == false)
 	succeed = m_dll_instance->txandrx(&put_mbx_frame);
+      //
+      const unsigned char *buf_rep = put_mbx_tg.get_data();
+      const unsigned char* p = buf_rep;
+      printf("get slave reply: ");
+      for (int i =0;i<put_mbx_tg.length();++i)
+      {
+          printf("%02x ", *p);
+          p++;
+      }
+      printf("\n");
       return succeed;
     }
     else{

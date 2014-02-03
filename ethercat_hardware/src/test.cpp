@@ -60,6 +60,8 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
+#include <al/ethercat_mbx.h>
+#include <al/ethercat_router.h>
 
 vector<EthercatDevice *> devices;
 
@@ -229,7 +231,24 @@ void init(char *interface)
 
   }//if dev
 #else
-  dev->sh_->m_router_instance.
+  for(int i=0;i<10;++i)
+  {
+      printf("route...\n");
+    dev->sh_->m_router_instance->route();
+      unsigned char buf[7] = { 0x06,0x00,0x04,0x40,0x61,0x60,0x00 };
+//      EtherCAT_CoE_MbxMsg msg(buf);
+//      EtherCAT_CoE_MbxMsg(EC_MbxMsgHdr a_hdr,
+//                  EC_CoE_Hdr a_CoE_hdr,
+//                  unsigned char * a_MbxMsgdata)
+      EC_MbxMsgPriority prio;
+      EC_MbxMsgType type(EC_CoE);
+      EC_MbxMsgHdr a_hdr(100,dev->sh_->get_station_address(),prio,type);
+      printf("mailbox 1...\n");
+      EtherCAT_MbxMsg *msg = new EtherCAT_MbxMsg(a_hdr,buf);
+      printf("mailbox 2...\n");
+      dev->sh_->m_router_instance->post_mbxmsg(msg,dev->sh_);
+    sleep(1);
+  }
 //  // test get modes_of_operation_display
 //  if(dev)
 //  {

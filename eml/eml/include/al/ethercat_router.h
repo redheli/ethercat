@@ -74,7 +74,7 @@ class EtherCAT_Router
  protected:
   EtherCAT_Router();
   
- private:
+ public:
   /// Pointer to AL instance
   EtherCAT_AL * m_al_instance;
   /// Pointer to EC_Logic

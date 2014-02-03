@@ -195,7 +195,7 @@ EtherCAT_AL::scan_slaves(void)
       sconf = m_slave_db->find(productcode,revision);
       if (sconf != NULL){
 	m_slave_handler[i] = new EtherCAT_SlaveHandler(adp2ringpos(adp),sconf,serial);
-	ec_log(EC_LOG_INFO, "AL creating SlaveHandler: pos=%d, adr=0x%x, Prod. Code=0x%x, rev=0x%x, Serial=%d\n", 
+    ec_log(EC_LOG_FATAL, "AL creating SlaveHandler: pos=%d, adr=0x%x, Prod. Code=0x%x, rev=0x%x, Serial=%d\n",
 	       adp2ringpos(adp),(EC_UINT) sconf->get_station_address(),productcode,revision,serial);
       }
       else { // No such slave found...

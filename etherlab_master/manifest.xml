@@ -1,0 +1,17 @@
+<package>
+  <description brief="etherlab_master">
+
+     etherlab_master
+
+  </description>
+  <author>turtlebot</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/etherlab_master</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+
+</package>
+
+
