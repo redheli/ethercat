@@ -81,7 +81,7 @@ void read_sdo(void)
             break;
         case EC_REQUEST_SUCCESS:
             fprintf(stderr, "SDO value: 0x%04X\n",
-                    EC_READ_U16(ecrt_sdo_request_data(sdo)));
+                    EC_READ_U8(ecrt_sdo_request_data(sdo)));
             ecrt_sdo_request_read(sdo); // trigger next read
             break;
         case EC_REQUEST_ERROR:
