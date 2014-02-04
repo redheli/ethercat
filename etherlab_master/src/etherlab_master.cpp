@@ -232,6 +232,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to create SDO modes_of_operation_display 0x6061 request.\n");
         return -1;
     }
+    //EC_WRITE_U16(ecrt_sdo_request_data(sdo), 0xFFFF);
+
     ecrt_sdo_request_timeout(sdo, 500); // ms
 #endif
 
