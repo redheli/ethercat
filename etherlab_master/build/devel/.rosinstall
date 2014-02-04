@@ -1,2 +1,0 @@
-- setup-file:
-    local-name: /home/turtlebot/ros_workspace/ethercat/etherlab_master/build/devel/setup.sh
