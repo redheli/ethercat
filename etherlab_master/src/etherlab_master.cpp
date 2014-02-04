@@ -75,6 +75,7 @@ void read_sdo(void)
     switch (ecrt_sdo_request_state(sdo)) {
         case EC_REQUEST_UNUSED: // request was not used yet
             ecrt_sdo_request_read(sdo); // trigger first read
+//            ecrt_sdo_request_write(sdo);
             break;
         case EC_REQUEST_BUSY:
             fprintf(stderr, "Still busy...\n");
