@@ -21,10 +21,39 @@
 // Optional features
 #define CONFIGURE_PDOS  1
 #define SDO_ACCESS      1
+// Timer
+static unsigned int sig_alarms = 0;
+static unsigned int user_alarms = 0;
 
 #if SDO_ACCESS
 static ec_sdo_request_t *sdo;
 #endif
+
+// PDO items
+// process data
+static uint8_t *domain1_pd = NULL;
+
+// offsets for PDO entries
+static unsigned int off_ana_in_status;
+static unsigned int off_ana_in_value;
+
+const static ec_pdo_entry_reg_t domain1_regs[] = {
+    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_ana_in_status},
+    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_ana_in_value},
+    {}
+};
+ec_pdo_entry_info_t duetfl80_channel1[] = {
+    {0x6061, 0,  8}, // modes_of_operation_display
+    {0x6098, 0,  8}  // homing_method
+};
+static ec_pdo_info_t duetfl80_pdos[] = {
+    {0x1A00, 2, duetfl80_channel1}    // pdo index input 0x1A00?
+};
+static ec_sync_info_t duetfl80_syncs[] = {
+    {2, EC_DIR_OUTPUT},
+    {3, EC_DIR_INPUT, 1, duetfl80_pdos},
+    {0xff}
+};
 
 // EtherCAT
 static ec_master_t *master = NULL;
@@ -147,14 +176,14 @@ void cyclic_task()
 
     }
 
-#if 0
+#if 1
     // read process data
     printf("AnaIn: state %u value %u\n",
             EC_READ_U8(domain1_pd + off_ana_in_status),
-            EC_READ_U16(domain1_pd + off_ana_in_value));
+            EC_READ_U8(domain1_pd + off_ana_in_value));
 #endif
 
-#if 1
+#if 0
     // write process data
 //    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
 #endif
@@ -164,11 +193,19 @@ void cyclic_task()
     ecrt_master_send(master);
 }
 
+/****************************************************************************/
 
+void signal_handler(int signum) {
+    switch (signum) {
+        case SIGALRM:
+            sig_alarms++;
+            break;
+    }
+}
 /*****************************************************************************/
 int main(int argc, char **argv)
 {
-    ec_slave_config_t *sc;
+//    ec_slave_config_t *sc;
     struct sigaction sa;
     struct itimerval tv;
 
@@ -198,4 +235,94 @@ int main(int argc, char **argv)
     ecrt_sdo_request_timeout(sdo, 500); // ms
 #endif
 
+#if CONFIGURE_PDOS
+    printf("Configuring PDOs...\n");
+    if (ecrt_slave_config_pdos(sc_ana_in, EC_END, duetfl80_syncs)) {
+        fprintf(stderr, "Failed to configure PDOs.\n");
+        return -1;
+    }
+
+//    if (!(sc = ecrt_master_slave_config(
+//                    master, AnaOutSlavePos, Beckhoff_EL4102))) {
+//        fprintf(stderr, "Failed to get slave configuration.\n");
+//        return -1;
+//    }
+
+//    if (ecrt_slave_config_pdos(sc, EC_END, el4102_syncs)) {
+//        fprintf(stderr, "Failed to configure PDOs.\n");
+//        return -1;
+//    }
+
+//    if (!(sc = ecrt_master_slave_config(
+//                    master, DigOutSlavePos, Beckhoff_EL2032))) {
+//        fprintf(stderr, "Failed to get slave configuration.\n");
+//        return -1;
+//    }
+
+//    if (ecrt_slave_config_pdos(sc, EC_END, el2004_syncs)) {
+//        fprintf(stderr, "Failed to configure PDOs.\n");
+//        return -1;
+//    }
+#endif
+
+//    // Create configuration for bus coupler
+//    sc = ecrt_master_slave_config(master, BusCouplerPos, Beckhoff_EK1100);
+//    if (!sc)
+//        return -1;
+
+    if (ecrt_domain_reg_pdo_entry_list(domain1, domain1_regs)) {
+            fprintf(stderr, "PDO entry registration failed!\n");
+            return -1;
+        }
+
+    printf("Activating master...\n");
+    if (ecrt_master_activate(master))
+        return -1;
+
+    if (!(domain1_pd = ecrt_domain_data(domain1))) {
+        return -1;
+    }
+
+#if PRIORITY
+    pid_t pid = getpid();
+    if (setpriority(PRIO_PROCESS, pid, -19))
+        fprintf(stderr, "Warning: Failed to set priority: %s\n",
+                strerror(errno));
+#endif
+
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    if (sigaction(SIGALRM, &sa, 0)) {
+        fprintf(stderr, "Failed to install signal handler!\n");
+        return -1;
+    }
+
+    printf("Starting timer...\n");
+    tv.it_interval.tv_sec = 0;
+    tv.it_interval.tv_usec = 1000000 / FREQUENCY;
+    tv.it_value.tv_sec = 0;
+    tv.it_value.tv_usec = 1000;
+    if (setitimer(ITIMER_REAL, &tv, NULL)) {
+        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
+        return 1;
+    }
+
+    printf("Started.\n");
+    while (1) {
+        pause();
+
+#if 0
+        struct timeval t;
+        gettimeofday(&t, NULL);
+        printf("%u.%06u\n", t.tv_sec, t.tv_usec);
+#endif
+
+        while (sig_alarms != user_alarms) {
+            cyclic_task();
+            user_alarms++;
+        }
+    }
+
+    return 0;
 }
