@@ -27,6 +27,7 @@ include_directories(${ETHERLAB}/include)
 rosbuild_add_executable(etherlab_mastr src/etherlab_master.cpp)
 rosbuild_add_executable(etherlab_mastr_sdo src/etherlab_master_sdo.cpp)
 target_link_libraries(etherlab_mastr ethercat)
+target_link_libraries(etherlab_mastr_sdo ethercat)
 
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)

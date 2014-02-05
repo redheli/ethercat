@@ -15,6 +15,9 @@
 #define AliasAndPositon  0, 0
 #define VendorID_ProductCode  0x000000e4, 0x00001133
 
+#define MODES_OF_OPERATION_DISPLAY 0x6061
+#define MODES_OF_OPERATION 0x6060
+
 // Application parameters
 #define FREQUENCY 100
 #define PRIORITY 1
@@ -26,7 +29,8 @@ static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
 
 #if SDO_ACCESS
-static ec_sdo_request_t *sdo;
+static ec_sdo_request_t *sdo_operation_mode_display;
+static ec_sdo_request_t *sdo_operation_mode_write;
 #endif
 
 // PDO items
@@ -72,9 +76,9 @@ static unsigned int blink = 0;
 #if SDO_ACCESS
 void read_sdo(void)
 {
-    switch (ecrt_sdo_request_state(sdo)) {
+    switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
         case EC_REQUEST_UNUSED: // request was not used yet
-            ecrt_sdo_request_read(sdo); // trigger first read
+            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
 //            ecrt_sdo_request_write(sdo);
             break;
         case EC_REQUEST_BUSY:
@@ -82,12 +86,12 @@ void read_sdo(void)
             break;
         case EC_REQUEST_SUCCESS:
             fprintf(stderr, "SDO value: 0x%04X\n",
-                    EC_READ_U8(ecrt_sdo_request_data(sdo)));
-            ecrt_sdo_request_read(sdo); // trigger next read
+                    EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)));
+            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger next read
             break;
         case EC_REQUEST_ERROR:
             fprintf(stderr, "Failed to read SDO!\n");
-            ecrt_sdo_request_read(sdo); // retry reading
+            ecrt_sdo_request_read(sdo_operation_mode_display); // retry reading
             break;
     }
 }
@@ -201,6 +205,11 @@ void signal_handler(int signum) {
         case SIGALRM:
             sig_alarms++;
             break;
+    case SIGINT:
+        printf("use ctrl+x ,need do something");
+        // disable the operation
+        // send 0x0007 to controlword
+        break;
     }
 }
 /*****************************************************************************/
@@ -227,15 +236,24 @@ int main(int argc, char **argv)
     }
 
 #if SDO_ACCESS
-    fprintf(stderr, "Creating SDO requests...\n");
-    if (!(sdo = ecrt_slave_config_create_sdo_request(sc_ana_in, 0x6061, 0, 1))) // data size 1 ?
+    fprintf(stderr, "Creating operation mode read SDO requests...\n");
+    if (!(sdo_operation_mode_display = ecrt_slave_config_create_sdo_request(sc_ana_in, MODES_OF_OPERATION_DISPLAY, 0, 1))) // data size 1 ?
     {
         fprintf(stderr, "Failed to create SDO modes_of_operation_display 0x6061 request.\n");
         return -1;
     }
+
+    fprintf(stderr, "Creating operation mode write SDO requests...\n");
+    if (!(sdo_operation_mode_write = ecrt_slave_config_create_sdo_request(sc_ana_in, MODES_OF_OPERATION, 0, 1))) // data size 1 ?
+    {
+        fprintf(stderr, "Failed to create SDO modes_of_operation_display MODES_OF_OPERATION request.\n");
+        return -1;
+    }
+
     //EC_WRITE_U16(ecrt_sdo_request_data(sdo), 0xFFFF);
 
-    ecrt_sdo_request_timeout(sdo, 500); // ms
+    ecrt_sdo_request_timeout(sdo_operation_mode_display, 500); // ms
+    ecrt_sdo_request_timeout(sdo_operation_mode_write, 500); // ms
 #endif
 
 #if CONFIGURE_PDOS
@@ -283,9 +301,11 @@ int main(int argc, char **argv)
     if (ecrt_master_activate(master))
         return -1;
 
+#if CONFIGURE_PDOS
     if (!(domain1_pd = ecrt_domain_data(domain1))) {
         return -1;
     }
+#endif
 
 #if PRIORITY
     pid_t pid = getpid();
@@ -293,6 +313,85 @@ int main(int argc, char **argv)
         fprintf(stderr, "Warning: Failed to set priority: %s\n",
                 strerror(errno));
 #endif
+
+    // 1. check operation mode
+    bool getModeOk=false;
+    for(int i=0;i<10;++i)
+    {
+        ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
+        switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+                ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+                fprintf(stderr, "Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "sdo_operation_mode_display value: 0x%04X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)));
+                getModeOk = true;
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO!\n");
+                break;
+        }
+        if(getModeOk)
+        {
+            break;
+        }
+        sleep(1);
+    }
+    // 2. set operation mode to velocity mode
+    EC_WRITE_U8(ecrt_sdo_request_data(sdo_operation_mode_write), 0x03);
+    switch (ecrt_sdo_request_state(sdo_operation_mode_write)) {
+        case EC_REQUEST_UNUSED: // request was not used yet
+//            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+//            ecrt_sdo_request_write(sdo);
+            break;
+        case EC_REQUEST_BUSY:
+            fprintf(stderr, "Request to Write,But Still busy...\n");
+            break;
+        case EC_REQUEST_SUCCESS:
+            fprintf(stderr, "sdo_operation_mode_write write value 0x03");
+            ecrt_sdo_request_write(sdo_operation_mode_write);
+            break;
+        case EC_REQUEST_ERROR:
+            fprintf(stderr, "Failed to read SDO state!\n");
+            break;
+    }
+    // 1. check operation mode
+    getModeOk=false;
+    for(int i=0;i<10;++i)
+    {
+        ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
+        switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+                ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+                fprintf(stderr, "Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "sdo_operation_mode_display value: 0x%04X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)));
+                getModeOk = true;
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO!\n");
+                break;
+        }
+        if(getModeOk)
+        {
+            break;
+        }
+        sleep(1);
+    }
+
+
+
+
 
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
