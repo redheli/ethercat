@@ -24,7 +24,7 @@
 #define FREQUENCY 100
 #define PRIORITY 1
 // Optional features
-#define CONFIGURE_PDOS  0
+#define CONFIGURE_PDOS  1
 #define SDO_ACCESS      1
 // Timer
 static unsigned int sig_alarms = 0;
@@ -80,7 +80,8 @@ static unsigned int blink = 0;
 void disable_operation()
 {
     bool isOperationDisabled=false;
-    while(!isOperationDisabled)
+//    while(!isOperationDisabled)
+    for(int i=0;i<1;++i)
     {
         EC_WRITE_U8(ecrt_sdo_request_data(sdo_controlword_write), 0x0000);// p85, use state transition 9
         switch (ecrt_sdo_request_state(sdo_controlword_write)) {
@@ -125,6 +126,10 @@ void disable_operation()
         if(isOperationDisabled)
         {
             break;
+        }
+        else
+        {
+            printf("bad exit!\n");
         }
     }//while
 }
@@ -258,7 +263,7 @@ void cyclic_task()
 /****************************************************************************/
 
 void signal_handler(int signum) {
-    fprintf(stderr,"signal_handler \n");
+//    fprintf(stderr,"signal_handler \n");
     switch (signum) {
         case SIGALRM:
             sig_alarms++;
@@ -278,6 +283,7 @@ void my_sig_handler(int signum) {
             fprintf(stderr,"use ctrl+c ,need do something before exit\n");
             // disable the operation
             // send 0x0007 to controlword
+            disable_operation();
             exit(-1);
             break;
     }
@@ -388,7 +394,7 @@ int main(int argc, char **argv)
     if (ecrt_master_activate(master))
         return -1;
 
-#if CONFIGURE_PDOS
+#if 1
     if (!(domain1_pd = ecrt_domain_data(domain1))) {
         return -1;
     }
@@ -417,16 +423,32 @@ int main(int argc, char **argv)
 
     // 1. check operation mode
     bool getModeOk=false;
-    for(int i=0;i<10;++i)
+    while(1)
     {
+//        printf("i=%d\n",i);
+        // receive process data
+        ecrt_master_receive(master);
+        ecrt_domain_process(domain1);
+
+        // check process data state (optional)
+        check_domain1_state();
+
+        // check for master state (optional)
+        check_master_state();
+
+        // check for islave configuration state(s) (optional)
+        check_slave_config_states();
+
+//        read_sdo();
+
         ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
         switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
             case EC_REQUEST_UNUSED: // request was not used yet
+            printf("request was not used yet\n");
                 ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
-    //            ecrt_sdo_request_write(sdo);
                 break;
             case EC_REQUEST_BUSY:
-                fprintf(stderr, "Still busy...\n");
+//                fprintf(stderr, "Still busy...\n");
                 break;
             case EC_REQUEST_SUCCESS:
                 fprintf(stderr, "sdo_operation_mode_display value: 0x%04X\n",
@@ -441,7 +463,15 @@ int main(int argc, char **argv)
         {
             break;
         }
-        sleep(1);
+        ecrt_domain_queue(domain1);
+        ecrt_master_send(master);
+//        sleep(1);
+//        cyclic_task();
+    }
+    printf("check mode done\n");
+    if(getModeOk == false)
+    {
+        exit(-1);
     }
     // 2. set operation mode to velocity mode
     EC_WRITE_U8(ecrt_sdo_request_data(sdo_operation_mode_write), 0x03);

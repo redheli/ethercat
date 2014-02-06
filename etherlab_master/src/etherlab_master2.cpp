@@ -203,6 +203,28 @@ void cyclic_task()
     ecrt_master_send(master);
 }
 
+void my_cyclic_task()
+{
+    // receive process data
+    ecrt_master_receive(master);
+    ecrt_domain_process(domain1);
+
+    // check process data state (optional)
+    check_domain1_state();
+
+        // check for master state (optional)
+        check_master_state();
+
+        // check for islave configuration state(s) (optional)
+        check_slave_config_states();
+
+        // read process data SDO
+        read_sdo();
+
+    // send process data
+    ecrt_domain_queue(domain1);
+    ecrt_master_send(master);
+}
 /****************************************************************************/
 
 void signal_handler(int signum) {
@@ -313,29 +335,137 @@ int main(int argc, char **argv)
     }
 
     printf("Starting timer...\n");
-    tv.it_interval.tv_sec = 0;
-    tv.it_interval.tv_usec = 1000000 / FREQUENCY;
-    tv.it_value.tv_sec = 0;
-    tv.it_value.tv_usec = 1000;
-    if (setitimer(ITIMER_REAL, &tv, NULL)) {
-        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
-        return 1;
-    }
+//    tv.it_interval.tv_sec = 0;
+//    tv.it_interval.tv_usec = 1000000 / FREQUENCY;
+//    tv.it_value.tv_sec = 0;
+//    tv.it_value.tv_usec = 1000;
+//    if (setitimer(ITIMER_REAL, &tv, NULL)) {
+//        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
+//        return 1;
+//    }
 
     printf("Started.\n");
     while (1) {
-        pause();
+//        pause();
 
-#if 0
-        struct timeval t;
-        gettimeofday(&t, NULL);
-        printf("%u.%06u\n", t.tv_sec, t.tv_usec);
-#endif
+#if 1
+//    for(int i=0;i<10;++i)
+//    {
+//        my_cyclic_task();
+        // receive process data
+        ecrt_master_receive(master);
+//        ecrt_domain_process(domain1);
 
-        while (sig_alarms != user_alarms) {
-            cyclic_task();
-            user_alarms++;
+        // check process data state (optional)
+//        check_domain1_state();
+
+            // check for master state (optional)
+            check_master_state();
+
+            // check for islave configuration state(s) (optional)
+            check_slave_config_states();
+
+            // read process data SDO
+            switch (ecrt_sdo_request_state(sdo)) {
+                case EC_REQUEST_UNUSED: // request was not used yet
+                printf("request was not used yet\n");
+                    ecrt_sdo_request_read(sdo); // trigger first read
+        //            ecrt_sdo_request_write(sdo);
+                    break;
+                case EC_REQUEST_BUSY:
+//                    fprintf(stderr, "Still busy...\n");
+                    break;
+                case EC_REQUEST_SUCCESS:
+                    printf( "SDO value: 0x%04X\n",
+                            EC_READ_U8(ecrt_sdo_request_data(sdo)));
+                    ecrt_sdo_request_read(sdo); // trigger next read
+                    break;
+                case EC_REQUEST_ERROR:
+                    fprintf(stderr, "Failed to read SDO!\n");
+                    ecrt_sdo_request_read(sdo); // retry reading
+                    break;
+            }
+//            read_sdo();
+//            switch (ecrt_sdo_request_state(sdo)) {
+//                case EC_REQUEST_UNUSED: // request was not used yet
+//                printf("request was not used yet\n");
+//                    ecrt_sdo_request_read(sdo); // trigger first read
+//                    break;
+//                case EC_REQUEST_BUSY:
+//                    fprintf(stderr, "Still busy...\n");
+//                    break;
+//                case EC_REQUEST_SUCCESS:
+//                    fprintf(stderr, "sdo value: 0x%04X\n",
+//                            EC_READ_U8(ecrt_sdo_request_data(sdo)));
+////                    getModeOk = true;
+//                    break;
+//                case EC_REQUEST_ERROR:
+//                    fprintf(stderr, "Failed to read SDO!\n");
+//                    break;
+//            }
+
+
+        // send process data
+//        ecrt_domain_queue(domain1);
+//            ecrt_sdo_request_read(sdo); // trigger next read
+        ecrt_master_send(master);
+        ecrt_master_receive(master);
+//        sleep(1);
+
+//    }
+#else
+        // 1. check operation mode
+        bool getModeOk=false;
+        for(int i=0;i<10;++i)
+        {
+            printf("i=%d\n",i);
+            // receive process data
+            ecrt_master_receive(master);
+//            ecrt_domain_process(domain1);
+
+            // check process data state (optional)
+//            check_domain1_state();
+
+            // check for master state (optional)
+            check_master_state();
+
+            // check for islave configuration state(s) (optional)
+            check_slave_config_states();
+
+    //        read_sdo();
+
+    //        ecrt_sdo_request_read(sdo); // trigger read
+            switch (ecrt_sdo_request_state(sdo)) {
+                case EC_REQUEST_UNUSED: // request was not used yet
+                printf("request was not used yet\n");
+                    ecrt_sdo_request_read(sdo); // trigger first read
+                    break;
+                case EC_REQUEST_BUSY:
+                    fprintf(stderr, "Still busy...\n");
+                    break;
+                case EC_REQUEST_SUCCESS:
+                    fprintf(stderr, "sdo value: 0x%04X\n",
+                            EC_READ_U8(ecrt_sdo_request_data(sdo)));
+                    getModeOk = true;
+                    break;
+                case EC_REQUEST_ERROR:
+                    fprintf(stderr, "Failed to read SDO!\n");
+                    break;
+            }
+            if(getModeOk)
+            {
+                break;
+            }
+//            ecrt_domain_queue(domain1);
+            ecrt_master_send(master);
+//            sleep(1);
+//            cyclic_task();
         }
+        if(getModeOk == false)
+        {
+//            exit(-1);
+        }
+#endif
     }
 
     return 0;

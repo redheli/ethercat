@@ -32,6 +32,9 @@ rosbuild_add_executable(etherlab_mastr_sdo src/etherlab_master_sdo.cpp)
 target_link_libraries(etherlab_mastr ethercat)
 target_link_libraries(etherlab_mastr_sdo ethercat)
 
+rosbuild_add_executable(etherlab_master2 src/etherlab_master2.cpp)
+target_link_libraries(etherlab_master2 ethercat)
+
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
