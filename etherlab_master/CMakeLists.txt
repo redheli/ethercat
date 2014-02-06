@@ -24,6 +24,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(ETHERLAB /opt/etherlab/)
 link_directories(${ETHERLAB}/lib/)
 include_directories(${ETHERLAB}/include)
+# /usr/src/linux-headers-3.2.0-53-generic/include
+#    /usr/src/linux-headers-3.2.0-53-generic/arch/x86/include)
+#include_directories(/usr/src/linux-headers-3.2.0-53-generic/include/linux)
 rosbuild_add_executable(etherlab_mastr src/etherlab_master.cpp)
 target_link_libraries(etherlab_mastr ethercat)
 

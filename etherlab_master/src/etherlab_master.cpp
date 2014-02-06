@@ -10,6 +10,7 @@
 /****************************************************************************/
 
 #include "ecrt.h"
+//#include "/home/redheli/Downloads/ethercat-1.5.2/master/slave_config.h"
 
 /****************************************************************************/
 #define AliasAndPositon  0, 0
@@ -34,23 +35,30 @@ static ec_sdo_request_t *sdo;
 static uint8_t *domain1_pd = NULL;
 
 // offsets for PDO entries
-static unsigned int off_ana_in_status;
+//static unsigned int off_ana_in_status;
+static unsigned int off_1A00;
 static unsigned int off_ana_in_value;
 
+//const static ec_pdo_entry_reg_t domain1_regs[] = {
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_ana_in_status},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_ana_in_value},
+//    {}
+//};
 const static ec_pdo_entry_reg_t domain1_regs[] = {
-    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_ana_in_status},
-    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_ana_in_value},
+    {AliasAndPositon,  VendorID_ProductCode, 0x1A00, 4, &off_1A00},
     {}
 };
+//ec_pdo_entry_info_t duetfl80_channel1[] = {
+//    {0x6061, 0,  8}, // modes_of_operation_display
+//    {0x6098, 0,  8}  // homing_method
+//};
 ec_pdo_entry_info_t duetfl80_channel1[] = {
-    {0x6061, 0,  8}, // modes_of_operation_display
-    {0x6098, 0,  8}  // homing_method
+    {0x1A00, 4,  32} // modes_of_operation_display
 };
 static ec_pdo_info_t duetfl80_pdos[] = {
-    {0x1A00, 2, duetfl80_channel1}    // pdo index input 0x1A00?
+    {0x1A00,1 , duetfl80_channel1}    // pdo index input 0x1A00?
 };
 static ec_sync_info_t duetfl80_syncs[] = {
-    {2, EC_DIR_OUTPUT},
     {3, EC_DIR_INPUT, 1, duetfl80_pdos},
     {0xff}
 };
@@ -171,16 +179,16 @@ void cyclic_task()
 
 #if SDO_ACCESS
         // read process data SDO
-        read_sdo();
+//        read_sdo();
 #endif
 
     }
 
 #if 1
     // read process data
-    printf("AnaIn: state %u value %u\n",
-            EC_READ_U8(domain1_pd + off_ana_in_status),
-            EC_READ_U8(domain1_pd + off_ana_in_value));
+    printf("pdo value: %u offset %u\n",
+            EC_READ_U8(domain1_pd + off_1A00),off_1A00);
+//            EC_READ_U8(domain1_pd + off_ana_in_value));
 #endif
 
 #if 0
@@ -224,6 +232,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to get slave configuration.\n");
         return -1;
     }
+//    printf("sync mgr 0 config: %d \n",sc_ana_in->sync_configs[0].dir);
+//    printf("sync mgr 1 config: %d \n",sc_ana_in->sync_configs[1].dir);
 
 #if SDO_ACCESS
     fprintf(stderr, "Creating SDO requests...\n");
