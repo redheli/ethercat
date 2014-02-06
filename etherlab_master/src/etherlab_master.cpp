@@ -83,6 +83,7 @@ void read_sdo(void)
     switch (ecrt_sdo_request_state(sdo)) {
         case EC_REQUEST_UNUSED: // request was not used yet
             ecrt_sdo_request_read(sdo); // trigger first read
+//            ecrt_sdo_request_write(sdo);
             break;
         case EC_REQUEST_BUSY:
             fprintf(stderr, "Still busy...\n");
@@ -242,6 +243,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to create SDO modes_of_operation_display 0x6061 request.\n");
         return -1;
     }
+    //EC_WRITE_U16(ecrt_sdo_request_data(sdo), 0xFFFF);
+
     ecrt_sdo_request_timeout(sdo, 500); // ms
 #endif
 
