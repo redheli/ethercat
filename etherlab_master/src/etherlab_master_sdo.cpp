@@ -484,7 +484,7 @@ int main(int argc, char **argv)
             fprintf(stderr, "Request to Write,But Still busy...\n");
             break;
         case EC_REQUEST_SUCCESS:
-            fprintf(stderr, "sdo_operation_mode_write write value 0x03");
+            fprintf(stderr, "sdo_operation_mode_write write value 0x03\n");
             ecrt_sdo_request_write(sdo_operation_mode_write);
             break;
         case EC_REQUEST_ERROR:
@@ -502,7 +502,7 @@ int main(int argc, char **argv)
     //            ecrt_sdo_request_write(sdo);
                 break;
             case EC_REQUEST_BUSY:
-                fprintf(stderr, "Still busy...\n");
+//                fprintf(stderr, "Still busy...\n");
                 break;
             case EC_REQUEST_SUCCESS:
                 fprintf(stderr, "sdo_operation_mode_display value: 0x%04X\n",
@@ -517,7 +517,7 @@ int main(int argc, char **argv)
         {
             break;
         }
-        sleep(1);
+//        sleep(1);
     }
 
 
