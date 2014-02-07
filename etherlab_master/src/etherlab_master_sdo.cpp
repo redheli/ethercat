@@ -406,7 +406,15 @@ int main(int argc, char **argv)
         fprintf(stderr, "Warning: Failed to set priority: %s\n",
                 strerror(errno));
 #endif
-
+    printf("Starting timer...\n");
+    tv.it_interval.tv_sec = 0;
+    tv.it_interval.tv_usec = 1000000 / FREQUENCY;
+    tv.it_value.tv_sec = 0;
+    tv.it_value.tv_usec = 1000;
+    if (setitimer(ITIMER_REAL, &tv, NULL)) {
+        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
+        return 1;
+    }
     // handle ctrl+c ,important , do not remove
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
@@ -423,15 +431,18 @@ int main(int argc, char **argv)
 
     // 1. check operation mode
     bool getModeOk=false;
+    uint8_t mode_value;
+    int i=0;
     while(1)
     {
 //        printf("i=%d\n",i);
+        i++;
         // receive process data
         ecrt_master_receive(master);
-        ecrt_domain_process(domain1);
+//        ecrt_domain_process(domain1);
 
         // check process data state (optional)
-        check_domain1_state();
+//        check_domain1_state();
 
         // check for master state (optional)
         check_master_state();
@@ -441,19 +452,23 @@ int main(int argc, char **argv)
 
 //        read_sdo();
 
-        ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
+        if(i==1)
+        {
+            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
+        }
         switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
             case EC_REQUEST_UNUSED: // request was not used yet
             printf("request was not used yet\n");
                 ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
                 break;
             case EC_REQUEST_BUSY:
-//                fprintf(stderr, "Still busy...\n");
+//                printf( "Still busy...\n");
                 break;
             case EC_REQUEST_SUCCESS:
-                fprintf(stderr, "sdo_operation_mode_display value: 0x%04X\n",
+                fprintf(stderr, "sdo_operation_mode_display value: 0x%02X\n",
                         EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)));
                 getModeOk = true;
+                mode_value = EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display));
                 break;
             case EC_REQUEST_ERROR:
                 fprintf(stderr, "Failed to read SDO!\n");
@@ -461,10 +476,12 @@ int main(int argc, char **argv)
         }
         if(getModeOk)
         {
+            printf("get mode value <%02x>\n",mode_value);
             break;
         }
-        ecrt_domain_queue(domain1);
+//        ecrt_domain_queue(domain1);
         ecrt_master_send(master);
+//        pause();
 //        sleep(1);
 //        cyclic_task();
     }
@@ -473,29 +490,51 @@ int main(int argc, char **argv)
     {
         exit(-1);
     }
+//    exit(0);
     // 2. set operation mode to velocity mode
-    EC_WRITE_U8(ecrt_sdo_request_data(sdo_operation_mode_write), 0x03);
-    switch (ecrt_sdo_request_state(sdo_operation_mode_write)) {
-        case EC_REQUEST_UNUSED: // request was not used yet
-//            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
-//            ecrt_sdo_request_write(sdo);
+    printf("setting mode to velocity_mode...\n");
+    bool isWriteModeOk=false;
+    while(1)
+    {
+        ecrt_master_receive(master);
+        EC_WRITE_U8(ecrt_sdo_request_data(sdo_operation_mode_write), 0x03);
+        ecrt_sdo_request_write(sdo_operation_mode_write);
+        switch (ecrt_sdo_request_state(sdo_operation_mode_write)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+    //            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+//                printf("Request to Write,But Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "sdo_operation_mode_write write value 0x03 ok\n");
+//                ecrt_sdo_request_write(sdo_operation_mode_write);
+                isWriteModeOk = true;
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO state!\n");
+                break;
+        }
+        if(isWriteModeOk)
+        {
             break;
-        case EC_REQUEST_BUSY:
-            fprintf(stderr, "Request to Write,But Still busy...\n");
-            break;
-        case EC_REQUEST_SUCCESS:
-            fprintf(stderr, "sdo_operation_mode_write write value 0x03\n");
-            ecrt_sdo_request_write(sdo_operation_mode_write);
-            break;
-        case EC_REQUEST_ERROR:
-            fprintf(stderr, "Failed to read SDO state!\n");
-            break;
+        }
+        ecrt_master_send(master);
     }
     // 1. check operation mode
     getModeOk=false;
-    for(int i=0;i<10;++i)
+//    for(int i=0;i<10;++i)
+    i=0;
+    while(1)
     {
-        ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
+        i++;
+
+        ecrt_master_receive(master);
+        if(i==1)
+        {
+            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
+        }
         switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
             case EC_REQUEST_UNUSED: // request was not used yet
                 ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
@@ -505,9 +544,18 @@ int main(int argc, char **argv)
 //                fprintf(stderr, "Still busy...\n");
                 break;
             case EC_REQUEST_SUCCESS:
-                fprintf(stderr, "sdo_operation_mode_display value: 0x%04X\n",
+                printf("sdo_operation_mode_display value: 0x%02X\n",
                         EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)));
-                getModeOk = true;
+                if(EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)) ^ 0x03 == 0)
+                {
+                    printf("mode is in velocity_mode \n");
+                    getModeOk = true;
+                }
+                else
+                {
+                    printf("mode not in velocity_mode \n");
+                    exit(-1);
+                }
                 break;
             case EC_REQUEST_ERROR:
                 fprintf(stderr, "Failed to read SDO!\n");
@@ -517,10 +565,14 @@ int main(int argc, char **argv)
         {
             break;
         }
+//        if(i<10)
+        {
+            ecrt_master_send(master);
+        }
 //        sleep(1);
     }
 
-
+    exit(0);
 
 
 
@@ -532,15 +584,7 @@ int main(int argc, char **argv)
 //        return -1;
 //    }
 
-    printf("Starting timer...\n");
-    tv.it_interval.tv_sec = 0;
-    tv.it_interval.tv_usec = 1000000 / FREQUENCY;
-    tv.it_value.tv_sec = 0;
-    tv.it_value.tv_usec = 1000;
-    if (setitimer(ITIMER_REAL, &tv, NULL)) {
-        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
-        return 1;
-    }
+
 
     printf("Started.\n");
     while (1) {
