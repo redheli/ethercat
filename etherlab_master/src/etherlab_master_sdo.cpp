@@ -522,7 +522,7 @@ int main(int argc, char **argv)
         }
         ecrt_master_send(master);
     }
-    // 1. check operation mode
+    // 3. check operation mode, after write
     getModeOk=false;
 //    for(int i=0;i<10;++i)
     i=0;
@@ -572,7 +572,11 @@ int main(int argc, char **argv)
 //        sleep(1);
     }
 
-    exit(0);
+    // 4. read target velocity
+    // 5. set target velocity to zero
+    // 6. read statusword
+    // 7. set controlword , enable operation
+    // 8. set target velocity 100r/min
 
 
 
@@ -586,21 +590,21 @@ int main(int argc, char **argv)
 
 
 
-    printf("Started.\n");
-    while (1) {
-        pause();
+//    printf("Started.\n");
+//    while (1) {
+//        pause();
 
-#if 0
-        struct timeval t;
-        gettimeofday(&t, NULL);
-        printf("%u.%06u\n", t.tv_sec, t.tv_usec);
-#endif
+//#if 0
+//        struct timeval t;
+//        gettimeofday(&t, NULL);
+//        printf("%u.%06u\n", t.tv_sec, t.tv_usec);
+//#endif
 
-        while (sig_alarms != user_alarms) {
-            cyclic_task();
-            user_alarms++;
-        }
-    }
+//        while (sig_alarms != user_alarms) {
+//            cyclic_task();
+//            user_alarms++;
+//        }
+//    }
 
     return 0;
 }
