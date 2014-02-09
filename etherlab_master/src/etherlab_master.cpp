@@ -21,7 +21,7 @@
 #define PRIORITY 1
 // Optional features
 #define CONFIGURE_PDOS  1
-#define SDO_ACCESS      1
+#define SDO_ACCESS      0
 // Timer
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
@@ -36,30 +36,86 @@ static uint8_t *domain1_pd = NULL;
 
 // offsets for PDO entries
 //static unsigned int off_ana_in_status;
-static unsigned int off_6041;
+static unsigned int off_0x6040;
+static unsigned int off_0x6060;
+static unsigned int off_0x6098;
+static unsigned int off_0x607a;
+static unsigned int off_0x60ff;
+static unsigned int off_0x6071;
+static unsigned int off_0x6041;
+static unsigned int off_0x6064;
+static unsigned int off_0x6061;
+static unsigned int off_0x1001;
+static unsigned int off_0x606c;
+static unsigned int off_0x6077;
+
 static unsigned int off_ana_in_value;
 
-//const static ec_pdo_entry_reg_t domain1_regs[] = {
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_ana_in_status},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_ana_in_value},
-//    {}
-//};
+////const static ec_pdo_entry_reg_t domain1_regs[] = {
+////    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_ana_in_status},
+////    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_ana_in_value},
+////    {}
+////};
 const static ec_pdo_entry_reg_t domain1_regs[] = {
-    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_6041},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
+    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
     {}
 };
+////ec_pdo_entry_info_t duetfl80_channel1[] = {
+////    {0x6061, 0,  8}, // modes_of_operation_display
+////    {0x6098, 0,  8}  // homing_method
+////};
 //ec_pdo_entry_info_t duetfl80_channel1[] = {
-//    {0x6061, 0,  8}, // modes_of_operation_display
-//    {0x6098, 0,  8}  // homing_method
+//    {0x6041, 0,  16} // modes_of_operation_display
 //};
-ec_pdo_entry_info_t duetfl80_channel1[] = {
-    {0x6041, 0,  16} // modes_of_operation_display
+//static ec_pdo_info_t duetfl80_pdos[] = {
+//    {0x1A00,1 , duetfl80_channel1}    // pdo index input 0x1A00?
+//};
+//static ec_sync_info_t duetfl80_syncs[] = {
+//    {3, EC_DIR_INPUT, 1, duetfl80_pdos, EC_WD_DISABLE},
+//    {0xff}
+//};
+/* Master 0, Slave 0, "Metronix DIS-2 ECAT"
+ * Vendor ID:       0x000000e4
+ * Product code:    0x00001133
+ * Revision number: 0x00020000
+ */
+
+ec_pdo_entry_info_t slave_0_pdo_entries[] = {
+    {0x6040, 0x00, 16}, /* Controlword */
+    {0x6060, 0x00, 8}, /* Mode_of_Operation */
+    {0x6098, 0x00, 8}, /* Homing_Method */
+    {0x607a, 0x00, 32}, /* Target_Position */
+    {0x60ff, 0x00, 32}, /* Target_Velocity */
+    {0x6071, 0x00, 16}, /* Target_Torque */
+    {0x6041, 0x00, 16}, /* Statusword */
+    {0x6064, 0x00, 32}, /* Position_Actual_Value */
+    {0x6061, 0x00, 8}, /* Modes_Of_Operation_Display */
+    {0x1001, 0x00, 8}, /* Error_Register */
+    {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
+    {0x6077, 0x00, 16}, /* Torque_Actual_Value */
 };
-static ec_pdo_info_t duetfl80_pdos[] = {
-    {0x6041,1 , duetfl80_channel1}    // pdo index input 0x1A00?
+
+ec_pdo_info_t slave_0_pdos[] = {
+    {0x1600, 6, slave_0_pdo_entries + 0}, /* Outputs */
+    {0x1a00, 6, slave_0_pdo_entries + 6}, /* Inputs */
 };
-static ec_sync_info_t duetfl80_syncs[] = {
-    {3, EC_DIR_INPUT, 1, duetfl80_pdos},
+
+ec_sync_info_t slave_0_syncs[] = {
+    {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
+    {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
+    {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
     {0xff}
 };
 
@@ -159,15 +215,16 @@ void check_slave_config_states(void)
 void cyclic_task()
 {
     // receive process data
-    ecrt_master_receive(master);
-    ecrt_domain_process(domain1);
+
 
     // check process data state (optional)
-    check_domain1_state();
+//    check_domain1_state();
 
     if (counter) {
         counter--;
     } else { // do this at 1 Hz
+        ecrt_master_receive(master);
+        ecrt_domain_process(domain1);
         counter = FREQUENCY;
 
         // calculate new process data
@@ -179,28 +236,51 @@ void cyclic_task()
         // check for islave configuration state(s) (optional)
         check_slave_config_states();
 
+
+#if 1
+    // read process data
+//        {0x6040, 0x00, 16}, /* Controlword */
+//        {0x6060, 0x00, 8}, /* Mode_of_Operation */
+//        {0x6098, 0x00, 8}, /* Homing_Method */
+//        {0x607a, 0x00, 32}, /* Target_Position */
+//        {0x60ff, 0x00, 32}, /* Target_Velocity */
+//        {0x6071, 0x00, 16}, /* Target_Torque */
+//        {0x6041, 0x00, 16}, /* Statusword */
+//        {0x6064, 0x00, 32}, /* Position_Actual_Value */
+//        {0x6061, 0x00, 8}, /* Modes_Of_Operation_Display */
+//        {0x1001, 0x00, 8}, /* Error_Register */
+//        {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
+//        {0x6077, 0x00, 16}, /* Torque_Actual_Value */
+//        printf("pdo value: %02x offset %u\n",
+//                EC_READ_U16(domain1_pd + off_0x6040),off_0x6040);
+//        printf("pdo value: %02x offset %u\n",
+//                EC_READ_U16(domain1_pd + off_0x1001),off_0x1001);
+//    printf("pdo value: %02x offset %u\n",
+//            EC_READ_U16(domain1_pd + off_0x6041),off_0x6041);
+    printf("pdo value2: %02x offset %u\n",
+            EC_READ_U8(domain1_pd + off_0x6060),off_0x6060);
+    printf("pd: %u \n",*domain1_pd);
+//            EC_READ_U8(domain1_pd + off_ana_in_value));
+#endif
+
 #if SDO_ACCESS
         // read process data SDO
         read_sdo();
 #endif
+        // send process data
+        ecrt_domain_queue(domain1);
+        ecrt_master_send(master);
 
     }
 
-#if 1
-    // read process data
-    printf("pdo value: %u offset %u\n",
-            EC_READ_U8(domain1_pd + off_6041),off_6041);
-//            EC_READ_U8(domain1_pd + off_ana_in_value));
-#endif
+
 
 #if 0
     // write process data
 //    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
 #endif
 
-    // send process data
-    ecrt_domain_queue(domain1);
-    ecrt_master_send(master);
+
 }
 
 /****************************************************************************/
@@ -251,7 +331,7 @@ int main(int argc, char **argv)
 
 #if CONFIGURE_PDOS
     printf("Configuring PDOs...\n");
-    if (ecrt_slave_config_pdos(sc_ana_in, EC_END, duetfl80_syncs)) {
+    if (ecrt_slave_config_pdos(sc_ana_in, EC_END, slave_0_syncs)) {
         fprintf(stderr, "Failed to configure PDOs.\n");
         return -1;
     }
