@@ -58,14 +58,14 @@ static unsigned int off_ana_in_value;
 ////};
 const static ec_pdo_entry_reg_t domain1_regs[] = {
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
-    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
+    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
@@ -130,7 +130,6 @@ static ec_slave_config_t *sc_ana_in = NULL;
 static ec_slave_config_state_t sc_ana_in_state = {};
 
 static unsigned int counter = 0;
-static unsigned int blink = 0;
 /*****************************************************************************/
 
 #if SDO_ACCESS
@@ -227,9 +226,6 @@ void cyclic_task()
         ecrt_domain_process(domain1);
         counter = FREQUENCY;
 
-        // calculate new process data
-        blink = !blink;
-
         // check for master state (optional)
         check_master_state();
 
@@ -258,7 +254,7 @@ void cyclic_task()
 //    printf("pdo value: %02x offset %u\n",
 //            EC_READ_U16(domain1_pd + off_0x6041),off_0x6041);
     printf("pdo value2: %02x offset %u\n",
-            EC_READ_U8(domain1_pd + off_0x6060),off_0x6060);
+            EC_READ_U8(domain1_pd + off_0x6061),off_0x6061);
     printf("pd: %u \n",*domain1_pd);
 //            EC_READ_U8(domain1_pd + off_ana_in_value));
 #endif
@@ -314,8 +310,6 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to get slave configuration.\n");
         return -1;
     }
-//    printf("sync mgr 0 config: %d \n",sc_ana_in->sync_configs[0].dir);
-//    printf("sync mgr 1 config: %d \n",sc_ana_in->sync_configs[1].dir);
 
 #if SDO_ACCESS
     fprintf(stderr, "Creating SDO requests...\n");
@@ -335,34 +329,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to configure PDOs.\n");
         return -1;
     }
-
-//    if (!(sc = ecrt_master_slave_config(
-//                    master, AnaOutSlavePos, Beckhoff_EL4102))) {
-//        fprintf(stderr, "Failed to get slave configuration.\n");
-//        return -1;
-//    }
-
-//    if (ecrt_slave_config_pdos(sc, EC_END, el4102_syncs)) {
-//        fprintf(stderr, "Failed to configure PDOs.\n");
-//        return -1;
-//    }
-
-//    if (!(sc = ecrt_master_slave_config(
-//                    master, DigOutSlavePos, Beckhoff_EL2032))) {
-//        fprintf(stderr, "Failed to get slave configuration.\n");
-//        return -1;
-//    }
-
-//    if (ecrt_slave_config_pdos(sc, EC_END, el2004_syncs)) {
-//        fprintf(stderr, "Failed to configure PDOs.\n");
-//        return -1;
-//    }
 #endif
-
-//    // Create configuration for bus coupler
-//    sc = ecrt_master_slave_config(master, BusCouplerPos, Beckhoff_EK1100);
-//    if (!sc)
-//        return -1;
 
     if (ecrt_domain_reg_pdo_entry_list(domain1, domain1_regs)) {
             fprintf(stderr, "PDO entry registration failed!\n");
