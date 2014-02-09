@@ -32,10 +32,12 @@ static unsigned int user_alarms = 0;
 
 #if SDO_ACCESS
 static ec_sdo_request_t *sdo_operation_mode_display;
-static ec_sdo_request_t *sdo_operation_mode_write;
-
-static ec_sdo_request_t *sdo_controlword_write;
 static ec_sdo_request_t *sdo_statusword_read;
+static ec_sdo_request_t *sdo_velocity_demand_value_read;
+
+static ec_sdo_request_t *sdo_operation_mode_write;
+static ec_sdo_request_t *sdo_controlword_write;
+
 #endif
 
 // PDO items
@@ -573,9 +575,217 @@ int main(int argc, char **argv)
     }
 
     // 4. read target velocity
+    while(1)
+    {
+        i++;
+        ecrt_master_receive(master);
+        if(i==1)
+        {
+            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger read
+        }
+        switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+                ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+//                fprintf(stderr, "Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                printf("sdo_operation_mode_display value: 0x%02X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)));
+                if(EC_READ_U8(ecrt_sdo_request_data(sdo_operation_mode_display)) ^ 0x03 == 0)
+                {
+                    printf("mode is in velocity_mode \n");
+                    getModeOk = true;
+                }
+                else
+                {
+                    printf("mode not in velocity_mode \n");
+                    exit(-1);
+                }
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO!\n");
+                break;
+        }
+        if(getModeOk)
+        {
+            break;
+        }
+        ecrt_master_send(master);
+    }
     // 5. set target velocity to zero
     // 6. read statusword
-    // 7. set controlword , enable operation
+    printf("6.read statusword...\n");
+    bool isOperationDisabled=false;
+//    while(!isOperationDisabled)
+    while(1)
+    {
+        ecrt_master_receive(master);
+        EC_WRITE_U8(ecrt_sdo_request_data(sdo_controlword_write), 0x0080);// reset from fault
+        ecrt_sdo_request_write(sdo_controlword_write);
+        switch (ecrt_sdo_request_state(sdo_controlword_write)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+    //            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+                printf("Request to Write,But Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "sdo_controlword_write write value 0x0080\n");
+                ecrt_sdo_request_write(sdo_controlword_write);
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO state!\n");
+                break;
+        }
+        ecrt_master_send(master);
+        // read state ,need switch_on_disabled
+        ecrt_sdo_request_read(sdo_statusword_read); // trigger read
+        switch (ecrt_sdo_request_state(sdo_statusword_read)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+                ecrt_sdo_request_read(sdo_statusword_read); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+                printf("Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "statusword value: 0x%04X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)));
+                if(EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)) & 0x004F ^ 0x0040 == 0) // p91
+                {
+                    isOperationDisabled = true;
+                    printf("motor state is in switch_on_disabled \n");
+                }
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO!\n");
+                break;
+        }
+        if(isOperationDisabled)
+        {
+            printf("good \n");
+            break;
+        }
+        ecrt_master_send(master);
+    }
+    // 7. set controlword to ready_to_switch_on
+    printf("7. set controlword , ready_to_switch_on...\n");
+    isOperationDisabled = false;
+    while(1)
+    {
+        ecrt_master_receive(master);
+        EC_WRITE_U8(ecrt_sdo_request_data(sdo_controlword_write), 0x0006);// reset from fault
+        ecrt_sdo_request_write(sdo_controlword_write);
+        switch (ecrt_sdo_request_state(sdo_controlword_write)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+    //            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+//                printf("Request to Write,But Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "sdo_controlword_write write value 0x0006\n");
+                ecrt_sdo_request_write(sdo_controlword_write);
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO state!\n");
+                break;
+        }
+        ecrt_master_send(master);
+        // read state ,need switch_on_disabled
+        ecrt_sdo_request_read(sdo_statusword_read); // trigger read
+        switch (ecrt_sdo_request_state(sdo_statusword_read)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+                ecrt_sdo_request_read(sdo_statusword_read); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+//                printf("Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "statusword value: 0x%04X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)));
+                if(EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)) & 0x006F ^ 0x0021 == 0) // p91
+                {
+                    isOperationDisabled = true;
+                    printf("motor state is in ready_to_switch_on \n");
+                }
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO!\n");
+                break;
+        }
+        if(isOperationDisabled)
+        {
+            printf("good2 \n");
+            break;
+        }
+        ecrt_master_send(master);
+    }
+    // 8. set controlword , enable operation
+    printf("8. set controlword , enable operation...\n");
+    isOperationDisabled = false;
+    while(1)
+    {
+        ecrt_master_receive(master);
+        EC_WRITE_U8(ecrt_sdo_request_data(sdo_controlword_write), 0x000F);// reset from fault
+        ecrt_sdo_request_write(sdo_controlword_write);
+        switch (ecrt_sdo_request_state(sdo_controlword_write)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+    //            ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+//                printf("Request to Write,But Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "sdo_controlword_write write value 0x000F\n");
+                ecrt_sdo_request_write(sdo_controlword_write);
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO state!\n");
+                break;
+        }
+        ecrt_master_send(master);
+        // read state ,need switch_on_disabled
+        ecrt_sdo_request_read(sdo_statusword_read); // trigger read
+        switch (ecrt_sdo_request_state(sdo_statusword_read)) {
+            case EC_REQUEST_UNUSED: // request was not used yet
+                ecrt_sdo_request_read(sdo_statusword_read); // trigger first read
+    //            ecrt_sdo_request_write(sdo);
+                break;
+            case EC_REQUEST_BUSY:
+//                printf("Still busy...\n");
+                break;
+            case EC_REQUEST_SUCCESS:
+                fprintf(stderr, "statusword value: 0x%04X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)));
+                fprintf(stderr, "statusword value aa: 0x%04X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)) & 0x006F);
+                fprintf(stderr, "statusword value aaa: 0x%04X\n",
+                        EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)) & 0x006F^ 0x0027);
+                if(EC_READ_U8(ecrt_sdo_request_data(sdo_statusword_read)) & 0x006F == 0x0027) // p91
+                {
+                    isOperationDisabled = true;
+                    printf("motor state is in operation_on \n");
+                }
+                break;
+            case EC_REQUEST_ERROR:
+                fprintf(stderr, "Failed to read SDO!\n");
+                break;
+        }
+        if(isOperationDisabled)
+        {
+            printf("good2 \n");
+            break;
+        }
+        ecrt_master_send(master);
+    }
     // 8. set target velocity 100r/min
 
 

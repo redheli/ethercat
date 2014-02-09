@@ -36,7 +36,7 @@ static uint8_t *domain1_pd = NULL;
 
 // offsets for PDO entries
 //static unsigned int off_ana_in_status;
-static unsigned int off_1A00;
+static unsigned int off_6041;
 static unsigned int off_ana_in_value;
 
 //const static ec_pdo_entry_reg_t domain1_regs[] = {
@@ -45,7 +45,7 @@ static unsigned int off_ana_in_value;
 //    {}
 //};
 const static ec_pdo_entry_reg_t domain1_regs[] = {
-    {AliasAndPositon,  VendorID_ProductCode, 0x1A00, 4, &off_1A00},
+    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_6041},
     {}
 };
 //ec_pdo_entry_info_t duetfl80_channel1[] = {
@@ -53,10 +53,10 @@ const static ec_pdo_entry_reg_t domain1_regs[] = {
 //    {0x6098, 0,  8}  // homing_method
 //};
 ec_pdo_entry_info_t duetfl80_channel1[] = {
-    {0x1A00, 4,  32} // modes_of_operation_display
+    {0x6041, 0,  16} // modes_of_operation_display
 };
 static ec_pdo_info_t duetfl80_pdos[] = {
-    {0x1A00,1 , duetfl80_channel1}    // pdo index input 0x1A00?
+    {0x6041,1 , duetfl80_channel1}    // pdo index input 0x1A00?
 };
 static ec_sync_info_t duetfl80_syncs[] = {
     {3, EC_DIR_INPUT, 1, duetfl80_pdos},
@@ -188,8 +188,8 @@ void cyclic_task()
 
 #if 1
     // read process data
-//    printf("pdo value: %u offset %u\n",
-//            EC_READ_U8(domain1_pd + off_1A00),off_1A00);
+    printf("pdo value: %u offset %u\n",
+            EC_READ_U8(domain1_pd + off_6041),off_6041);
 //            EC_READ_U8(domain1_pd + off_ana_in_value));
 #endif
 
