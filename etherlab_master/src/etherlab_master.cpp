@@ -17,7 +17,7 @@
 #define VendorID_ProductCode  0x000000e4, 0x00001133
 
 // Application parameters
-#define FREQUENCY 100
+#define FREQUENCY 300
 #define PRIORITY 1
 // Optional features
 #define CONFIGURE_PDOS  1
@@ -32,8 +32,8 @@ static ec_sdo_request_t *sdo;
 
 // PDO items
 // process data
-static uint8_t *domain1_pd = NULL;
-
+static uint8_t *domain_output_pd = NULL;
+static uint8_t *domain_input_pd = NULL;
 // offsets for PDO entries
 //static unsigned int off_ana_in_status;
 static unsigned int off_0x6040;
@@ -56,12 +56,27 @@ static unsigned int off_ana_in_value;
 ////    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_ana_in_value},
 ////    {}
 ////};
-const static ec_pdo_entry_reg_t domain1_regs[] = {
+const static ec_pdo_entry_reg_t domain_output_regs[] = {
+    {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
+    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
+    {}
+};
+const static ec_pdo_entry_reg_t domain_input_regs[] = {
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
-    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
-    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
     {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
     {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
@@ -92,11 +107,11 @@ const static ec_pdo_entry_reg_t domain1_regs[] = {
  */
 
 ec_pdo_entry_info_t slave_0_pdo_entries[] = {
-//    {0x6040, 0x00, 16}, /* Controlword */
-//    {0x6060, 0x00, 8}, /* Mode_of_Operation */
+    {0x6040, 0x00, 16}, /* Controlword */
+    {0x6060, 0x00, 8}, /* Mode_of_Operation */
 //    {0x6098, 0x00, 8}, /* Homing_Method */
-    {0x607a, 0x00, 32}, /* Target_Position */
-    {0x60ff, 0x00, 32}, /* Target_Velocity */
+//    {0x607a, 0x00, 32}, /* Target_Position */
+//    {0x60ff, 0x00, 32}, /* Target_Velocity */
 //    {0x6071, 0x00, 16}, /* Target_Torque */
     {0x6041, 0x00, 16}, /* Statusword */
     {0x6064, 0x00, 32}, /* Position_Actual_Value */
@@ -107,8 +122,8 @@ ec_pdo_entry_info_t slave_0_pdo_entries[] = {
 };
 
 ec_pdo_info_t slave_0_pdos[] = {
-    {0x1601, 2, slave_0_pdo_entries + 0}, /* Outputs */
-    {0x1a01, 4, slave_0_pdo_entries + 2}, /* Inputs */
+    {0x1600, 2, slave_0_pdo_entries + 0}, /* Outputs */
+    {0x1A00, 4, slave_0_pdo_entries + 2}, /* Inputs */
 };
 
 ec_sync_info_t slave_0_syncs[] = {
@@ -123,8 +138,9 @@ ec_sync_info_t slave_0_syncs[] = {
 static ec_master_t *master = NULL;
 static ec_master_state_t master_state = {};
 
-static ec_domain_t *domain1 = NULL;
-static ec_domain_state_t domain1_state = {};
+static ec_domain_t *domain_output = NULL;
+static ec_domain_t *domain_input = NULL;
+static ec_domain_state_t domain_input_state = {};
 
 static ec_slave_config_t *sc_ana_in = NULL;
 static ec_slave_config_state_t sc_ana_in_state = {};
@@ -163,14 +179,14 @@ void check_domain1_state(void)
 {
     ec_domain_state_t ds;
 
-    ecrt_domain_state(domain1, &ds);
+    ecrt_domain_state(domain_input, &ds);
 
-    if (ds.working_counter != domain1_state.working_counter)
+    if (ds.working_counter != domain_input_state.working_counter)
         printf("Domain1: WC %u.\n", ds.working_counter);
-    if (ds.wc_state != domain1_state.wc_state)
-        printf("Domain1: State %u.\n", ds.wc_state);
+    if (ds.wc_state != domain_input_state.wc_state)
+        printf("Domain_input: State %u.\n", ds.wc_state);
 
-    domain1_state = ds;
+    domain_input_state = ds;
 }
 
 /*****************************************************************************/
@@ -215,7 +231,9 @@ void cyclic_task()
 {
     // receive process data
     ecrt_master_receive(master);
-    ecrt_domain_process(domain1);
+    ecrt_domain_process(domain_output);
+    ecrt_domain_process(domain_input);
+
 
     // check process data state (optional)
     check_domain1_state();
@@ -233,7 +251,6 @@ void cyclic_task()
         check_slave_config_states();
 
 
-#if 1
     // read process data
 //        {0x6040, 0x00, 16}, /* Controlword */
 //        {0x6060, 0x00, 8}, /* Mode_of_Operation */
@@ -251,13 +268,12 @@ void cyclic_task()
 //                EC_READ_U16(domain1_pd + off_0x6040),off_0x6040);
 //        printf("pdo value: %02x offset %u\n",
 //                EC_READ_U16(domain1_pd + off_0x1001),off_0x1001);
-//    printf("pdo value: %02x offset %u\n",
-//            EC_READ_U16(domain1_pd + off_0x6041),off_0x6041);
-    printf("pdo value 6061: %02x offset %u\n",
-            EC_READ_U8(domain1_pd + off_0x6061),off_0x6061);
-    printf("pd: %u \n",*domain1_pd);
+    printf("pdo value: %02x offset %u\n",
+            EC_READ_U16(domain_input_pd + off_0x6041),off_0x6041);
+    printf("pdo value 6061asfsadf: %02x offset %u\n",
+            EC_READ_U8(domain_input_pd + off_0x6061),off_0x6061);
+    printf("pd: %u \n",*domain_input_pd);
 //            EC_READ_U8(domain1_pd + off_ana_in_value));
-#endif
 
 #if SDO_ACCESS
         // read process data SDO
@@ -269,7 +285,8 @@ void cyclic_task()
 
 
     // send process data
-    ecrt_domain_queue(domain1);
+    ecrt_domain_queue(domain_output);
+    ecrt_domain_queue(domain_input);
     ecrt_master_send(master);
 #if 0
     // write process data
@@ -299,8 +316,9 @@ int main(int argc, char **argv)
     if (!master)
         return -1;
 
-    domain1 = ecrt_master_create_domain(master);
-    if (!domain1)
+    domain_input = ecrt_master_create_domain(master);
+    domain_output = ecrt_master_create_domain(master);
+    if (!domain_input || !domain_output)
     {
         return -1;
     }
@@ -331,8 +349,12 @@ int main(int argc, char **argv)
     }
 #endif
 
-    if (ecrt_domain_reg_pdo_entry_list(domain1, domain1_regs)) {
-            fprintf(stderr, "PDO entry registration failed!\n");
+    if (ecrt_domain_reg_pdo_entry_list(domain_output, domain_output_regs)) {
+            fprintf(stderr, "Output PDO entry registration failed!\n");
+            return -1;
+        }
+    if (ecrt_domain_reg_pdo_entry_list(domain_input, domain_input_regs)) {
+            fprintf(stderr, "Input PDO entry registration failed!\n");
             return -1;
         }
 
@@ -340,7 +362,10 @@ int main(int argc, char **argv)
     if (ecrt_master_activate(master))
         return -1;
 
-    if (!(domain1_pd = ecrt_domain_data(domain1))) {
+    if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
+        return -1;
+    }
+    if (!(domain_input_pd = ecrt_domain_data(domain_input))) {
         return -1;
     }
 
