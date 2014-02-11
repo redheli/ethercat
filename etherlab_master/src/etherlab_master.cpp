@@ -60,13 +60,13 @@ const static ec_pdo_entry_reg_t domain1_regs[] = {
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
+    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
+    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
+    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
+    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
     {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
+    {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
     {}
@@ -214,16 +214,16 @@ void check_slave_config_states(void)
 void cyclic_task()
 {
     // receive process data
-
+    ecrt_master_receive(master);
+    ecrt_domain_process(domain1);
 
     // check process data state (optional)
-//    check_domain1_state();
+    check_domain1_state();
 
     if (counter) {
         counter--;
     } else { // do this at 1 Hz
-        ecrt_master_receive(master);
-        ecrt_domain_process(domain1);
+
         counter = FREQUENCY;
 
         // check for master state (optional)
@@ -253,7 +253,7 @@ void cyclic_task()
 //                EC_READ_U16(domain1_pd + off_0x1001),off_0x1001);
 //    printf("pdo value: %02x offset %u\n",
 //            EC_READ_U16(domain1_pd + off_0x6041),off_0x6041);
-    printf("pdo value2: %02x offset %u\n",
+    printf("pdo value 6061: %02x offset %u\n",
             EC_READ_U8(domain1_pd + off_0x6061),off_0x6061);
     printf("pd: %u \n",*domain1_pd);
 //            EC_READ_U8(domain1_pd + off_ana_in_value));
@@ -263,14 +263,14 @@ void cyclic_task()
         // read process data SDO
         read_sdo();
 #endif
-        // send process data
-        ecrt_domain_queue(domain1);
-        ecrt_master_send(master);
+
 
     }
 
 
-
+    // send process data
+    ecrt_domain_queue(domain1);
+    ecrt_master_send(master);
 #if 0
     // write process data
 //    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
