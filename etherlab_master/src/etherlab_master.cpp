@@ -58,9 +58,9 @@ static unsigned int off_ana_in_value;
 ////};
 const static ec_pdo_entry_reg_t domain_output_regs[] = {
     {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
-    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
+    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
@@ -78,11 +78,12 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
 //    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
+        {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
     {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
-    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
-    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
+//    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
+{AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
     {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
+//
 //    {AliasAndPositon,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
     {}
 };
@@ -108,14 +109,15 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
 
 ec_pdo_entry_info_t slave_0_pdo_entries[] = {
     {0x6040, 0x00, 16}, /* Controlword */
-    {0x6060, 0x00, 8}, /* Mode_of_Operation */
+//    {0x6060, 0x00, 8}, /* Mode_of_Operation */
 //    {0x6098, 0x00, 8}, /* Homing_Method */
-//    {0x607a, 0x00, 32}, /* Target_Position */
+    {0x607a, 0x00, 32}, /* Target_Position */
 //    {0x60ff, 0x00, 32}, /* Target_Velocity */
 //    {0x6071, 0x00, 16}, /* Target_Torque */
-    {0x6041, 0x00, 16}, /* Statusword */
-    {0x6064, 0x00, 32}, /* Position_Actual_Value */
     {0x6061, 0x00, 8}, /* Modes_Of_Operation_Display */
+    {0x6041, 0x00, 16}, /* Statusword */
+    {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
+//    {0x6064, 0x00, 32}, /* Position_Actual_Value */
     {0x1001, 0x00, 8}, /* Error_Register */
 //    {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
 //    {0x6077, 0x00, 16}, /* Torque_Actual_Value */
@@ -268,9 +270,9 @@ void cyclic_task()
 //                EC_READ_U16(domain1_pd + off_0x6040),off_0x6040);
 //        printf("pdo value: %02x offset %u\n",
 //                EC_READ_U16(domain1_pd + off_0x1001),off_0x1001);
-    printf("pdo value: %02x offset %u\n",
+    printf("pdo value: %04x offset %u\n",
             EC_READ_U16(domain_input_pd + off_0x6041),off_0x6041);
-    printf("pdo value 6061asfsadf: %02x offset %u\n",
+    printf("pdo value 6061asfsadf: %04x offset %u\n",
             EC_READ_U8(domain_input_pd + off_0x6061),off_0x6061);
     printf("pd: %u \n",*domain_input_pd);
 //            EC_READ_U8(domain1_pd + off_ana_in_value));
