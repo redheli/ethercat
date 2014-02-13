@@ -38,6 +38,10 @@ target_link_libraries(etherlab_master2 ethercat)
 rosbuild_add_executable(coe_example src/coe_example.c)
 target_link_libraries(coe_example ethercat)
 
+rosbuild_add_executable(DuetflController src/DuetflController.cpp
+                                         src/etherlab.cpp src/etherlab.h)
+target_link_libraries(DuetflController ethercat)
+
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)
