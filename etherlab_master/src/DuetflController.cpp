@@ -13,7 +13,8 @@
 int main(int argc, char**argv)
 {
     ROS_INFO("Hello there?!");
-    ros::init(argc, argv, "speed_controller");
-    ros::spin();
+    ros::init(argc, argv, "Duet FL motor controller");
+//    ros::spin();
+//    ros::spinOnce();
     return 0;
 }
