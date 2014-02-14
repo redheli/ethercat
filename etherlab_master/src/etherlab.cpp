@@ -1,12 +1,13 @@
 #include "etherlab.h"
 
 fm_auto::DuetflEthercatController::DuetflEthercatController()
+    : domain_input(NULL),domain_output(NULL),master(NULL)
 {
 
 }
 bool fm_auto::DuetflEthercatController::init()
 {
-    FREQUENCY = 300;
+    FREQUENCY = 300; //hz
 
     ROS_INFO("Starting timer...\n");
     tv.it_interval.tv_sec = 0;
@@ -14,7 +15,43 @@ bool fm_auto::DuetflEthercatController::init()
     tv.it_value.tv_sec = 0;
     tv.it_value.tv_usec = 1000;
     if (setitimer(ITIMER_REAL, &tv, NULL)) {
-        fprintf(stderr, "Failed to start timer: %s\n", strerror(errno));
+        ROS_ERROR("Failed to start timer: %s\n", strerror(errno));
+        return false;
+    }
+
+    // init ethercat
+    if(!initEthercat())
+    {
+        return false;
+    }
+
+    return true;
+}
+bool fm_auto::DuetflEthercatController::initEthercat()
+{
+    // we only have one master,who is g...
+    master = ecrt_request_master(0);
+    if (!master)
+    {
+        return -1;
+    }
+
+    // two domains
+    domain_input = ecrt_master_create_domain(master);
+    domain_output = ecrt_master_create_domain(master);
+
+    if (!domain_input || !domain_output)
+    {
+        return false;
+    }
+
+    // domain entry list
+    if (ecrt_domain_reg_pdo_entry_list(domain_output, fm_auto::domain_output_regs)) {
+        ROS_ERROR("Output PDO entry registration failed!\n");
+        return false;
+    }
+    if (ecrt_domain_reg_pdo_entry_list(domain_input, fm_auto::domain_input_regs)) {
+        ROS_ERROR("Input PDO entry registration failed!\n");
         return false;
     }
 }
@@ -26,11 +63,17 @@ void fm_auto::DuetflEthercatController::run()
 
         ros::spinOnce();
 
-        while (sig_alarms != user_alarms) {
+//        while (sig_alarms != user_alarms) {
             cyclic_task();
-            user_alarms++;
-        }
+//            user_alarms++;
+//        }
     }
+}
+bool fm_auto::DuetflEthercatController::sendOneSDO()
+{
+    ecrt_master_receive(master);
+
+    ecrt_master_send(master);
 }
 
 void fm_auto::DuetflEthercatController::cyclic_task()
@@ -44,17 +87,17 @@ void fm_auto::DuetflEthercatController::cyclic_task()
     // check process data state (optional)
     check_domain1_state();
 
-    if (counter) {
-        counter--;
-    } else { // do this at 1 Hz
-
-        counter = FREQUENCY;
-
         // check for master state (optional)
         check_master_state();
 
         // check for islave configuration state(s) (optional)
         check_slave_config_states();
+
+        // check has sdos to send?
+        // check sdos states
+
+        // check has pdos to send
+        // check pdos states
 
 
     // read process data
@@ -86,17 +129,14 @@ void fm_auto::DuetflEthercatController::cyclic_task()
        read_sdo();
 
 
-    }
-
-
     // send process data
     ecrt_domain_queue(domain_output);
     ecrt_domain_queue(domain_input);
     ecrt_master_send(master);
-#if 0
+
     // write process data
 //    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
-#endif
+
 
 }
 

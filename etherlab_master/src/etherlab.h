@@ -24,7 +24,7 @@ class DuetflEthercatController
 {
     struct fm_sdo
     {
-        ec_sdo_request_t sdo;
+        ec_sdo_request_t *sdo;
         std::string descrption;
     };
 
@@ -33,6 +33,8 @@ public:
        /// loop trigger
        void run();
        bool init();
+       bool initEthercat();
+       bool initSDOs();
        void cyclic_task();
 
 public:
@@ -56,6 +58,8 @@ public:
        /// do check target velocity ,check target position before trigger the motor
        /// make sure motor shaft rolling is safe
        bool enableControl();
+
+       bool sendOneSDO();
 
        // position control
 
@@ -95,6 +99,18 @@ private:
 
        u_int FREQUENCY;
        struct itimerval tv;
+
+       // EtherCAT
+       ec_master_t *master;
+       ec_domain_t *domain_output;
+       ec_domain_t *domain_input;
+
+       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
+       static ec_sdo_request_t *slave0_sdo_statusword_read;
+       static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read;
+
+       static ec_sdo_request_t *slave0_sdo_operation_mode_write;
+       static ec_sdo_request_t *slave0_sdo_controlword_write;
 
 };
 

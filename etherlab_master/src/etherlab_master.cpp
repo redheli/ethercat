@@ -341,7 +341,7 @@ int main(int argc, char **argv)
     ecrt_sdo_request_timeout(sdo, 500); // ms
 #endif
 
-#if CONFIGURE_PDOS
+#if 0
     printf("Configuring PDOs...\n");
     if (ecrt_slave_config_pdos(sc_ana_in, EC_END, slave_0_syncs)) {
         fprintf(stderr, "Failed to configure PDOs.\n");
