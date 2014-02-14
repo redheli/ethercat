@@ -1,10 +1,10 @@
 #include "etherlab.h"
 
-void signal_handler(int signum) {
+void fm_auto::DuetflEthercatController::signal_handler(int signum) {
 //    fprintf(stderr,"signal_handler \n");
     switch (signum) {
         case SIGALRM:
-            sig_alarms++;
+//            sig_alarms++;
             break;
     case SIGINT:
         fprintf(stderr,"use ctrl+c ,need do something \n");
@@ -13,7 +13,7 @@ void signal_handler(int signum) {
         break;
     }
 }
-void my_sig_handler(int signum) {
+void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
     ROS_INFO("my_sig_handler <%d>\n",signum);
     switch (signum) {
         case SIGINT:
@@ -25,7 +25,10 @@ void my_sig_handler(int signum) {
             break;
     }
 }
+void fm_auto::DuetflEthercatController::disable_operation()
+{
 
+}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),master(NULL)
 {
@@ -53,6 +56,11 @@ bool fm_auto::DuetflEthercatController::init()
 
     return true;
 }
+bool fm_auto::DuetflEthercatController::initSDOs()
+{
+//TODO
+}
+
 bool fm_auto::DuetflEthercatController::initEthercat()
 {
     // we only have one master,who is g...
@@ -105,7 +113,7 @@ bool fm_auto::DuetflEthercatController::initEthercat()
 
     // signal handler
     // handle ctrl+c important
-    if (signal(SIGINT, my_sig_handler) == SIG_ERR)
+    if (signal(SIGINT, fm_auto::DuetflEthercatController::my_sig_handler) == SIG_ERR)
     {
             ROS_ERROR("\ncan't catch SIGUSR1\n");
             return false;
@@ -140,7 +148,21 @@ bool fm_auto::DuetflEthercatController::sendOneSDO()
 
     ecrt_master_send(master);
 }
+void fm_auto::DuetflEthercatController::check_master_state()
+{
+    ec_master_state_t ms;
 
+    ecrt_master_state(master, &ms);
+
+    if (ms.slaves_responding != master_state.slaves_responding)
+        printf("%u slave(s).\n", ms.slaves_responding);
+    if (ms.al_states != master_state.al_states)
+        printf("AL states: 0x%02X.\n", ms.al_states);
+    if (ms.link_up != master_state.link_up)
+        printf("Link is %s.\n", ms.link_up ? "up" : "down");
+
+    master_state = ms;
+}
 void fm_auto::DuetflEthercatController::cyclic_task()
 {
     // receive process data
@@ -150,49 +172,62 @@ void fm_auto::DuetflEthercatController::cyclic_task()
 
 
     // check process data state (optional)
-    check_domain1_state();
+//    check_domain1_state();
 
-        // check for master state (optional)
-        check_master_state();
+    // check for master state (optional)
+    check_master_state();
 
-        // check for islave configuration state(s) (optional)
-        check_slave_config_states();
+    // check for islave configuration state(s) (optional)
+//    check_slave_config_states();
 
-        // check has sdos to send?
-        // check sdos states
+    // check has sdos to send?
+    std::list<fm_auto::fm_sdo*> sdoPool;
+    if(!activeSdoPool.empty())
+    {
+        std::list<fm_sdo*>::iterator it;
+        for(it=activeSdoPool.begin();it!=activeSdoPool.end();++it)
+        {
+            fm_auto::fm_sdo *fmSdo = *it;
+            if(!fmSdo->isOperate) // never operate before
+            {
+                sdoPool.push_back(fmSdo);
+                // check upload or download
+                if(fmSdo->isReadSDO)
+                {
+                    ecrt_sdo_request_read(fmSdo->sdo);
+                }
+                else{
+                    ecrt_sdo_request_write(fmSdo->sdo);
+                }
+                fmSdo->isOperate=true;
+            }
+            else
+            {
+                // check state
+                switch (ecrt_sdo_request_state(fmSdo->sdo)) {
+                    case EC_REQUEST_UNUSED: // request was not used yet
+                        break;
+                    case EC_REQUEST_BUSY:
+        //                printf( "Still busy...\n");
+                    sdoPool.push_back(fmSdo);
+                        break;
+                    case EC_REQUEST_SUCCESS:
+                    // remove from list
+                        fmSdo->isOperate = false;
+                        fmSdo->callback();
+                        break;
+                    case EC_REQUEST_ERROR:
+                        ROS_ERROR("Failed to operate SDO %s!\n",fmSdo->descrption.c_str());
+                        break;
+                }//switch
+            }//else
+    }//for
+            activeSdoPool.clear();
+            activeSdoPool = sdoPool;
 
-        // check has pdos to send
-        // check pdos states
-
-
-    // read process data
-//        {0x6040, 0x00, 16}, /* Controlword */
-//        {0x6060, 0x00, 8}, /* Mode_of_Operation */
-//        {0x6098, 0x00, 8}, /* Homing_Method */
-//        {0x607a, 0x00, 32}, /* Target_Position */
-//        {0x60ff, 0x00, 32}, /* Target_Velocity */
-//        {0x6071, 0x00, 16}, /* Target_Torque */
-//        {0x6041, 0x00, 16}, /* Statusword */
-//        {0x6064, 0x00, 32}, /* Position_Actual_Value */
-//        {0x6061, 0x00, 8}, /* Modes_Of_Operation_Display */
-//        {0x1001, 0x00, 8}, /* Error_Register */
-//        {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
-//        {0x6077, 0x00, 16}, /* Torque_Actual_Value */
-//        printf("pdo value: %02x offset %u\n",
-//                EC_READ_U16(domain1_pd + off_0x6040),off_0x6040);
-//        printf("pdo value: %02x offset %u\n",
-//                EC_READ_U16(domain1_pd + off_0x1001),off_0x1001);
-    printf("pdo value: %04x offset %u\n",
-            EC_READ_U16(domain_input_pd + off_0x6041),off_0x6041);
-    printf("pdo value 6061asfsadf: %04x offset %u\n",
-            EC_READ_U8(domain_input_pd + off_0x6061),off_0x6061);
-    printf("pd: %u \n",*domain_input_pd);
-//            EC_READ_U8(domain1_pd + off_ana_in_value));
-
-
-        // read process data SDO
-       read_sdo();
-
+}//if
+    // check has pdos to send
+    // check pdos states
 
     // send process data
     ecrt_domain_queue(domain_output);

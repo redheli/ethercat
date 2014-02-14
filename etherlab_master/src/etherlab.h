@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <tr1/functional>
 /****************************************************************************/
 #include "ros/ros.h"
 #include "ecrt.h"
@@ -19,14 +19,20 @@
 
 namespace fm_auto
 {
-
+class fm_sdo
+{
+public:
+    typedef std::tr1::function<void()> CallbackFunc;
+    fm_sdo():sdo(NULL),isReadSDO(true),isOperate(false) {}
+    ec_sdo_request_t *sdo;
+    std::string descrption;
+    bool isReadSDO;
+    bool isOperate; // the sdo has been operated
+    CallbackFunc callback;
+};
 class DuetflEthercatController
 {
-    struct fm_sdo
-    {
-        ec_sdo_request_t *sdo;
-        std::string descrption;
-    };
+
 
 public:
        DuetflEthercatController();
@@ -60,6 +66,11 @@ public:
        bool enableControl();
 
        bool sendOneSDO();
+       void check_master_state();
+
+       static void disable_operation();
+       static void my_sig_handler(int signum);
+       static void signal_handler(int signum);
 
        // position control
 
@@ -95,7 +106,7 @@ private:
 
 private:
        /// store sdo request
-       std::vector<fm_sdo> activeSdoPool;
+       std::list<fm_sdo*> activeSdoPool;
 
        u_int FREQUENCY;
        struct itimerval tv;
@@ -103,6 +114,7 @@ private:
 
        // EtherCAT
        ec_master_t *master;
+       ec_master_state_t master_state;
        ec_domain_t *domain_output;
        ec_domain_t *domain_input;
 

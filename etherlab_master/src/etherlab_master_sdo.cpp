@@ -461,7 +461,6 @@ int main(int argc, char **argv)
         switch (ecrt_sdo_request_state(sdo_operation_mode_display)) {
             case EC_REQUEST_UNUSED: // request was not used yet
             printf("request was not used yet\n");
-                ecrt_sdo_request_read(sdo_operation_mode_display); // trigger first read
                 break;
             case EC_REQUEST_BUSY:
 //                printf( "Still busy...\n");
