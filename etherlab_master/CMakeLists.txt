@@ -38,7 +38,7 @@ target_link_libraries(etherlab_master2 ethercat)
 rosbuild_add_executable(coe_example src/coe_example.c)
 target_link_libraries(coe_example ethercat)
 
-rosbuild_add_executable(DuetflController src/DuetflController.cpp
+rosbuild_add_executable(DuetflController src/main.cpp
                                             src/ObjectDictionay.h
                                          src/etherlab.cpp src/etherlab.h)
 
