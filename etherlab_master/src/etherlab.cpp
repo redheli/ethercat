@@ -1,5 +1,31 @@
 #include "etherlab.h"
 
+void signal_handler(int signum) {
+//    fprintf(stderr,"signal_handler \n");
+    switch (signum) {
+        case SIGALRM:
+            sig_alarms++;
+            break;
+    case SIGINT:
+        fprintf(stderr,"use ctrl+c ,need do something \n");
+        // disable the operation
+        // send 0x0007 to controlword
+        break;
+    }
+}
+void my_sig_handler(int signum) {
+    ROS_INFO("my_sig_handler <%d>\n",signum);
+    switch (signum) {
+        case SIGINT:
+            fprintf(stderr,"use ctrl+c ,need do something before exit\n");
+            // disable the operation
+            // send 0x0002 to controlword
+            disable_operation();
+            exit(-1);
+            break;
+    }
+}
+
 fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),master(NULL)
 {
@@ -36,13 +62,35 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         return -1;
     }
 
+    if(!initSDOs())
+    {
+        ROS_ERROR("init sdos failed!\n");
+        return false;
+    }
+
     // two domains
     domain_input = ecrt_master_create_domain(master);
     domain_output = ecrt_master_create_domain(master);
 
     if (!domain_input || !domain_output)
     {
+        ROS_ERROR("init domain failed!\n");
         return false;
+    }
+
+    ROS_INFO("Activating master...\n");
+    if (ecrt_master_activate(master))
+    {
+        ROS_ERROR("active master failed!\n");
+        return false;
+    }
+
+    // set pid priority
+    pid_t pid = getpid();
+    if (setpriority(PRIO_PROCESS, pid, -19))
+    {
+        ROS_ERROR("Warning: Failed to set priority: %s\n",
+                strerror(errno));
     }
 
     // domain entry list
@@ -53,6 +101,23 @@ bool fm_auto::DuetflEthercatController::initEthercat()
     if (ecrt_domain_reg_pdo_entry_list(domain_input, fm_auto::domain_input_regs)) {
         ROS_ERROR("Input PDO entry registration failed!\n");
         return false;
+    }
+
+    // signal handler
+    // handle ctrl+c important
+    if (signal(SIGINT, my_sig_handler) == SIG_ERR)
+    {
+            ROS_ERROR("\ncan't catch SIGUSR1\n");
+            return false;
+    }
+
+    // get alarm to control frequcy
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    if (sigaction(SIGALRM, &sa, 0)) {
+        fprintf(stderr, "Failed to install signal handler!\n");
+        return -1;
     }
 }
 

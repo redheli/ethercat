@@ -99,6 +99,7 @@ private:
 
        u_int FREQUENCY;
        struct itimerval tv;
+       struct sigaction sa;
 
        // EtherCAT
        ec_master_t *master;
