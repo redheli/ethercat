@@ -26,9 +26,7 @@
 static unsigned int sig_alarms = 0;
 static unsigned int user_alarms = 0;
 
-#if SDO_ACCESS
 static ec_sdo_request_t *sdo;
-#endif
 
 // PDO items
 // process data
@@ -150,7 +148,7 @@ static ec_slave_config_state_t sc_ana_in_state = {};
 static unsigned int counter = 0;
 /*****************************************************************************/
 
-#if SDO_ACCESS
+
 void read_sdo(void)
 {
     switch (ecrt_sdo_request_state(sdo)) {
@@ -173,7 +171,7 @@ void read_sdo(void)
             break;
     }
 }
-#endif
+
 
 /*****************************************************************************/
 

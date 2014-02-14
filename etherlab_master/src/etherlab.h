@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 /****************************************************************************/
-
+#include "ros/ros.h"
 #include "ecrt.h"
 #include "ObjectDictionay.h"
 
@@ -20,19 +20,26 @@
 namespace fm_auto
 {
 
-class EtherlabMaster
+class DuetflEthercatController
 {
-   public:
-       EtherlabMaster();
-       /// loop trigger
-       void run();
+    struct fm_sdo
+    {
+        ec_sdo_request_t sdo;
+        std::string descrption;
+    };
 
 public:
-       /// get homing operation mode
+       DuetflEthercatController();
+       /// loop trigger
+       void run();
+       bool init();
+       void cyclic_task();
+
+public:
+       /// @brief get homing operation mode
        /// @param slave_config slave point
        /// @return HOMING_METHOD
        fm_auto::HOMING_METHOD getMotorHomingMode(const ec_slave_config_t *slave_config);
-
        /// set homing operation mode
        /// @param hm slave set to which homing method
        /// @return success = true, failure = false
@@ -40,12 +47,15 @@ public:
 
        bool conductHomingOperation();
 
-       /// get operating mode
+       /// @brief get operating mode
        /// @param slave_config slave point
        /// @return OPERATIN_MODE
        fm_auto::OPERATIN_MODE getMotorOperatingMode(const ec_slave_config_t *slave_config);
-
        bool setMotorOperatingMode(OPERATIN_MODE);
+
+       /// do check target velocity ,check target position before trigger the motor
+       /// make sure motor shaft rolling is safe
+       bool enableControl();
 
        // position control
 
@@ -78,6 +88,13 @@ public:
 private:
        /// download value to address
        bool setValueToAddress(uint &address);
+
+private:
+       /// store sdo request
+       std::vector<fm_sdo> activeSdoPool;
+
+       u_int FREQUENCY;
+       struct itimerval tv;
 
 };
 
