@@ -74,6 +74,22 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO modes_of_operation_display 0x6061 request.\n");
         return false;
     }
+    slave0_operation_mode_display_fmsdo = new fm_sdo();
+    slave0_operation_mode_display_fmsdo->sdo = fm_auto::slave0_sdo_operation_mode_display;
+    slave0_operation_mode_display_fmsdo->descrption = "operation_mode_display 0x6061";
+
+    ROS_INFO("Creating Homing Method read SDO requests...\n");
+    if (!(fm_auto::slave0_sdo_homing_method = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
+                                                                                            ADDRESS_HOMING_METHOD,
+                                                                                            0, 1))) // uint8 data size 1
+    {
+        ROS_ERROR("Failed to create SDO slave0_sdo_homing_methiod 0x6098 request.\n");
+        return false;
+    }
+    slave0_homing_method_fmSdo = new fm_sdo();
+    slave0_homing_method_fmSdo->sdo = fm_auto::slave0_sdo_homing_method;
+    slave0_homing_method_fmSdo->descrption = "homing_method 0X6098";
+
 
     ROS_INFO( "Creating operation mode write SDO requests...\n");
     if (!(fm_auto::slave0_sdo_operation_mode_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
@@ -122,7 +138,7 @@ bool fm_auto::DuetflEthercatController::initEthercat()
     fm_auto::slave_zero = ecrt_master_slave_config(master,SlaveZeroAliasAndPosition,VendorID_ProductCode);
     if(!fm_auto::slave_zero)
     {
-        fprintf(stderr, "Failed to get slave configuration.\n");
+        ROS_ERROR("Failed to get slave configuration.\n");
         return false;
     }
 
@@ -205,12 +221,60 @@ void fm_auto::DuetflEthercatController::run()
 //        }
     }
 }
-bool fm_auto::DuetflEthercatController::sendOneSDO()
+bool fm_auto::DuetflEthercatController::sendOneReadSDO(fm_sdo *fmSdo_read)
 {
     ecrt_master_receive(master);
-
+    //  upload
+    ecrt_sdo_request_read(fmSdo_read->sdo);
     ecrt_master_send(master);
 }
+bool fm_auto::DuetflEthercatController::sendOneWriteSDO(fm_sdo *fmSdo_write)
+{
+    ecrt_master_receive(master);
+    // download
+    ecrt_sdo_request_write(fmSdo_write->sdo);
+    ecrt_master_send(master);
+}
+bool fm_auto::DuetflEthercatController::checkSDORequestState(fm_sdo *fmSdo)
+{
+    bool state=false;
+    ecrt_master_receive(master);
+    switch (ecrt_sdo_request_state(fmSdo->sdo)) {
+        case EC_REQUEST_UNUSED: // request was not used yet
+            ROS_INFO_ONCE("request was not used yet\n");
+            break;
+        case EC_REQUEST_BUSY:
+            ROS_INFO_ONCE("request is busy...\n");
+            break;
+        case EC_REQUEST_SUCCESS:
+            state=true;
+            break;
+        case EC_REQUEST_ERROR:
+            ROS_ERROR("Failed to read SDO!\n");
+            break;
+    }
+    return state;
+}
+fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(const ec_slave_config_t *slave_config)
+{
+    int8_t mode_value;
+    //1. send read sdo request
+    sendOneReadSDO(slave0_operation_mode_display_fmsdo);
+    //2. check sdo state
+    if(checkSDORequestState(slave0_operation_mode_display_fmsdo))
+    {
+        mode_value = EC_READ_S8(ecrt_sdo_request_data(slave0_operation_mode_display_fmsdo->sdo));
+    }
+    ROS_INFO_ONCE("operation_mode_display: %02x",mode_value);
+//    if(mode_value == fm_auto::HM_current_position)
+    return (fm_auto::HOMING_METHOD)mode_value;
+}
+
+bool fm_auto::DuetflEthercatController::setMotorHomingMode(fm_auto::HOMING_METHOD &hm)
+{
+
+}
+
 void fm_auto::DuetflEthercatController::check_master_state()
 {
     ec_master_state_t ms;
@@ -321,17 +385,4 @@ bool fm_auto::DuetflEthercatController::processSDOs()
             activeSdoPool = sdoPool;
 
     }//if
-}
-
-fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(const ec_slave_config_t *slave_config)
-{
-    fm_auto::HOMING_METHOD m;
-
-    return m;
-
-}
-
-fm_auto::OPERATIN_MODE fm_auto::DuetflEthercatController::getMotorOperatingMode(const ec_slave_config_t *slave_config)
-{
-
 }

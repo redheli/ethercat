@@ -42,8 +42,17 @@ public:
        bool initEthercat();
        bool initSDOs();
        void cyclic_task();
-       bool processSDOs();
 
+public:
+       // sdo method
+       bool sendOneReadSDO(fm_sdo* fmSdo_read);
+       bool sendOneWriteSDO(fm_sdo* fmSdo_write);
+       bool processSDOs();
+       bool checkSDORequestState(fm_sdo* fmSdo);
+
+
+public:
+       // pdo method
        bool readPDOsData();
        bool writePdoTargetPosition(int32_t &value);
        bool writePdoControlword(uint16_t &value);
@@ -70,7 +79,6 @@ public:
        /// make sure motor shaft rolling is safe
        bool enableControl();
 
-       bool sendOneSDO();
        void check_master_state();
 
        static void disable_operation();
@@ -126,6 +134,9 @@ private:
 
        uint8_t *domain_output_pd;
        uint8_t *domain_input_pd;
+
+       fm_sdo *slave0_operation_mode_display_fmsdo;
+       fm_sdo *slave0_homing_method_fmSdo;
 
 //       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
 //       static ec_sdo_request_t *slave0_sdo_statusword_read;

@@ -44,6 +44,7 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 
 #define ADDRESS_MODES_OF_OPERATION_DISPLAY  0x6061
 #define ADDRESS_MODES_OF_OPERATION          0x6060
+#define ADDRESS_HOMING_METHOD               0X6098
 #define ADDRESS_CONTROLWORD                 0x6040
 #define ADDRESS_STATUSWORD                  0x6041
 
@@ -68,12 +69,13 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
 static ec_slave_config_t *slave_zero = NULL;
 static ec_slave_config_state_t sc_ana_in_state = {};
 
-static ec_sdo_request_t *slave0_sdo_operation_mode_display;
-static ec_sdo_request_t *slave0_sdo_statusword_read;
-static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read;
+static ec_sdo_request_t *slave0_sdo_operation_mode_display = NULL;
+static ec_sdo_request_t *slave0_sdo_homing_method = NULL;
+static ec_sdo_request_t *slave0_sdo_statusword_read = NULL;
+static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read = NULL;
 
-static ec_sdo_request_t *slave0_sdo_operation_mode_write;
-static ec_sdo_request_t *slave0_sdo_controlword_write;
+static ec_sdo_request_t *slave0_sdo_operation_mode_write = NULL;
+static ec_sdo_request_t *slave0_sdo_controlword_write = NULL;
 }//fm_auto
 
 #endif
