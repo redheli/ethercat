@@ -182,20 +182,32 @@ void fm_auto::DuetflEthercatController::cyclic_task()
 
 
     // read PDO data
+    readPDOsData();
 
     // send process data
     ecrt_domain_queue(domain_output);
     ecrt_domain_queue(domain_input);
     ecrt_master_send(master);
-
-    // write process data
-//    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
-
-
 }
+bool fm_auto::DuetflEthercatController::writePdoTargetPosition(int32_t &value)
+{
+    // TODO:check boundary
+    // write process data
+    EC_WRITE_U32(domain_output + fm_auto::OFFSET_TARGET_POSITION, value);
+
+    return true;
+}
+bool fm_auto::DuetflEthercatController::writePdoControlword(uint16_t &value)
+{
+    EC_WRITE_U16(domain_output + fm_auto::OFFSET_CONTROLWORD, value);
+
+    return true;
+}
+
 bool fm_auto::DuetflEthercatController::readPDOsData()
 {
-
+    printf("pdo value: %04x offset %u\n",
+            EC_READ_U16(domain_input_pd + off_0x6041),off_0x6041);
 }
 
 bool fm_auto::DuetflEthercatController::processSDOs()

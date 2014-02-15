@@ -45,6 +45,8 @@ public:
        bool processSDOs();
 
        bool readPDOsData();
+       bool writePdoTargetPosition(int32_t &value);
+       bool writePdoControlword(uint16_t &value);
 
 public:
        /// @brief get homing operation mode
