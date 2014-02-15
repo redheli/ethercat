@@ -180,6 +180,21 @@ void fm_auto::DuetflEthercatController::cyclic_task()
     // check for islave configuration state(s) (optional)
 //    check_slave_config_states();
 
+
+    // read PDO data
+
+    // send process data
+    ecrt_domain_queue(domain_output);
+    ecrt_domain_queue(domain_input);
+    ecrt_master_send(master);
+
+    // write process data
+//    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
+
+
+}
+bool fm_auto::DuetflEthercatController::processSDOs()
+{
     // check has sdos to send?
     std::list<fm_auto::fm_sdo*> sdoPool;
     if(!activeSdoPool.empty())
@@ -221,23 +236,11 @@ void fm_auto::DuetflEthercatController::cyclic_task()
                         break;
                 }//switch
             }//else
-    }//for
+        }//for
             activeSdoPool.clear();
             activeSdoPool = sdoPool;
 
-}//if
-    // check has pdos to send
-    // check pdos states
-
-    // send process data
-    ecrt_domain_queue(domain_output);
-    ecrt_domain_queue(domain_input);
-    ecrt_master_send(master);
-
-    // write process data
-//    EC_WRITE_U8(domain1_pd + off_dig_out, blink ? 0x06 : 0x09);
-
-
+    }//if
 }
 
 fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(const ec_slave_config_t *slave_config)

@@ -42,6 +42,7 @@ public:
        bool initEthercat();
        bool initSDOs();
        void cyclic_task();
+       bool processSDOs();
 
 public:
        /// @brief get homing operation mode
