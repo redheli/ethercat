@@ -1,6 +1,8 @@
 #ifndef __OBJECT_DICTIONARY_H__
 #define __OBJECT_DICTIONARY_H__
 
+#include "ecrt.h"
+
 namespace fm_auto
 {
 
@@ -57,7 +59,16 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
     {}
 };
 
+// slave
+static ec_slave_config_t *slave_zero = NULL;
+static ec_slave_config_state_t sc_ana_in_state = {};
 
+static ec_sdo_request_t *slave0_sdo_operation_mode_display;
+static ec_sdo_request_t *slave0_sdo_statusword_read;
+static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read;
+
+static ec_sdo_request_t *slave0_sdo_operation_mode_write;
+static ec_sdo_request_t *slave0_sdo_controlword_write;
 }//fm_auto
 
 #endif

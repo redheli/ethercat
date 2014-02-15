@@ -76,6 +76,7 @@ public:
        static void disable_operation();
        static void my_sig_handler(int signum);
        static void signal_handler(int signum);
+       static void writeSdoControlword(uint16_t &value);
 
        // position control
 
@@ -123,12 +124,12 @@ private:
        ec_domain_t *domain_output;
        ec_domain_t *domain_input;
 
-       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
-       static ec_sdo_request_t *slave0_sdo_statusword_read;
-       static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read;
+//       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
+//       static ec_sdo_request_t *slave0_sdo_statusword_read;
+//       static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read;
 
-       static ec_sdo_request_t *slave0_sdo_operation_mode_write;
-       static ec_sdo_request_t *slave0_sdo_controlword_write;
+//       static ec_sdo_request_t *slave0_sdo_operation_mode_write;
+//       static ec_sdo_request_t *slave0_sdo_controlword_write;
 
 };
 

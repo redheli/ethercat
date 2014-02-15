@@ -9,10 +9,17 @@ void fm_auto::DuetflEthercatController::signal_handler(int signum) {
     case SIGINT:
         fprintf(stderr,"use ctrl+c ,need do something \n");
         // disable the operation
-        // send 0x0007 to controlword
+        // send 0x0002 to controlword
+        uint16_t value = 0x0002;
+        writeSdoControlword(value);
         break;
     }
 }
+void fm_auto::DuetflEthercatController::writeSdoControlword(uint16_t &value)
+{
+    static ec_sdo_request_t *slave0_sdo_controlword_write;
+}
+
 void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
     ROS_INFO("my_sig_handler <%d>\n",signum);
     switch (signum) {
@@ -58,7 +65,41 @@ bool fm_auto::DuetflEthercatController::init()
 }
 bool fm_auto::DuetflEthercatController::initSDOs()
 {
-//TODO
+    ROS_INFO("Creating operation mode read SDO requests...\n");
+    if (!(fm_auto::slave0_sdo_operation_mode_display = ecrt_slave_config_create_sdo_request(sc_ana_in, MODES_OF_OPERATION_DISPLAY, 0, 1))) // uint8 data size 1
+    {
+        fprintf(stderr, "Failed to create SDO modes_of_operation_display 0x6061 request.\n");
+        return -1;
+    }
+
+    fprintf(stderr, "Creating operation mode write SDO requests...\n");
+    if (!(sdo_operation_mode_write = ecrt_slave_config_create_sdo_request(sc_ana_in, MODES_OF_OPERATION, 0, 1))) // uint8 data size 1
+    {
+        fprintf(stderr, "Failed to create SDO MODES_OF_OPERATION request.\n");
+        return -1;
+    }
+
+    fprintf(stderr, "Creating controlword write SDO requests...\n");
+    if (!(sdo_controlword_write = ecrt_slave_config_create_sdo_request(sc_ana_in, CONTROLWORD, 0, 2))) // uint16 data size 2
+    {
+        fprintf(stderr, "Failed to create SDO CONTROLWORD request.\n");
+        return -1;
+    }
+
+    fprintf(stderr, "Creating statusword read SDO requests...\n");
+    if (!(sdo_statusword_read = ecrt_slave_config_create_sdo_request(sc_ana_in, STATUSWORD, 0, 2))) // uint16 data size 2
+    {
+        fprintf(stderr, "Failed to create SDO STATUSWORD request.\n");
+        return -1;
+    }
+
+
+    //EC_WRITE_U16(ecrt_sdo_request_data(sdo), 0xFFFF);
+
+    ecrt_sdo_request_timeout(sdo_operation_mode_display, 500); // ms
+    ecrt_sdo_request_timeout(sdo_operation_mode_write, 500); // ms
+    ecrt_sdo_request_timeout(sdo_controlword_write, 500); // ms
+    ecrt_sdo_request_timeout(sdo_statusword_read, 500); // ms
 }
 
 bool fm_auto::DuetflEthercatController::initEthercat()
@@ -68,6 +109,14 @@ bool fm_auto::DuetflEthercatController::initEthercat()
     if (!master)
     {
         return -1;
+    }
+
+//    fm_auto::slave_zero = NULL;
+    fm_auto::slave_zero = ecrt_master_slave_config(master,SlaveZeroAliasAndPosition,VendorID_ProductCode);
+    if(!fm_auto::slave_zero)
+    {
+        fprintf(stderr, "Failed to get slave configuration.\n");
+        return false;
     }
 
     if(!initSDOs())
