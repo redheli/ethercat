@@ -9,7 +9,7 @@ namespace fm_auto
 enum HOMING_METHOD
 {
     HM_Method_1 = -1, //Negative stop evaluating the zero impulse
-    HM_current_position= 37,
+    HM_current_position= 35,
 
     HM_fail = 100
 };
