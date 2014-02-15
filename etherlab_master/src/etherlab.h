@@ -44,6 +44,9 @@ public:
        void cyclic_task();
 
 public:
+       bool operateHomingMethod();
+
+public:
        // sdo method
        bool sendOneReadSDO(fm_sdo* fmSdo_read);
        bool sendOneWriteSDO(fm_sdo* fmSdo_write);

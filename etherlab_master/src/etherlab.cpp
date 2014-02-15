@@ -63,6 +63,36 @@ bool fm_auto::DuetflEthercatController::init()
 
     return true;
 }
+bool fm_auto::DuetflEthercatController::operateHomingMethod()
+{
+    // set homing_method to current position
+    HOMING_METHOD hm = getMotorHomingMode(slave_zero);
+    if(hm != HM_current_position)
+    {
+        ros::Time time_begin = ros::Time::now();
+        while(hm != HM_current_position)
+        {
+            ROS_INFO_ONCE("homing method not current position: %d",hm);
+            setMotorHomingMode(HM_current_position);
+            hm = getMotorHomingMode(slave_zero);
+        //        time_t t_n = time(0);   // get time now
+        //        struct tm * now = localtime( & t );
+        //        if(now_b->tm_sec - )
+            ros::Time time_now = ros::Time::now();
+            if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
+            {
+                break;
+            }
+        }
+        if(getMotorHomingMode(slave_zero) != HM_current_position)
+        {
+            ROS_ERROR("cannot get slave0 homing method to current position");
+            return false;
+        }
+    }
+    // trigger home position
+}
+
 bool fm_auto::DuetflEthercatController::initSDOs()
 {
     // slave0 sdo
@@ -272,7 +302,9 @@ fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(con
 
 bool fm_auto::DuetflEthercatController::setMotorHomingMode(fm_auto::HOMING_METHOD &hm)
 {
-
+    int8_t v=(int8_t)hm;
+    EC_WRITE_S8(ecrt_sdo_request_data(slave0_operation_mode_display_fmsdo->sdo), v);
+    ecrt_master_send(master);
 }
 
 void fm_auto::DuetflEthercatController::check_master_state()
