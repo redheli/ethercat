@@ -65,41 +65,48 @@ bool fm_auto::DuetflEthercatController::init()
 }
 bool fm_auto::DuetflEthercatController::initSDOs()
 {
+    // slave0 sdo
     ROS_INFO("Creating operation mode read SDO requests...\n");
-    if (!(fm_auto::slave0_sdo_operation_mode_display = ecrt_slave_config_create_sdo_request(sc_ana_in, MODES_OF_OPERATION_DISPLAY, 0, 1))) // uint8 data size 1
+    if (!(fm_auto::slave0_sdo_operation_mode_display = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
+                                                                                            ADDRESS_MODES_OF_OPERATION_DISPLAY,
+                                                                                            0, 1))) // uint8 data size 1
     {
-        fprintf(stderr, "Failed to create SDO modes_of_operation_display 0x6061 request.\n");
+        ROS_ERROR("Failed to create SDO modes_of_operation_display 0x6061 request.\n");
+        return false;
+    }
+
+    ROS_INFO( "Creating operation mode write SDO requests...\n");
+    if (!(fm_auto::slave0_sdo_operation_mode_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
+                                                                                          ADDRESS_MODES_OF_OPERATION,
+                                                                                          0, 1))) // uint8 data size 1
+    {
+        ROS_ERROR("Failed to create SDO MODES_OF_OPERATION request.\n");
         return -1;
     }
 
-    fprintf(stderr, "Creating operation mode write SDO requests...\n");
-    if (!(sdo_operation_mode_write = ecrt_slave_config_create_sdo_request(sc_ana_in, MODES_OF_OPERATION, 0, 1))) // uint8 data size 1
+    ROS_INFO("Creating controlword write SDO requests...\n");
+    if (!(fm_auto::slave0_sdo_controlword_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
+                                                                                       ADDRESS_CONTROLWORD,
+                                                                                       0, 2))) // uint16 data size 2
     {
-        fprintf(stderr, "Failed to create SDO MODES_OF_OPERATION request.\n");
+        ROS_ERROR("Failed to create SDO CONTROLWORD request.\n");
         return -1;
     }
 
-    fprintf(stderr, "Creating controlword write SDO requests...\n");
-    if (!(sdo_controlword_write = ecrt_slave_config_create_sdo_request(sc_ana_in, CONTROLWORD, 0, 2))) // uint16 data size 2
+    ROS_INFO("Creating statusword read SDO requests...\n");
+    if (!(fm_auto::slave0_sdo_statusword_read = ecrt_slave_config_create_sdo_request(slave_zero, ADDRESS_STATUSWORD,
+                                                                                     0, 2))) // uint16 data size 2
     {
-        fprintf(stderr, "Failed to create SDO CONTROLWORD request.\n");
+        ROS_ERROR("Failed to create SDO STATUSWORD request.\n");
         return -1;
     }
 
-    fprintf(stderr, "Creating statusword read SDO requests...\n");
-    if (!(sdo_statusword_read = ecrt_slave_config_create_sdo_request(sc_ana_in, STATUSWORD, 0, 2))) // uint16 data size 2
-    {
-        fprintf(stderr, "Failed to create SDO STATUSWORD request.\n");
-        return -1;
-    }
+    ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_display, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_write, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave0_sdo_controlword_write, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave0_sdo_statusword_read, 500); // ms
 
-
-    //EC_WRITE_U16(ecrt_sdo_request_data(sdo), 0xFFFF);
-
-    ecrt_sdo_request_timeout(sdo_operation_mode_display, 500); // ms
-    ecrt_sdo_request_timeout(sdo_operation_mode_write, 500); // ms
-    ecrt_sdo_request_timeout(sdo_controlword_write, 500); // ms
-    ecrt_sdo_request_timeout(sdo_statusword_read, 500); // ms
+    //TODO: slave1 sdo
 }
 
 bool fm_auto::DuetflEthercatController::initEthercat()
@@ -139,6 +146,13 @@ bool fm_auto::DuetflEthercatController::initEthercat()
     if (ecrt_master_activate(master))
     {
         ROS_ERROR("active master failed!\n");
+        return false;
+    }
+    // pdo domain data point
+    if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
+        return false;
+    }
+    if (!(domain_input_pd = ecrt_domain_data(domain_input))) {
         return false;
     }
 
@@ -242,21 +256,21 @@ bool fm_auto::DuetflEthercatController::writePdoTargetPosition(int32_t &value)
 {
     // TODO:check boundary
     // write process data
-    EC_WRITE_U32(domain_output + fm_auto::OFFSET_TARGET_POSITION, value);
+    EC_WRITE_U32(domain_output_pd + fm_auto::OFFSET_TARGET_POSITION, value);
 
     return true;
 }
 bool fm_auto::DuetflEthercatController::writePdoControlword(uint16_t &value)
 {
-    EC_WRITE_U16(domain_output + fm_auto::OFFSET_CONTROLWORD, value);
+    EC_WRITE_U16(domain_output_pd + fm_auto::OFFSET_CONTROLWORD, value);
 
     return true;
 }
 
 bool fm_auto::DuetflEthercatController::readPDOsData()
 {
-    printf("pdo value: %04x offset %u\n",
-            EC_READ_U16(domain_input_pd + off_0x6041),off_0x6041);
+    printf("pdo statusword value: %04x offset %u\n",
+            EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD),OFFSET_STATUSWORD);
 }
 
 bool fm_auto::DuetflEthercatController::processSDOs()

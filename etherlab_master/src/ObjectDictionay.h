@@ -42,6 +42,11 @@ static unsigned int OFFSET_REGISTER;/* Error_Register */
 static unsigned int OFFSET_VELOCITY_ACTUAL_VALUE;/* Velocity_Actual_Value */
 static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 
+#define ADDRESS_MODES_OF_OPERATION_DISPLAY  0x6061
+#define ADDRESS_MODES_OF_OPERATION          0x6060
+#define ADDRESS_CONTROLWORD                 0x6040
+#define ADDRESS_STATUSWORD                  0x6041
+
 // current only have one slave
 #define SlaveZeroAliasAndPosition  0, 0
 #define VendorID_ProductCode  0x000000e4, 0x00001133

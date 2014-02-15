@@ -124,6 +124,9 @@ private:
        ec_domain_t *domain_output;
        ec_domain_t *domain_input;
 
+       uint8_t *domain_output_pd;
+       uint8_t *domain_input_pd;
+
 //       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
 //       static ec_sdo_request_t *slave0_sdo_statusword_read;
 //       static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read;
