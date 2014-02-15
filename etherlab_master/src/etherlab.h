@@ -44,6 +44,8 @@ public:
        void cyclic_task();
        bool processSDOs();
 
+       bool readPDOsData();
+
 public:
        /// @brief get homing operation mode
        /// @param slave_config slave point

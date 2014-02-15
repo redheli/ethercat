@@ -193,6 +193,11 @@ void fm_auto::DuetflEthercatController::cyclic_task()
 
 
 }
+bool fm_auto::DuetflEthercatController::readPDOsData()
+{
+
+}
+
 bool fm_auto::DuetflEthercatController::processSDOs()
 {
     // check has sdos to send?

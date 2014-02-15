@@ -40,38 +40,38 @@ static unsigned int off_0x606c;
 static unsigned int off_0x6077;
 
 // current only have one slave
-#define AliasAndPositon  0, 0
+#define SlaveZeroAliasAndPosition  0, 0
 #define VendorID_ProductCode  0x000000e4, 0x00001133
 
 const static ec_pdo_entry_reg_t domain_output_regs[] = {
-    {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
-    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
     {}
 };
 const static ec_pdo_entry_reg_t domain_input_regs[] = {
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
-        {AliasAndPositon,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
-    {AliasAndPositon,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
-{AliasAndPositon,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
-    {AliasAndPositon,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &off_0x6040},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6060, 0, &off_0x6060},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6098, 0, &off_0x6098},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x607a, 0, &off_0x607a},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x60ff, 0, &off_0x60ff},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6071, 0, &off_0x6071},
+        {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6061, 0, &off_0x6061},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &off_0x6041},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6064, 0, &off_0x6064},
+{SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x606c, 0, &off_0x606c},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x1001, 0, &off_0x1001},
 //
-//    {AliasAndPositon,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
+//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6077, 0, &off_0x6077},
     {}
 };
 
