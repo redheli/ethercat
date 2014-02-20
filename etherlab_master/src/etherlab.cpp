@@ -91,6 +91,26 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
         }
     }
     // trigger home position
+    // 1.0 set controlword bit 4: 0
+    // 1.1 check statusword bit 13 has homing_error
+
+    // 2.0 set controlword bit 4: 1, start homing operation
+    // 2.1 check statusword bit 13 has homing_error
+    // 2.2 check statusword bit 12 =1 , executed successfully
+}
+int16_t fm_auto::DuetflEthercatController::getStatusword(const ec_slave_config_t *slave_config)
+{
+    int16_t statusword_value;
+    //1. send read sdo request
+    sendOneReadSDO(slave0_operation_mode_display_fmsdo);
+    //2. check sdo state
+    if(checkSDORequestState(slave0_operation_mode_display_fmsdo))
+    {
+        statusword_value = EC_READ_U16(ecrt_sdo_request_data(slave0_operation_mode_display_fmsdo->sdo));
+    }
+    ROS_INFO_ONCE("operation_mode_display: %02x",mode_value);
+//    if(mode_value == fm_auto::HM_current_position)
+    return (fm_auto::HOMING_METHOD)mode_value;
 }
 
 bool fm_auto::DuetflEthercatController::initSDOs()
@@ -118,7 +138,7 @@ bool fm_auto::DuetflEthercatController::initSDOs()
     }
     slave0_homing_method_fmSdo = new fm_sdo();
     slave0_homing_method_fmSdo->sdo = fm_auto::slave0_sdo_homing_method;
-    slave0_homing_method_fmSdo->descrption = "homing_method 0X6098";
+    slave0_homing_method_fmSdo->descrption = "homing_method 0x6098";
 
 
     ROS_INFO( "Creating operation mode write SDO requests...\n");
@@ -138,6 +158,9 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO CONTROLWORD request.\n");
         return -1;
     }
+    slave0_controlword_fmsdo = new fm_sdo();
+    slave0_controlword_fmsdo->sdo = fm_auto::slave0_sdo_controlword_write;
+    slave0_controlword_fmsdo->descrption = "statusword 0x6040";
 
     ROS_INFO("Creating statusword read SDO requests...\n");
     if (!(fm_auto::slave0_sdo_statusword_read = ecrt_slave_config_create_sdo_request(slave_zero, ADDRESS_STATUSWORD,
@@ -146,6 +169,9 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO STATUSWORD request.\n");
         return -1;
     }
+    slave0_statusword_fmsdo = new fm_sdo();
+    slave0_statusword_fmsdo->sdo = fm_auto::slave0_sdo_statusword_read;
+    slave0_statusword_fmsdo->descrption = "statusword 0x6041";
 
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_display, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_write, 500); // ms

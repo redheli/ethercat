@@ -44,6 +44,7 @@ public:
        void cyclic_task();
 
 public:
+       /// trigger home position,shall be current position
        bool operateHomingMethod();
 
 public:
@@ -70,7 +71,10 @@ public:
        /// @return success = true, failure = false
        bool setMotorHomingMode(fm_auto::HOMING_METHOD &hm);
 
-       bool conductHomingOperation();
+       int16_t getStatusword(const ec_slave_config_t *slave_config);
+       bool setControlword(const ec_slave_config_t *slave_config,int16_t &value);
+
+//       bool conductHomingOperation();
 
        /// @brief get operating mode
        /// @param slave_config slave point
@@ -140,6 +144,9 @@ private:
 
        fm_sdo *slave0_operation_mode_display_fmsdo;
        fm_sdo *slave0_homing_method_fmSdo;
+
+       fm_sdo *slave0_statusword_fmsdo;
+       fm_sdo *slave0_controlword_fmsdo;
 
 //       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
 //       static ec_sdo_request_t *slave0_sdo_statusword_read;
