@@ -71,8 +71,8 @@ public:
        /// @return success = true, failure = false
        bool setMotorHomingMode(fm_auto::HOMING_METHOD &hm);
 
-       int16_t getStatusword(const ec_slave_config_t *slave_config);
-       bool setControlword(const ec_slave_config_t *slave_config,int16_t &value);
+       uint16_t getStatusword(fm_sdo *statusword_fmsdo);
+       bool setControlword(fm_sdo *controlword_fmsdo,uint16_t &value);
 
 //       bool conductHomingOperation();
 

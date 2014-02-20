@@ -98,24 +98,24 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     // 2.1 check statusword bit 13 has homing_error
     // 2.2 check statusword bit 12 =1 , executed successfully
 }
-int16_t fm_auto::DuetflEthercatController::getStatusword(const ec_slave_config_t *slave_config)
+uint16_t fm_auto::DuetflEthercatController::getStatusword(fm_auto::fm_sdo *statusword_fmsdo)
 {
-    int16_t statusword_value;
+    uint16_t statusword_value;
     //1. send read sdo request
-    sendOneReadSDO(slave0_statusword_fmsdo);
+    sendOneReadSDO(statusword_fmsdo);
     //2. check sdo state
-    if(checkSDORequestState(slave0_statusword_fmsdo))
+    if(checkSDORequestState(statusword_fmsdo))
     {
-        statusword_value = EC_READ_U16(ecrt_sdo_request_data(slave0_statusword_fmsdo->sdo));
+        statusword_value = EC_READ_U16(ecrt_sdo_request_data(statusword_fmsdo->sdo));
     }
     ROS_INFO_ONCE("getStatusword: %02x",statusword_value);
 //    if(mode_value == fm_auto::HM_current_position)
     return statusword_value;
 }
-bool fm_auto::DuetflEthercatController::setControlword(const ec_slave_config_t *slave_config, int16_t &value)
+bool fm_auto::DuetflEthercatController::setControlword(fm_auto::fm_sdo *controlword_fmsdo, uint16_t &value)
 {
-    EC_WRITE_U16(ecrt_sdo_request_data(slave0_controlword_fmsdo->sdo), value);
-    sendOneWriteSDO(slave0_controlword_fmsdo);
+    EC_WRITE_U16(ecrt_sdo_request_data(controlword_fmsdo->sdo), value);
+    sendOneWriteSDO(controlword_fmsdo);
 }
 
 bool fm_auto::DuetflEthercatController::initSDOs()
