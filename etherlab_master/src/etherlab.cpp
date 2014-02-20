@@ -102,15 +102,20 @@ int16_t fm_auto::DuetflEthercatController::getStatusword(const ec_slave_config_t
 {
     int16_t statusword_value;
     //1. send read sdo request
-    sendOneReadSDO(slave0_operation_mode_display_fmsdo);
+    sendOneReadSDO(slave0_statusword_fmsdo);
     //2. check sdo state
-    if(checkSDORequestState(slave0_operation_mode_display_fmsdo))
+    if(checkSDORequestState(slave0_statusword_fmsdo))
     {
-        statusword_value = EC_READ_U16(ecrt_sdo_request_data(slave0_operation_mode_display_fmsdo->sdo));
+        statusword_value = EC_READ_U16(ecrt_sdo_request_data(slave0_statusword_fmsdo->sdo));
     }
-    ROS_INFO_ONCE("operation_mode_display: %02x",mode_value);
+    ROS_INFO_ONCE("getStatusword: %02x",statusword_value);
 //    if(mode_value == fm_auto::HM_current_position)
-    return (fm_auto::HOMING_METHOD)mode_value;
+    return statusword_value;
+}
+bool fm_auto::DuetflEthercatController::setControlword(const ec_slave_config_t *slave_config, int16_t &value)
+{
+    EC_WRITE_U16(ecrt_sdo_request_data(slave0_controlword_fmsdo->sdo), value);
+    sendOneWriteSDO(slave0_controlword_fmsdo);
 }
 
 bool fm_auto::DuetflEthercatController::initSDOs()
@@ -330,7 +335,8 @@ bool fm_auto::DuetflEthercatController::setMotorHomingMode(fm_auto::HOMING_METHO
 {
     int8_t v=(int8_t)hm;
     EC_WRITE_S8(ecrt_sdo_request_data(slave0_operation_mode_display_fmsdo->sdo), v);
-    ecrt_master_send(master);
+//    ecrt_master_send(master);
+    sendOneWriteSDO(slave0_operation_mode_display_fmsdo);
 }
 
 void fm_auto::DuetflEthercatController::check_master_state()
