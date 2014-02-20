@@ -11,11 +11,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <tr1/functional>
+#include <bitset>
 /****************************************************************************/
 #include "ros/ros.h"
 #include "ecrt.h"
 #include "ObjectDictionay.h"
 
+typedef std::bitset<16> Int16Bits;
 
 namespace fm_auto
 {

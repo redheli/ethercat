@@ -92,11 +92,49 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     }
     // trigger home position
     // 1.0 set controlword bit 4: 0
+    setControlword(0x00);
     // 1.1 check statusword bit 13 has homing_error
-
+    uint16_t statusword_value = getStatusword(slave0_statusword_fmsdo);
+    if(Int16Bits(statusword_value).test(13))
+    {
+        //has error
+        //TODO handle error
+        ROS_ERROR("set controlword 0x00 has error");
+    }
     // 2.0 set controlword bit 4: 1, start homing operation
+    setControlword(0x10);
     // 2.1 check statusword bit 13 has homing_error
+    if(Int16Bits(statusword_value).test(13))
+    {
+        //has error
+        //TODO handle error
+        ROS_ERROR("set controlword 0x10 has error");
+    }
     // 2.2 check statusword bit 12 =1 , executed successfully
+    ros::Time time_begin = ros::Time::now();
+    bool is_success=false;
+    while(!is_success)
+    {
+        ROS_INFO_ONCE("check homing operation successful");
+        uint16_t statusword_value = getStatusword(slave0_statusword_fmsdo);
+        if(Int16Bits(statusword_value).test(12) && !Int16Bits(statusword_value).test(13)) //p106
+        {
+            is_success = true;
+            ROS_INFO_ONCE("homing operation success!");
+            break;
+        }
+        ros::Time time_now = ros::Time::now();
+        if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
+        {
+            ROS_INFO_ONCE("homing operation timeout");
+            break;
+        }
+    }
+    //
+    if(is_success)
+    {
+        return true;
+    }
 }
 uint16_t fm_auto::DuetflEthercatController::getStatusword(fm_auto::fm_sdo *statusword_fmsdo)
 {
