@@ -66,14 +66,15 @@ bool fm_auto::DuetflEthercatController::init()
 bool fm_auto::DuetflEthercatController::operateHomingMethod()
 {
     // set homing_method to current position
-    HOMING_METHOD hm = getMotorHomingMode(slave_zero);
+    fm_auto::HOMING_METHOD hm = getMotorHomingMode(slave_zero);
     if(hm != HM_current_position)
     {
         ros::Time time_begin = ros::Time::now();
         while(hm != HM_current_position)
         {
             ROS_INFO_ONCE("homing method not current position: %d",hm);
-            setMotorHomingMode(HM_current_position);
+            fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
+            setMotorHomingMode(hm35);
             hm = getMotorHomingMode(slave_zero);
         //        time_t t_n = time(0);   // get time now
         //        struct tm * now = localtime( & t );
@@ -92,7 +93,8 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     }
     // trigger home position
     // 1.0 set controlword bit 4: 0
-    setControlword(0x00);
+    uint16_t c = 0x00;
+    setControlword(slave0_controlword_fmsdo,c);
     // 1.1 check statusword bit 13 has homing_error
     uint16_t statusword_value = getStatusword(slave0_statusword_fmsdo);
     if(Int16Bits(statusword_value).test(13))
@@ -102,7 +104,8 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
         ROS_ERROR("set controlword 0x00 has error");
     }
     // 2.0 set controlword bit 4: 1, start homing operation
-    setControlword(0x10);
+    c = 0x10;
+    setControlword(slave0_controlword_fmsdo,c);
     // 2.1 check statusword bit 13 has homing_error
     if(Int16Bits(statusword_value).test(13))
     {
@@ -131,10 +134,7 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
         }
     }
     //
-    if(is_success)
-    {
-        return true;
-    }
+    return is_success;
 }
 uint16_t fm_auto::DuetflEthercatController::getStatusword(fm_auto::fm_sdo *statusword_fmsdo)
 {

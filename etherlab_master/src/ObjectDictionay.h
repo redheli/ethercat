@@ -53,15 +53,15 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 #define VendorID_ProductCode  0x000000e4, 0x00001133
 
 const static ec_pdo_entry_reg_t domain_output_regs[] = {
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &OFFSET_CONTROLWORD},
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x607a, 0, &OFFSET_TARGET_POSITION},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &OFFSET_CONTROLWORD,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x607a, 0, &OFFSET_TARGET_POSITION,NULL},
     {}
 };
 const static ec_pdo_entry_reg_t domain_input_regs[] = {
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6061, 0, &OFFSET_MODES_OF_OPERATION_DISPLAY},
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &OFFSET_STATUSWORD},
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x606c, 0, &OFFSET_VELOCITY_ACTUAL_VALUE},
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x1001, 0, &OFFSET_REGISTER},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6061, 0, &OFFSET_MODES_OF_OPERATION_DISPLAY,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &OFFSET_STATUSWORD,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x606c, 0, &OFFSET_VELOCITY_ACTUAL_VALUE,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x1001, 0, &OFFSET_REGISTER,NULL},
     {}
 };
 
