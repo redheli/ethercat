@@ -7,7 +7,7 @@ void fm_auto::DuetflEthercatController::signal_handler(int signum) {
 //            sig_alarms++;
             break;
     case SIGINT:
-        fprintf(stderr,"use ctrl+c ,need do something \n");
+        ROS_INFO_ONCE("user ctrl+c ,need do something \n");
         // disable the operation
         // send 0x0002 to controlword
         uint16_t value = 0x0002;
@@ -40,24 +40,16 @@ fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),master(NULL)
 {
 
+    init();
 }
 bool fm_auto::DuetflEthercatController::init()
 {
     FREQUENCY = 300; //hz
 
-    ROS_INFO("Starting timer...\n");
-    tv.it_interval.tv_sec = 0;
-    tv.it_interval.tv_usec = 1000000 / FREQUENCY;
-    tv.it_value.tv_sec = 0;
-    tv.it_value.tv_usec = 1000;
-    if (setitimer(ITIMER_REAL, &tv, NULL)) {
-        ROS_ERROR("Failed to start timer: %s\n", strerror(errno));
-        return false;
-    }
-
     // init ethercat
     if(!initEthercat())
     {
+        ROS_ERROR("Failed to init ethercat: %s\n", strerror(errno));
         return false;
     }
 
@@ -66,7 +58,7 @@ bool fm_auto::DuetflEthercatController::init()
 bool fm_auto::DuetflEthercatController::operateHomingMethod()
 {
     // set homing_method to current position
-    fm_auto::HOMING_METHOD hm = getMotorHomingMode(slave_zero);
+    fm_auto::HOMING_METHOD hm = getMotorHomingMode(slave0_homing_method_fmSdo);
     if(hm != HM_current_position)
     {
         ros::Time time_begin = ros::Time::now();
@@ -75,7 +67,7 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
             ROS_INFO_ONCE("homing method not current position: %d",hm);
             fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
             setMotorHomingMode(hm35);
-            hm = getMotorHomingMode(slave_zero);
+            hm = getMotorHomingMode(slave0_homing_method_fmSdo);
         //        time_t t_n = time(0);   // get time now
         //        struct tm * now = localtime( & t );
         //        if(now_b->tm_sec - )
@@ -85,7 +77,7 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
                 break;
             }
         }
-        if(getMotorHomingMode(slave_zero) != HM_current_position)
+        if(getMotorHomingMode(slave0_homing_method_fmSdo) != HM_current_position)
         {
             ROS_ERROR("cannot get slave0 homing method to current position");
             return false;
@@ -222,6 +214,8 @@ bool fm_auto::DuetflEthercatController::initSDOs()
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_statusword_read, 500); // ms
 
     //TODO: slave1 sdo
+
+    return true;
 }
 
 bool fm_auto::DuetflEthercatController::initEthercat()
@@ -246,39 +240,30 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         ROS_ERROR("init sdos failed!\n");
         return false;
     }
-
+#if 0
     // two domains
     domain_input = ecrt_master_create_domain(master);
+    if(!domain_input)
+    {
+        ROS_ERROR("init domain_input failed!\n");
+        return false;
+    }
     domain_output = ecrt_master_create_domain(master);
-
+    if(!domain_output)
+    {
+        ROS_ERROR("init domain_output failed!\n");
+        return false;
+    }
     if (!domain_input || !domain_output)
     {
         ROS_ERROR("init domain failed!\n");
         return false;
     }
-
-    ROS_INFO("Activating master...\n");
-    if (ecrt_master_activate(master))
-    {
-        ROS_ERROR("active master failed!\n");
-        return false;
+    printf("Configuring PDOs...\n");
+    if (ecrt_slave_config_pdos(fm_auto::slave_zero, EC_END, fm_auto::slave_0_syncs)) {
+        fprintf(stderr, "Failed to configure PDOs.\n");
+        return -1;
     }
-    // pdo domain data point
-    if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
-        return false;
-    }
-    if (!(domain_input_pd = ecrt_domain_data(domain_input))) {
-        return false;
-    }
-
-    // set pid priority
-    pid_t pid = getpid();
-    if (setpriority(PRIO_PROCESS, pid, -19))
-    {
-        ROS_ERROR("Warning: Failed to set priority: %s\n",
-                strerror(errno));
-    }
-
     // domain entry list
     if (ecrt_domain_reg_pdo_entry_list(domain_output, fm_auto::domain_output_regs)) {
         ROS_ERROR("Output PDO entry registration failed!\n");
@@ -288,6 +273,34 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         ROS_ERROR("Input PDO entry registration failed!\n");
         return false;
     }
+#endif
+    ROS_INFO("Activating master...\n");
+    if (ecrt_master_activate(master))
+    {
+        ROS_ERROR("active master failed!\n");
+        return false;
+    }
+
+#if 0
+ROS_INFO_ONCE("debug1");
+    // pdo domain data point
+    if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
+        return false;
+    }
+ROS_INFO_ONCE("debug1---1");
+    if (!(domain_input_pd = ecrt_domain_data(domain_input))) {
+        return false;
+    }
+#endif
+    // set pid priority
+    pid_t pid = getpid();
+    if (setpriority(PRIO_PROCESS, pid, -19))
+    {
+        ROS_ERROR("Warning: Failed to set priority: %s\n",
+                strerror(errno));
+    }
+ROS_INFO_ONCE("debug2");
+
 
     // signal handler
     // handle ctrl+c important
@@ -297,14 +310,26 @@ bool fm_auto::DuetflEthercatController::initEthercat()
             return false;
     }
 
-    // get alarm to control frequcy
-    sa.sa_handler = signal_handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    if (sigaction(SIGALRM, &sa, 0)) {
-        fprintf(stderr, "Failed to install signal handler!\n");
-        return -1;
-    }
+ROS_INFO_ONCE("debug");
+//    // get alarm to control frequcy
+//    sa.sa_handler = signal_handler;
+//    sigemptyset(&sa.sa_mask);
+//    sa.sa_flags = 0;
+//    if (sigaction(SIGALRM, &sa, 0)) {
+//        ROS_ERROR("Failed to install signal handler!\n");
+//        return -1;
+//    }
+
+//    ROS_INFO("Starting timer...\n");
+//    tv.it_interval.tv_sec = 0;
+//    tv.it_interval.tv_usec = 1000000 / FREQUENCY;
+//    tv.it_value.tv_sec = 0;
+//    tv.it_value.tv_usec = 1000;
+//    if (setitimer(ITIMER_REAL, &tv, NULL)) {
+//        ROS_ERROR("Failed to start timer: %s\n", strerror(errno));
+//        return false;
+//    }
+    return true;
 }
 
 void fm_auto::DuetflEthercatController::run()
@@ -354,21 +379,57 @@ bool fm_auto::DuetflEthercatController::checkSDORequestState(fm_sdo *fmSdo)
     }
     return state;
 }
-fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(const ec_slave_config_t *slave_config)
+fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(fm_auto::fm_sdo *homing_operation_mode_fmsdo)
 {
-    int8_t mode_value;
+    int8_t mode_value=0x00;
     //1. send read sdo request
-    sendOneReadSDO(slave0_operation_mode_display_fmsdo);
+    sendOneReadSDO(homing_operation_mode_fmsdo);
     //2. check sdo state
-    if(checkSDORequestState(slave0_operation_mode_display_fmsdo))
+    if(checkSDORequestState(homing_operation_mode_fmsdo))
     {
-        mode_value = EC_READ_S8(ecrt_sdo_request_data(slave0_operation_mode_display_fmsdo->sdo));
+        mode_value = EC_READ_S8(ecrt_sdo_request_data(homing_operation_mode_fmsdo->sdo));
+        ROS_INFO_ONCE("get homing method: %02x",mode_value);
     }
-    ROS_INFO_ONCE("operation_mode_display: %02x",mode_value);
+    else
+    {
+        ROS_INFO_ONCE("get homing method failed");
+    }
 //    if(mode_value == fm_auto::HM_current_position)
     return (fm_auto::HOMING_METHOD)mode_value;
 }
-
+fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMethodSDO(fm_auto::fm_sdo *homing_operation_mode_fmsdo)
+{
+    int8_t method_value=0x00;
+    //1. send read sdo request
+    sendOneReadSDO(homing_operation_mode_fmsdo);
+    bool isGetValue=false;
+    ros::Time time_begin = ros::Time::now();
+    while(!isGetValue)
+    {
+        //2. check sdo state
+        ros::spinOnce();
+//        ROS_INFO("getMotorHomingModeSDO spinOnce");
+        if(checkSDORequestState(homing_operation_mode_fmsdo))
+        {
+            method_value = EC_READ_S8(ecrt_sdo_request_data(homing_operation_mode_fmsdo->sdo));
+            ROS_INFO_ONCE("get homing method: 0x%02x %d",method_value,method_value);
+            isGetValue = true;
+        }
+        ros::Time time_now = ros::Time::now();
+        if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
+        {
+            ROS_INFO_ONCE("getMotorHomingModeSDO timeout");
+            break;
+        }
+        ecrt_master_send(master);
+//        else
+//        {
+//            ROS_INFO_ONCE("get homing method failed");
+//        }
+    }
+//    if(mode_value == fm_auto::HM_current_position)
+    return (fm_auto::HOMING_METHOD)method_value;
+}
 bool fm_auto::DuetflEthercatController::setMotorHomingMode(fm_auto::HOMING_METHOD &hm)
 {
     int8_t v=(int8_t)hm;
@@ -487,4 +548,38 @@ bool fm_auto::DuetflEthercatController::processSDOs()
             activeSdoPool = sdoPool;
 
     }//if
+}
+void fm_auto::DuetflEthercatController::testGetStatusword()
+{
+    ROS_INFO_ONCE("testGetStatusword");
+//    while (1) {
+////        pause();
+
+//        ros::spinOnce();
+//        // receive process data
+//        ecrt_master_receive(master);
+//        ecrt_domain_process(domain_output);
+//        ecrt_domain_process(domain_input);
+
+
+//        // check process data state (optional)
+//    //    check_domain1_state();
+
+//        // check for master state (optional)
+//        check_master_state();
+
+//        // check for islave configuration state(s) (optional)
+//    //    check_slave_config_states();
+
+        getMotorHomingMethodSDO(slave0_homing_method_fmSdo);
+//        // read PDO data
+////        readPDOsData();
+
+//        // send process data
+//        ecrt_domain_queue(domain_output);
+//        ecrt_domain_queue(domain_input);
+//        ecrt_master_send(master);
+
+//    }
+
 }

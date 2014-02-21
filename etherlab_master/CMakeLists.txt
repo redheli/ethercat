@@ -44,6 +44,9 @@ rosbuild_add_executable(DuetflController src/main.cpp
 
 target_link_libraries(DuetflController ethercat)
 
+rosbuild_add_executable(etherlab_example_main src/etherlab_example_main.c)
+target_link_libraries(etherlab_example_main ethercat)
+
 #common commands for building c++ executables and libraries
 #rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
 #target_link_libraries(${PROJECT_NAME} another_library)

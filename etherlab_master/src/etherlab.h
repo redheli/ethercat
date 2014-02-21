@@ -67,7 +67,8 @@ public:
        /// @brief get homing operation mode
        /// @param slave_config slave point
        /// @return HOMING_METHOD
-       fm_auto::HOMING_METHOD getMotorHomingMode(const ec_slave_config_t *slave_config);
+       fm_auto::HOMING_METHOD getMotorHomingMode(fm_sdo *homing_operation_mode_fmsdo);
+       fm_auto::HOMING_METHOD getMotorHomingMethodSDO(fm_sdo *homing_operation_mode_fmsdo);
        /// set homing operation mode
        /// @param hm slave set to which homing method
        /// @return success = true, failure = false
@@ -157,6 +158,9 @@ private:
 //       static ec_sdo_request_t *slave0_sdo_operation_mode_write;
 //       static ec_sdo_request_t *slave0_sdo_controlword_write;
 
+public:
+       //test
+       void testGetStatusword();
 };
 
 }// fm_auto
