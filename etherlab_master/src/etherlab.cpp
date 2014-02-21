@@ -404,6 +404,7 @@ fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMethodSD
     sendOneReadSDO(homing_operation_mode_fmsdo);
     bool isGetValue=false;
     ros::Time time_begin = ros::Time::now();
+    ros::Rate loop_rate(100);
     while(!isGetValue)
     {
         //2. check sdo state
@@ -422,6 +423,7 @@ fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMethodSD
             break;
         }
         ecrt_master_send(master);
+        loop_rate.sleep();
 //        else
 //        {
 //            ROS_INFO_ONCE("get homing method failed");
