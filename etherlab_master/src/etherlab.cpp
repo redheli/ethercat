@@ -347,10 +347,10 @@ void fm_auto::DuetflEthercatController::run()
 }
 bool fm_auto::DuetflEthercatController::sendOneReadSDO(fm_sdo *fmSdo_read)
 {
-    ecrt_master_receive(master);
+//    ecrt_master_receive(master);
     //  upload
     ecrt_sdo_request_read(fmSdo_read->sdo);
-    ecrt_master_send(master);
+//    ecrt_master_send(master);
 }
 bool fm_auto::DuetflEthercatController::sendOneWriteSDO(fm_sdo *fmSdo_write)
 {
@@ -404,22 +404,25 @@ fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMethodSD
     sendOneReadSDO(homing_operation_mode_fmsdo);
     bool isGetValue=false;
     ros::Time time_begin = ros::Time::now();
+    ROS_INFO("getMotorHomingModeSDO %f",time_begin.toSec());
     ros::Rate loop_rate(100);
+    ROS_INFO("getMotorHomingModeSDO spinOnce");
     while(!isGetValue)
     {
         //2. check sdo state
         ros::spinOnce();
-//        ROS_INFO("getMotorHomingModeSDO spinOnce");
         if(checkSDORequestState(homing_operation_mode_fmsdo))
         {
             method_value = EC_READ_S8(ecrt_sdo_request_data(homing_operation_mode_fmsdo->sdo));
-            ROS_INFO_ONCE("get homing method: 0x%02x %d",method_value,method_value);
+            ROS_INFO("get homing method: 0x%02x %d",method_value,method_value);
             isGetValue = true;
+            break;
         }
         ros::Time time_now = ros::Time::now();
-        if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
+//        ROS_INFO("getMotorHomingModeSDO %f %f",time_begin.toSec(),time_now.toSec());
+        if( (time_now.toSec() - time_begin.toSec()) > 20 ) // 10 sec
         {
-            ROS_INFO_ONCE("getMotorHomingModeSDO timeout");
+            ROS_INFO("getMotorHomingModeSDO timeout");
             break;
         }
         ecrt_master_send(master);
@@ -430,6 +433,7 @@ fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMethodSD
 //        }
     }
 //    if(mode_value == fm_auto::HM_current_position)
+    ROS_INFO("getMotorHomingModeSDO out");
     return (fm_auto::HOMING_METHOD)method_value;
 }
 bool fm_auto::DuetflEthercatController::setMotorHomingMode(fm_auto::HOMING_METHOD &hm)
@@ -553,7 +557,7 @@ bool fm_auto::DuetflEthercatController::processSDOs()
 }
 void fm_auto::DuetflEthercatController::testGetStatusword()
 {
-    ROS_INFO_ONCE("testGetStatusword");
+    ROS_INFO("testGetStatusword");
 //    while (1) {
 ////        pause();
 
