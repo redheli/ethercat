@@ -55,6 +55,7 @@ public:
        bool sendOneWriteSDO(fm_sdo* fmSdo_write);
        bool processSDOs();
        bool checkSDORequestState(fm_sdo* fmSdo);
+       bool waitSDORequestSuccess(fm_sdo* fmSdo);
 
 
 public:
@@ -69,13 +70,13 @@ public:
        /// @return HOMING_METHOD
        fm_auto::HOMING_METHOD getMotorHomingMode(fm_sdo *homing_operation_mode_fmsdo);
        /// @brief get homing operation method by SDO
-       fm_auto::HOMING_METHOD getMotorHomingMethodSDO(fm_sdo *homing_operation_mode_fmsdo);
+       bool getMotorHomingMethodSDO(fm_sdo *homing_operation_mode_fmsdo, HOMING_METHOD &method);
        /// set homing operation mode
        /// @param hm slave set to which homing method
        /// @return success = true, failure = false
        bool setMotorHomingMode(fm_auto::HOMING_METHOD &hm);
 
-       uint16_t getStatusword(fm_sdo *statusword_fmsdo);
+       uint16_t getStatuswordSDO(fm_sdo *statusword_fmsdo);
        bool setControlword(fm_sdo *controlword_fmsdo,uint16_t &value);
 
 //       bool conductHomingOperation();
