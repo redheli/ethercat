@@ -97,49 +97,8 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     {
         ROS_ERROR("operateHomingMethod: set homing method failed");
     }
-//    fm_auto::HOMING_METHOD hm;
-//    if(!getMotorHomingModeSDO(slave0_homing_method_fmSdo,hm))
-//    {
-//        ROS_ERROR("operateHomingMethod: get homing method failed");
-//    }
-//    if(hm != fm_auto::HM_current_position)
-//    {
-////        ros::Time time_begin = ros::Time::now();
-////        while(hm != HM_current_position)
-////        {
-//            ROS_INFO("homing method not current position: %d",hm);
-//            fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
-//            if(setMotorHomingModeSDO(hm35))
-//            {
-//                ROS_ERROR("operateHomingMethod: set homing method failed");
-//                return false;
-//            }
-//            fm_auto::HOMING_METHOD hm2 = fm_auto::HM_fail;
-//            if(!getMotorHomingModeSDO(slave0_homing_method_fmSdo,hm2))
-//            {
-//                ROS_ERROR("operateHomingMethod: get homing method failed");
-//                return false;
-//            }
-//            if(hm2 != fm_auto::HM_current_position)
-//            {
-//                ROS_ERROR("operateHomingMethod: homing method not 35,after set, is %d",hm2);
-//                return false;
-//            }
-//        //        time_t t_n = time(0);   // get time now
-//        //        struct tm * now = localtime( & t );
-//        //        if(now_b->tm_sec - )
-////            ros::Time time_now = ros::Time::now();
-////            if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
-////            {
-////                break;
-////            }
-////        }
-////        if(getMotorHomingMode(slave0_homing_method_fmSdo) != HM_current_position)
-////        {
-////            ROS_ERROR("cannot get slave0 homing method to current position");
-////            return false;
-////        }
-//    }
+    // TODO: enable control
+    //
     // trigger home position
     // 1.0 set controlword bit 4: 0
     uint16_t c = 0x00;
@@ -599,7 +558,15 @@ bool fm_auto::DuetflEthercatController::setMotorHomingMode(fm_auto::HOMING_METHO
 //    ecrt_master_send(master);
     sendOneWriteSDO(slave0_operation_mode_display_fmsdo);
 }
-
+bool fm_auto::DuetflEthercatController::enableControlSDO(fm_sdo *controlword_fmSdo)
+{
+    // 1.0 check statusword ,serveo controller is in fault state
+    // 1.1 if has error , check error register
+    // 1.2 if error ergister has zero error,send 128(bit 7) to controlword to switch_on_disabled
+    // 2.0 controller in switch_on_disabled , send 6 to be ready_to_switch_on
+    // 3.0 in ready_to_switch_on, send 7 to be switched_on
+    // 4.0 in switched_on, send 0x0f 15 to be operation_enable
+}
 void fm_auto::DuetflEthercatController::check_master_state()
 {
     ec_master_state_t ms;

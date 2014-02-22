@@ -88,9 +88,10 @@ public:
        fm_auto::OPERATIN_MODE getMotorOperatingMode(const ec_slave_config_t *slave_config);
        bool setMotorOperatingMode(OPERATIN_MODE);
 
+       /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor
        /// make sure motor shaft rolling is safe
-       bool enableControl();
+       bool enableControlSDO(fm_sdo *controlword_fmSdo);
 
        void check_master_state();
 
