@@ -32,9 +32,27 @@ void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
             break;
     }
 }
+bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_actual_value_fmSdo,
+                                                               int32_t &value)
+{
+    //1. send read sdo request
+    sendOneReadSDO(position_actual_value_fmSdo);
+    if(waitSDORequestSuccess(position_actual_value_fmSdo))
+    {
+        value = EC_READ_S32(ecrt_sdo_request_data(position_actual_value_fmSdo->sdo));
+        ROS_INFO("get statusword: 0x%08x %d",value,value);
+        return true;
+    }
+    else
+    {
+        ROS_ERROR("getPositionActualValue failed");
+    }
+    return false;
+}
+
 void fm_auto::DuetflEthercatController::disable_operation()
 {
-
+    //TODO
 }
 fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),master(NULL)

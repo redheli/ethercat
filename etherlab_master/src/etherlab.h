@@ -109,6 +109,8 @@ public:
        /// set target position to 0x607A
        bool setTargetPosition(int &value);
 
+       bool getPositionActualValue(fm_sdo* position_actual_value_fmSdo,int32_t &value);
+
        /// 0x6081
        u_int32_t getProfileVelocity();
        bool setProfileVelocity();
