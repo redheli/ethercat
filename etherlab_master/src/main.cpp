@@ -18,7 +18,7 @@ int main(int argc, char**argv)
 //    ros::Rate loop_rate(10);
     fm_auto::DuetflEthercatController duetController;
     ROS_INFO("2222222");
-    duetController.testGetStatusword();
+    duetController.testGetHomingMethod();
 //    ROS_INFO("2222222");
 //    duetController.testGetStatusword();
 //    ros::spin();

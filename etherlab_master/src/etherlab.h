@@ -160,8 +160,10 @@ private:
 //       static ec_sdo_request_t *slave0_sdo_controlword_write;
 
 public:
-       //test
+       /// @brief test get statusword
        void testGetStatusword();
+       /// @brief teset get homing method
+       void testGetHomingMethod();
 };
 
 }// fm_auto

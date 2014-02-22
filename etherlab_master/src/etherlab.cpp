@@ -590,3 +590,8 @@ void fm_auto::DuetflEthercatController::testGetStatusword()
 //    }
 
 }
+void fm_auto::DuetflEthercatController::testGetHomingMethod()
+{
+    ROS_INFO("testGetHomingMethod");
+    getMotorHomingMethodSDO(slave0_homing_method_fmSdo);
+}
