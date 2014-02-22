@@ -313,6 +313,40 @@ bool fm_auto::DuetflEthercatController::setMotorOperatingModeSDO(fm_sdo *sdo_ope
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2Homing()
+{
+    //1. check current operation mode
+    fm_auto::OPERATION_MODE operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(slave0_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing: get mode failed");
+        return false;
+    }
+    if(operation_mode != fm_auto::OM_HOMING_MODE)
+    {
+        //2. set mode to homing
+        fm_auto::OPERATION_MODE value = fm_auto::OM_HOMING_MODE;
+        if(!setMotorOperatingModeSDO(slave0_operation_mode_write_fmsdo,value))
+        {
+            ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing: set mode failed");
+            return false;
+        }
+    }
+    //3. verify
+    operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(slave0_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing: get mode failed 2");
+        return false;
+    }
+    if(operation_mode != fm_auto::OM_HOMING_MODE)
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing: mode not homing after set %d\n",operation_mode);
+        return false;
+    }
+    ROS_INFO("set homing mode ok");
+    return true;
+}
 
 bool fm_auto::DuetflEthercatController::initSDOs()
 {
@@ -350,6 +384,9 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO MODES_OF_OPERATION request.\n");
         return -1;
     }
+    slave0_operation_mode_write_fmsdo = new fm_sdo();
+    slave0_operation_mode_write_fmsdo->sdo = fm_auto::slave0_sdo_operation_mode_write;
+    slave0_operation_mode_write_fmsdo->descrption = "operation_mode_ 0x6060";
 
     ROS_INFO("Creating controlword write SDO requests...\n");
     if (!(fm_auto::slave0_sdo_controlword_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,

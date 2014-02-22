@@ -86,9 +86,11 @@ public:
 
        /// @brief get operating mode
        /// @param slave_config slave point
-       /// @return OPERATIN_MODE
+       /// @return success or failed
        bool getMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_display,fm_auto::OPERATION_MODE &mode);
        bool setMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_write,fm_auto::OPERATION_MODE &value);
+
+       bool setSlaveZeroMotorOperatingMode2Homing();
 
        /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor
@@ -154,6 +156,7 @@ private:
        uint8_t *domain_input_pd;
 
        fm_sdo *slave0_operation_mode_display_fmsdo;
+       fm_sdo *slave0_operation_mode_write_fmsdo;
        fm_sdo *slave0_homing_method_fmSdo;
 
        fm_sdo *slave0_statusword_fmsdo;
