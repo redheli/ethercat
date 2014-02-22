@@ -362,7 +362,7 @@ bool fm_auto::DuetflEthercatController::sendOneWriteSDO(fm_sdo *fmSdo_write)
 bool fm_auto::DuetflEthercatController::checkSDORequestState(fm_sdo *fmSdo)
 {
     bool state=false;
-    ecrt_master_receive(master);
+
     switch (ecrt_sdo_request_state(fmSdo->sdo)) {
         case EC_REQUEST_UNUSED: // request was not used yet
             ROS_INFO_ONCE("request was not used yet\n");
@@ -411,6 +411,7 @@ fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMethodSD
     {
         //2. check sdo state
         ros::spinOnce();
+        ecrt_master_receive(master);
         if(checkSDORequestState(homing_operation_mode_fmsdo))
         {
             method_value = EC_READ_S8(ecrt_sdo_request_data(homing_operation_mode_fmsdo->sdo));
