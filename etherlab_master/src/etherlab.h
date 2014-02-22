@@ -167,8 +167,10 @@ private:
 public:
        /// @brief test get statusword
        void testGetStatuswordSDO();
-       /// @brief teset get homing method
+       /// @brief test get homing method
        void testGetHomingMethodSDO();
+       /// @brief test enable controller use SDO
+       void testEnableControllerSDO();
 };
 
 }// fm_auto
