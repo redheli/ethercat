@@ -76,7 +76,7 @@ public:
        /// @return success = true, failure = false
        bool setMotorHomingMode(fm_auto::HOMING_METHOD &hm);
 
-       uint16_t getStatuswordSDO(fm_sdo *statusword_fmsdo);
+       bool getStatuswordSDO(fm_sdo *statusword_fmsdo,uint16_t &value);
        bool setControlword(fm_sdo *controlword_fmsdo,uint16_t &value);
 
 //       bool conductHomingOperation();
