@@ -69,7 +69,7 @@ bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *
 //        {
             ROS_INFO("homing method not current position: %d",hm);
             fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
-            if(getMotorHomingMethodSDO(homing_method_fmSdo,hm35))
+            if(setMotorHomingModeSDO(homing_method_fmSdo,hm35))
             {
                 ROS_ERROR("operateHomingMethod: set homing method failed");
                 return false;
@@ -90,7 +90,7 @@ bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *
     return true;
 }
 
-bool fm_auto::DuetflEthercatController::operateHomingMethod()
+bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod()
 {
     // set homing_method to current position
     if(!setHomingMethod2CurrentPosition(slave0_homing_method_fmSdo))
@@ -98,26 +98,29 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
         ROS_ERROR("operateHomingMethod: set homing method failed");
     }
     // TODO: enable control
-    //
+    if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod: enable controller failed");
+    }
     // trigger home position
-    // 1.0 set controlword bit 4: 0
-    uint16_t c = 0x00;
-    setControlwordSDO(slave0_controlword_fmsdo,c);
-    // 1.1 check statusword bit 13 has homing_error
-    uint16_t statusword_value;
-    if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
-    {
-        ROS_ERROR("operateHomingMethod: get statusword failed");
-        return false;
-    }
-    if(Int16Bits(statusword_value).test(13))
-    {
-        //has error
-        //TODO handle error
-        ROS_ERROR("set controlword 0x00 has error");
-    }
+//     //1.0 set controlword bit 4: 0
+//    uint16_t c = 0x00;
+//    setControlwordSDO(slave0_controlword_fmsdo,c);
+//    // 1.1 check statusword bit 13 has homing_error
+//    uint16_t statusword_value;
+//    if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
+//    {
+//        ROS_ERROR("operateHomingMethod: get statusword failed");
+//        return false;
+//    }
+//    if(Int16Bits(statusword_value).test(13))
+//    {
+//        //has error
+//        //TODO handle error
+//        ROS_ERROR("set controlword 0x00 has error");
+//    }
     // 2.0 set controlword bit 4: 1, start homing operation
-    c = 0x10;
+    uint16_t c = 0x1f;
     setControlwordSDO(slave0_controlword_fmsdo,c);
     // 2.1 check statusword bit 13 has homing_error
     if(Int16Bits(statusword_value).test(13))
@@ -131,24 +134,29 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     bool is_success=false;
     while(!is_success)
     {
-        ROS_INFO_ONCE("check homing operation successful");
+        ROS_INFO("check homing operation successful");
         uint16_t statusword_value = 0x0000;
         if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
         {
+            ROS_ERROR("get statusword failed");
             return false;
         }
         if(Int16Bits(statusword_value).test(12) && !Int16Bits(statusword_value).test(13)) //p106
         {
             is_success = true;
-            ROS_INFO_ONCE("homing operation success!");
+            ROS_INFO("homing operation success!");
             break;
         }
         ros::Time time_now = ros::Time::now();
         if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
         {
-            ROS_INFO_ONCE("homing operation timeout");
+            ROS_INFOE("homing operation timeout");
             break;
         }
+    }
+    if(is_success)
+    {
+        //check actual position value 0x6064
     }
     //
     return is_success;
@@ -290,10 +298,22 @@ bool fm_auto::DuetflEthercatController::initSDOs()
     slave0_statusword_fmsdo->sdo = fm_auto::slave0_sdo_statusword_read;
     slave0_statusword_fmsdo->descrption = "statusword 0x6041";
 
+    ROS_INFO("Creating position_actual_value read SDO requests...\n");
+    if (!(fm_auto::slave0_sdo_position_actual_value_read = ecrt_slave_config_create_sdo_request(slave_zero, ADDRESS_POSITION_ACTUAL_VALUE,
+                                                                                     0, 4))) // int16 data size 2
+    {
+        ROS_ERROR("Failed to create SDO position_actual_value request.\n");
+        return -1;
+    }
+    slave0_position_actual_value_fmsdo = new fm_sdo();
+    slave0_position_actual_value_fmsdo->sdo = fm_auto::slave0_sdo_position_actual_value_read;
+    slave0_position_actual_value_fmsdo->descrption = "position_actual_value 0x6064";
+
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_display, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_write, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_controlword_write, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_statusword_read, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave0_sdo_position_actual_value_read, 500); // ms
 
     //TODO: slave1 sdo
 

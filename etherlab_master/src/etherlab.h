@@ -48,7 +48,7 @@ public:
 public:
        bool setHomingMethod2CurrentPosition(fm_sdo* homing_method_fmSdo);
        /// trigger home position,shall be current position
-       bool operateHomingMethod();
+       bool operateSteeringMotorHomingMethod();
 
 public:
        // sdo method
@@ -157,6 +157,8 @@ private:
        fm_sdo *slave0_statusword_fmsdo;
        fm_sdo *slave0_controlword_fmsdo;
 
+       fm_sdo *slave0_position_actual_value_fmsdo;
+
 //       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
 //       static ec_sdo_request_t *slave0_sdo_statusword_read;
 //       static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read;
@@ -171,6 +173,7 @@ public:
        void testGetHomingMethodSDO();
        /// @brief test enable controller use SDO
        void testEnableControllerSDO();
+       void testoperateHomingMethod();
 };
 
 }// fm_auto

@@ -59,6 +59,7 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 #define ADDRESS_HOMING_METHOD               0X6098
 #define ADDRESS_CONTROLWORD                 0x6040
 #define ADDRESS_STATUSWORD                  0x6041
+#define ADDRESS_POSITION_ACTUAL_VALUE       0x6064
 
 // current only have one slave
 #define SlaveZeroAliasAndPosition  0, 0
@@ -116,6 +117,8 @@ static ec_sdo_request_t *slave0_sdo_velocity_demand_value_read = NULL;
 
 static ec_sdo_request_t *slave0_sdo_operation_mode_write = NULL;
 static ec_sdo_request_t *slave0_sdo_controlword_write = NULL;
+
+static ec_sdo_request_t *slave0_sdo_position_actual_value_read = NULL;
 }//fm_auto
 
 #endif
