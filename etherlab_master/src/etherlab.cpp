@@ -76,6 +76,18 @@ bool fm_auto::DuetflEthercatController::init()
         ROS_ERROR("init: setSlaveZeroMotorOperatingMode2Homing failed");
         return false;
     }
+    // 2. enable controller
+    if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
+    {
+        ROS_ERROR("init: enableControlSDO failed");
+        return false;
+    }
+    // 3. trigger homing operation
+    if(!operateSteeringMotorHomingMethod())
+    {
+        ROS_ERROR("init: operateSteeringMotorHomingMethod failed");
+        return false;
+    }
 
     return true;
 }
