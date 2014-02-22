@@ -276,7 +276,8 @@ bool fm_auto::DuetflEthercatController::getControllerStateByStatusword(uint16_t 
     return false;
 
 }
-bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_display,fm_auto::OPERATION_MODE &mode)
+bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_display,
+                                                                 fm_auto::OPERATION_MODE &mode)
 {
     int8_t mode_value=0x00;
     //1. send read sdo request
@@ -298,6 +299,19 @@ bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *sdo_ope
         ROS_ERROR("get homing method failed");
         return false;
     }
+}
+bool fm_auto::DuetflEthercatController::setMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_write,
+                                                                 fm_auto::OPERATION_MODE &value)
+{
+    int8_t v=(int8_t)value;
+    EC_WRITE_S8(ecrt_sdo_request_data(sdo_operation_mode_write->sdo), v);
+//    ecrt_master_send(master);
+    sendOneWriteSDO(sdo_operation_mode_write);
+    if(!waitSDORequestSuccess(sdo_operation_mode_write))
+    {
+        ROS_ERROR("setMotorHomingModeSDO: set homing method %d failed",value);
+    }
+    return true;
 }
 
 bool fm_auto::DuetflEthercatController::initSDOs()
