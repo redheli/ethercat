@@ -27,6 +27,17 @@ enum OPERATIN_MODE
     OM_SWITCH_ON_DISABLED = 0x0040
 
 };
+// canopen doc p91
+enum CONTROLLER_STATE
+{
+    CS_NOT_READY_TO_SWITCH_ON = 0x0000,
+    CS_FAULT = 0x000F,
+    CS_READY_TO_SWITCH_ON = 0x0021,
+    CS_SWITCH_ON = 0x0023,
+    CS_OPERATION_ENABLE = 0x0027,
+    CS_SWITCH_ON_DISABLED = 0x0040
+
+};
 
 static unsigned int OFFSET_CONTROLWORD;/* Controlword */
 static unsigned int OFFSET_MODE_OF_OPERATION;/* Mode_of_Operation */

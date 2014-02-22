@@ -75,10 +75,10 @@ public:
        /// set homing operation mode
        /// @param hm slave set to which homing method
        /// @return success = true, failure = false
-       bool setMotorHomingMode(fm_auto::HOMING_METHOD &hm);
+       bool setMotorHomingModeSDO(fm_sdo *homing_operation_mode_fmsdo,fm_auto::HOMING_METHOD &hm);
 
        bool getStatuswordSDO(fm_sdo *statusword_fmsdo,uint16_t &value);
-       bool setControlword(fm_sdo *controlword_fmsdo,uint16_t &value);
+       bool setControlwordSDO(fm_sdo *controlword_fmsdo,uint16_t &value);
 
 //       bool conductHomingOperation();
 
