@@ -572,19 +572,67 @@ bool fm_auto::DuetflEthercatController::setMotorHomingModeSDO(fm_sdo *homing_ope
     }
     return true;
 }
-bool fm_auto::DuetflEthercatController::enableControlSDO(fm_sdo *controlword_fmSdo)
+bool fm_auto::DuetflEthercatController::enableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo)
 {
-    // 1.0 check statusword ,serveo controller is in fault state
-    uint16_t statusword=0x0000;
-    if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword))
+    fm_auto::CONTROLLER_STATE state = fm_auto::CS_UNKNOWN_STATE;
+    int i=0;
+    while(state != fm_auto::CS_OPERATION_ENABLE)
     {
-        ROS_ERROR("enableControlSDO: get statusword failed");
-    }
-    // 1.1 if has error , check error register
-    // 1.2 if error ergister has zero error,send 128(bit 7) to controlword to switch_on_disabled
-    // 2.0 controller in switch_on_disabled , send 6 to be ready_to_switch_on
-    // 3.0 in ready_to_switch_on, send 7 to be switched_on
-    // 4.0 in switched_on, send 0x0f 15 to be operation_enable
+        // 1.0 check statusword ,serveo controller is in fault state
+        uint16_t statusword=0x0000;
+        if(!getStatuswordSDO(statusword_fmSdo,statusword))
+        {
+            ROS_ERROR("enableControlSDO: get statusword failed");
+            return false;
+        }
+
+        if(!getControllerStateByStatusword(statusword,state))
+        {
+            ROS_ERROR("enableControlSDO: analyst controller state failed 0x%04x",statusword);
+            return false;
+        }
+        switch (state) {
+            case fm_auto::CS_FAULT: // request was not used yet
+                // 1.1 TODO: if has error , check error register
+                // 1.2 if error ergister has zero error,send 128(bit 7) to controlword to switch_on_disabled
+                uint16_t reset=0x0080;
+                setControlwordSDO(controlword_fmSdo,reset);
+                break;
+            case fm_auto::CS_SWITCH_ON_DISABLED:
+                // 2.0 controller in switch_on_disabled , send 6 to be ready_to_switch_on
+                uint16_t value = 0x0006;
+                setControlwordSDO(controlword_fmSdo,value);
+                break;
+            case fm_auto::CS_READY_TO_SWITCH_ON:
+                // 3.0 in ready_to_switch_on, send 7 to be switched_on
+                uint16_t value = 0x0007;
+                setControlwordSDO(controlword_fmSdo,value);
+                break;
+            case fm_auto::CS_SWITCH_ON:
+                // 4.0 in switched_on, send 0x0f 15 to be operation_enable
+                uint16_t value = 0x000f;
+                setControlwordSDO(controlword_fmSdo,value);
+                break;
+            case fm_auto::CS_OPERATION_ENABLE:
+                // controller enabled
+                return true;
+                break;
+            case fm_auto::CS_NOT_READY_TO_SWITCH_ON:
+                ROS_INFO("CS_NOT_READY_TO_SWITCH_ON");
+                return false;
+                break;
+        default:
+            ROS_ERROR("enableControlSDO: unkown state %04x",state);
+            return false;
+        }
+        i++;
+        if(i>5)
+        {
+            ROS_ERROR("enableControlSDO: controller not enabled in 5 steps");
+            return false;
+        }
+    }//while
+
 }
 void fm_auto::DuetflEthercatController::check_master_state()
 {

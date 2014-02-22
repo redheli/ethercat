@@ -93,7 +93,7 @@ public:
        /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor
        /// make sure motor shaft rolling is safe
-       bool enableControlSDO(fm_sdo *controlword_fmSdo);
+       bool enableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
 
        void check_master_state();
 
