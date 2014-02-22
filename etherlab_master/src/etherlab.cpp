@@ -276,6 +276,29 @@ bool fm_auto::DuetflEthercatController::getControllerStateByStatusword(uint16_t 
     return false;
 
 }
+bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_display,fm_auto::OPERATION_MODE &mode)
+{
+    int8_t mode_value=0x00;
+    //1. send read sdo request
+    sendOneReadSDO(sdo_operation_mode_display);
+//    bool isGetValue=false;
+//    ros::Time time_begin = ros::Time::now();
+//    ROS_INFO("getMotorHomingModeSDO %f",time_begin.toSec());
+//    ros::Rate loop_rate(100);
+//    ROS_INFO("getMotorHomingModeSDO spinOnce");
+    if(waitSDORequestSuccess(sdo_operation_mode_display))
+    {
+        mode_value = EC_READ_S8(ecrt_sdo_request_data(sdo_operation_mode_display->sdo));
+        ROS_INFO("get operation mode: 0x%02x %d",mode_value,mode_value);
+        mode = (fm_auto::OPERATION_MODE)mode_value;
+        return true;
+    }
+    else
+    {
+        ROS_ERROR("get homing method failed");
+        return false;
+    }
+}
 
 bool fm_auto::DuetflEthercatController::initSDOs()
 {

@@ -87,8 +87,8 @@ public:
        /// @brief get operating mode
        /// @param slave_config slave point
        /// @return OPERATIN_MODE
-       fm_auto::OPERATIN_MODE getMotorOperatingMode(const ec_slave_config_t *slave_config);
-       bool setMotorOperatingMode(OPERATIN_MODE);
+       bool getMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_display,fm_auto::OPERATION_MODE &mode);
+       bool setMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_write,fm_auto::OPERATION_MODE &value);
 
        /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor
