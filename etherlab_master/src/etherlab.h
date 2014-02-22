@@ -161,9 +161,9 @@ private:
 
 public:
        /// @brief test get statusword
-       void testGetStatusword();
+       void testGetStatuswordSDO();
        /// @brief teset get homing method
-       void testGetHomingMethod();
+       void testGetHomingMethodSDO();
 };
 
 }// fm_auto

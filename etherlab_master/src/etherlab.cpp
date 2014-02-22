@@ -556,7 +556,7 @@ bool fm_auto::DuetflEthercatController::processSDOs()
 
     }//if
 }
-void fm_auto::DuetflEthercatController::testGetStatusword()
+void fm_auto::DuetflEthercatController::testGetStatuswordSDO()
 {
     ROS_INFO("testGetStatusword");
 //    while (1) {
@@ -590,7 +590,7 @@ void fm_auto::DuetflEthercatController::testGetStatusword()
 //    }
 
 }
-void fm_auto::DuetflEthercatController::testGetHomingMethod()
+void fm_auto::DuetflEthercatController::testGetHomingMethodSDO()
 {
     ROS_INFO("testGetHomingMethod");
     getMotorHomingMethodSDO(slave0_homing_method_fmSdo);
