@@ -57,8 +57,6 @@ void fm_auto::DuetflEthercatController::disable_operation()
 fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),master(NULL)
 {
-
-    init();
 }
 bool fm_auto::DuetflEthercatController::init()
 {
@@ -68,6 +66,14 @@ bool fm_auto::DuetflEthercatController::init()
     if(!initEthercat())
     {
         ROS_ERROR("Failed to init ethercat: %s\n", strerror(errno));
+        return false;
+    }
+
+    // slave zero(steering motor) position zero
+    // 1. set operating mode to homing
+    if(!setSlaveZeroMotorOperatingMode2Homing())
+    {
+        ROS_ERROR("init: setSlaveZeroMotorOperatingMode2Homing failed");
         return false;
     }
 
@@ -110,6 +116,8 @@ bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *
 
 bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod()
 {
+    // check operating mode , is homging
+    // TODO
     // set homing_method to current position
     if(!setHomingMethod2CurrentPosition(slave0_homing_method_fmSdo))
     {
@@ -626,24 +634,24 @@ bool fm_auto::DuetflEthercatController::waitSDORequestSuccess(fm_sdo *fmSdo)
     return false;
 }
 
-fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(fm_auto::fm_sdo *homing_operation_mode_fmsdo)
-{
-    int8_t mode_value=0x00;
-    //1. send read sdo request
-    sendOneReadSDO(homing_operation_mode_fmsdo);
-    //2. check sdo state
-    if(checkSDORequestState(homing_operation_mode_fmsdo))
-    {
-        mode_value = EC_READ_S8(ecrt_sdo_request_data(homing_operation_mode_fmsdo->sdo));
-        ROS_INFO_ONCE("get homing method: %02x",mode_value);
-    }
-    else
-    {
-        ROS_INFO_ONCE("get homing method failed");
-    }
-//    if(mode_value == fm_auto::HM_current_position)
-    return (fm_auto::HOMING_METHOD)mode_value;
-}
+//fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMode(fm_auto::fm_sdo *homing_operation_mode_fmsdo)
+//{
+//    int8_t mode_value=0x00;
+//    //1. send read sdo request
+//    sendOneReadSDO(homing_operation_mode_fmsdo);
+//    //2. check sdo state
+//    if(checkSDORequestState(homing_operation_mode_fmsdo))
+//    {
+//        mode_value = EC_READ_S8(ecrt_sdo_request_data(homing_operation_mode_fmsdo->sdo));
+//        ROS_INFO_ONCE("get homing method: %02x",mode_value);
+//    }
+//    else
+//    {
+//        ROS_INFO_ONCE("get homing method failed");
+//    }
+////    if(mode_value == fm_auto::HM_current_position)
+//    return (fm_auto::HOMING_METHOD)mode_value;
+//}
 bool fm_auto::DuetflEthercatController::getMotorHomingMethodSDO(fm_auto::fm_sdo *homing_operation_mode_fmsdo,
                                                                 fm_auto::HOMING_METHOD &method)
 {

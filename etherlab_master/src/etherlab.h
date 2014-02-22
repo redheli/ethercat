@@ -69,7 +69,7 @@ public:
        /// @brief get homing operation mode
        /// @param fm sdo class
        /// @return HOMING_METHOD
-       fm_auto::HOMING_METHOD getMotorHomingMode(fm_sdo *homing_operation_mode_fmsdo);
+//       fm_auto::HOMING_METHOD getMotorHomingMode(fm_sdo *homing_operation_mode_fmsdo);
        /// @brief get homing operation method by SDO
        bool getMotorHomingMethodSDO(fm_sdo *homing_operation_mode_fmsdo, HOMING_METHOD &method);
        /// set homing operation mode

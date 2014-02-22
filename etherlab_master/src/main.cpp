@@ -18,6 +18,11 @@ int main(int argc, char**argv)
 //    ros::Rate loop_rate(10);
     fm_auto::DuetflEthercatController duetController;
     ROS_INFO("2222222");
+    if(!duetController.init())
+    {
+        ROS_ERROR("init failed");
+        return 0;
+    }
     duetController.testGetHomingMethodSDO();
 //    ROS_INFO("2222222");
 //    duetController.testGetStatusword();
