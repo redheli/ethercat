@@ -65,9 +65,10 @@ public:
 
 public:
        /// @brief get homing operation mode
-       /// @param slave_config slave point
+       /// @param fm sdo class
        /// @return HOMING_METHOD
        fm_auto::HOMING_METHOD getMotorHomingMode(fm_sdo *homing_operation_mode_fmsdo);
+       /// @brief get homing operation method by SDO
        fm_auto::HOMING_METHOD getMotorHomingMethodSDO(fm_sdo *homing_operation_mode_fmsdo);
        /// set homing operation mode
        /// @param hm slave set to which homing method

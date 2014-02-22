@@ -404,9 +404,9 @@ fm_auto::HOMING_METHOD fm_auto::DuetflEthercatController::getMotorHomingMethodSD
     sendOneReadSDO(homing_operation_mode_fmsdo);
     bool isGetValue=false;
     ros::Time time_begin = ros::Time::now();
-    ROS_INFO("getMotorHomingModeSDO %f",time_begin.toSec());
+//    ROS_INFO("getMotorHomingModeSDO %f",time_begin.toSec());
     ros::Rate loop_rate(100);
-    ROS_INFO("getMotorHomingModeSDO spinOnce");
+//    ROS_INFO("getMotorHomingModeSDO spinOnce");
     while(!isGetValue)
     {
         //2. check sdo state
