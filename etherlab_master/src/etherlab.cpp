@@ -58,7 +58,7 @@ bool fm_auto::DuetflEthercatController::init()
 bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *homing_method_fmSdo)
 {
     fm_auto::HOMING_METHOD hm;
-    if(!getMotorHomingModeSDO(homing_method_fmSdo,hm))
+    if(!getMotorHomingMethodSDO(homing_method_fmSdo,hm))
     {
         ROS_ERROR("operateHomingMethod: get homing method failed");
     }
@@ -69,7 +69,7 @@ bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *
 //        {
             ROS_INFO("homing method not current position: %d",hm);
             fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
-            if(setMotorHomingModeSDO(hm35))
+            if(getMotorHomingMethodSDO(homing_method_fmSdo,hm35))
             {
                 ROS_ERROR("operateHomingMethod: set homing method failed");
                 return false;
@@ -77,7 +77,7 @@ bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *
     }
     // recheck
     fm_auto::HOMING_METHOD hm2 = fm_auto::HM_fail;
-    if(!getMotorHomingModeSDO(homing_method_fmSdo,hm2))
+    if(!getMotorHomingMethodSDO(homing_method_fmSdo,hm2))
     {
         ROS_ERROR("operateHomingMethod: get homing method failed");
         return false;
@@ -102,7 +102,7 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     // trigger home position
     // 1.0 set controlword bit 4: 0
     uint16_t c = 0x00;
-    setControlword(slave0_controlword_fmsdo,c);
+    setControlwordSDO(slave0_controlword_fmsdo,c);
     // 1.1 check statusword bit 13 has homing_error
     uint16_t statusword_value;
     if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
@@ -118,7 +118,7 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     }
     // 2.0 set controlword bit 4: 1, start homing operation
     c = 0x10;
-    setControlword(slave0_controlword_fmsdo,c);
+    setControlwordSDO(slave0_controlword_fmsdo,c);
     // 2.1 check statusword bit 13 has homing_error
     if(Int16Bits(statusword_value).test(13))
     {
@@ -132,7 +132,11 @@ bool fm_auto::DuetflEthercatController::operateHomingMethod()
     while(!is_success)
     {
         ROS_INFO_ONCE("check homing operation successful");
-        uint16_t statusword_value = getStatusword(slave0_statusword_fmsdo);
+        uint16_t statusword_value = 0x0000;
+        if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
+        {
+            return false;
+        }
         if(Int16Bits(statusword_value).test(12) && !Int16Bits(statusword_value).test(13)) //p106
         {
             is_success = true;
@@ -181,7 +185,7 @@ bool fm_auto::DuetflEthercatController::setControlwordSDO(fm_auto::fm_sdo *contr
 bool fm_auto::DuetflEthercatController::getControllerStateByStatusword(uint16_t &value, fm_auto::CONTROLLER_STATE &state)
 {
     uint16_t withMask004F = value & 0x004F;
-    ROS_INFO("with mask 004F: 0x%04x ",withMask);
+    ROS_INFO("with mask 004F: 0x%04x ",withMask004F);
     if(withMask004F == fm_auto::CS_FAULT)
     {
         ROS_INFO("CS_FAULT");
@@ -591,26 +595,27 @@ bool fm_auto::DuetflEthercatController::enableControlSDO(fm_sdo *statusword_fmSd
             ROS_ERROR("enableControlSDO: analyst controller state failed 0x%04x",statusword);
             return false;
         }
+        uint16_t value;
         switch (state) {
             case fm_auto::CS_FAULT: // request was not used yet
                 // 1.1 TODO: if has error , check error register
                 // 1.2 if error ergister has zero error,send 128(bit 7) to controlword to switch_on_disabled
-                uint16_t reset=0x0080;
-                setControlwordSDO(controlword_fmSdo,reset);
+                value = 0x0080;//reset
+                setControlwordSDO(controlword_fmSdo,value);
                 break;
             case fm_auto::CS_SWITCH_ON_DISABLED:
                 // 2.0 controller in switch_on_disabled , send 6 to be ready_to_switch_on
-                uint16_t value = 0x0006;
+                value = 0x0006;
                 setControlwordSDO(controlword_fmSdo,value);
                 break;
             case fm_auto::CS_READY_TO_SWITCH_ON:
                 // 3.0 in ready_to_switch_on, send 7 to be switched_on
-                uint16_t value = 0x0007;
+                value = 0x0007;
                 setControlwordSDO(controlword_fmSdo,value);
                 break;
             case fm_auto::CS_SWITCH_ON:
                 // 4.0 in switched_on, send 0x0f 15 to be operation_enable
-                uint16_t value = 0x000f;
+                value = 0x000f;
                 setControlwordSDO(controlword_fmSdo,value);
                 break;
             case fm_auto::CS_OPERATION_ENABLE:
@@ -747,7 +752,7 @@ bool fm_auto::DuetflEthercatController::processSDOs()
 }
 void fm_auto::DuetflEthercatController::testGetStatuswordSDO()
 {
-    ROS_INFO("testGetStatusword");
+    ROS_INFO("testGetStatusword\n");
 //    while (1) {
 ////        pause();
 
@@ -766,8 +771,15 @@ void fm_auto::DuetflEthercatController::testGetStatuswordSDO()
 
 //        // check for islave configuration state(s) (optional)
 //    //    check_slave_config_states();
-
-        getMotorHomingMethodSDO(slave0_homing_method_fmSdo);
+    HOMING_METHOD method;
+    if(getMotorHomingMethodSDO(slave0_homing_method_fmSdo,method))
+    {
+        ROS_INFO("testGetStatuswordSDO: get homing method %d",method);
+    }
+    else
+    {
+        ROS_ERROR("testGetStatuswordSDO: homing method failed");
+    }
 //        // read PDO data
 ////        readPDOsData();
 
