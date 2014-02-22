@@ -55,40 +55,102 @@ bool fm_auto::DuetflEthercatController::init()
 
     return true;
 }
+bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *homing_method_fmSdo)
+{
+    fm_auto::HOMING_METHOD hm;
+    if(!getMotorHomingModeSDO(homing_method_fmSdo,hm))
+    {
+        ROS_ERROR("operateHomingMethod: get homing method failed");
+    }
+    if(hm != fm_auto::HM_current_position)
+    {
+//        ros::Time time_begin = ros::Time::now();
+//        while(hm != HM_current_position)
+//        {
+            ROS_INFO("homing method not current position: %d",hm);
+            fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
+            if(setMotorHomingModeSDO(hm35))
+            {
+                ROS_ERROR("operateHomingMethod: set homing method failed");
+                return false;
+            }
+    }
+    // recheck
+    fm_auto::HOMING_METHOD hm2 = fm_auto::HM_fail;
+    if(!getMotorHomingModeSDO(homing_method_fmSdo,hm2))
+    {
+        ROS_ERROR("operateHomingMethod: get homing method failed");
+        return false;
+    }
+    if(hm2 != fm_auto::HM_current_position)
+    {
+        ROS_ERROR("operateHomingMethod: homing method not 35,after set, is %d",hm2);
+        return false;
+    }
+    return true;
+}
+
 bool fm_auto::DuetflEthercatController::operateHomingMethod()
 {
     // set homing_method to current position
-    fm_auto::HOMING_METHOD hm = getMotorHomingMode(slave0_homing_method_fmSdo);
-    if(hm != HM_current_position)
+    if(!setHomingMethod2CurrentPosition(slave0_homing_method_fmSdo))
     {
-        ros::Time time_begin = ros::Time::now();
-        while(hm != HM_current_position)
-        {
-            ROS_INFO_ONCE("homing method not current position: %d",hm);
-            fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
-            setMotorHomingMode(hm35);
-            hm = getMotorHomingMode(slave0_homing_method_fmSdo);
-        //        time_t t_n = time(0);   // get time now
-        //        struct tm * now = localtime( & t );
-        //        if(now_b->tm_sec - )
-            ros::Time time_now = ros::Time::now();
-            if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
-            {
-                break;
-            }
-        }
-        if(getMotorHomingMode(slave0_homing_method_fmSdo) != HM_current_position)
-        {
-            ROS_ERROR("cannot get slave0 homing method to current position");
-            return false;
-        }
+        ROS_ERROR("operateHomingMethod: set homing method failed");
     }
+//    fm_auto::HOMING_METHOD hm;
+//    if(!getMotorHomingModeSDO(slave0_homing_method_fmSdo,hm))
+//    {
+//        ROS_ERROR("operateHomingMethod: get homing method failed");
+//    }
+//    if(hm != fm_auto::HM_current_position)
+//    {
+////        ros::Time time_begin = ros::Time::now();
+////        while(hm != HM_current_position)
+////        {
+//            ROS_INFO("homing method not current position: %d",hm);
+//            fm_auto::HOMING_METHOD hm35 = fm_auto::HM_current_position;
+//            if(setMotorHomingModeSDO(hm35))
+//            {
+//                ROS_ERROR("operateHomingMethod: set homing method failed");
+//                return false;
+//            }
+//            fm_auto::HOMING_METHOD hm2 = fm_auto::HM_fail;
+//            if(!getMotorHomingModeSDO(slave0_homing_method_fmSdo,hm2))
+//            {
+//                ROS_ERROR("operateHomingMethod: get homing method failed");
+//                return false;
+//            }
+//            if(hm2 != fm_auto::HM_current_position)
+//            {
+//                ROS_ERROR("operateHomingMethod: homing method not 35,after set, is %d",hm2);
+//                return false;
+//            }
+//        //        time_t t_n = time(0);   // get time now
+//        //        struct tm * now = localtime( & t );
+//        //        if(now_b->tm_sec - )
+////            ros::Time time_now = ros::Time::now();
+////            if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
+////            {
+////                break;
+////            }
+////        }
+////        if(getMotorHomingMode(slave0_homing_method_fmSdo) != HM_current_position)
+////        {
+////            ROS_ERROR("cannot get slave0 homing method to current position");
+////            return false;
+////        }
+//    }
     // trigger home position
     // 1.0 set controlword bit 4: 0
     uint16_t c = 0x00;
     setControlword(slave0_controlword_fmsdo,c);
     // 1.1 check statusword bit 13 has homing_error
-    uint16_t statusword_value = getStatusword(slave0_statusword_fmsdo);
+    uint16_t statusword_value;
+    if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
+    {
+        ROS_ERROR("operateHomingMethod: get statusword failed");
+        return false;
+    }
     if(Int16Bits(statusword_value).test(13))
     {
         //has error
@@ -686,6 +748,6 @@ void fm_auto::DuetflEthercatController::testGetStatuswordSDO()
 void fm_auto::DuetflEthercatController::testGetHomingMethodSDO()
 {
     ROS_INFO("testGetHomingMethod");
-    fm_auto::HOMING_METHOD &method;
+    fm_auto::HOMING_METHOD method;
     getMotorHomingMethodSDO(slave0_homing_method_fmSdo,method);
 }
