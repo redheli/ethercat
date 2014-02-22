@@ -139,13 +139,24 @@ bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod()
 //    }
     // 2.0 set controlword bit 4: 1, start homing operation
     uint16_t c = 0x1f;
-    setControlwordSDO(slave0_controlword_fmsdo,c);
+    if(!setControlwordSDO(slave0_controlword_fmsdo,c))
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod: set controlword failed 0x04x",c);
+        return false;
+    }
+    uint16_t statusword_value;
+    if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod: get statusword failed ");
+        return false;
+    }
     // 2.1 check statusword bit 13 has homing_error
     if(Int16Bits(statusword_value).test(13))
     {
         //has error
         //TODO handle error
         ROS_ERROR("set controlword 0x10 has error");
+        return false;
     }
     // 2.2 check statusword bit 12 =1 , executed successfully
     ros::Time time_begin = ros::Time::now();
@@ -168,13 +179,23 @@ bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod()
         ros::Time time_now = ros::Time::now();
         if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
         {
-            ROS_INFOE("homing operation timeout");
+            ROS_ERROR("homing operation timeout");
             break;
         }
     }
     if(is_success)
     {
         //check actual position value 0x6064
+        int32_t positionValue=0xff;
+        if(getPositionActualValue(slave0_position_actual_value_fmsdo,positionValue))
+        {
+            ROS_INFO("operateSteeringMotorHomingMethod: position actual value 0x%08x %d",positionValue,positionValue);
+        }
+        else
+        {
+            ROS_ERROR("operateSteeringMotorHomingMethod: get position_actual_value failed");
+            return false;
+        }
     }
     //
     return is_success;
