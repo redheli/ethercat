@@ -861,3 +861,8 @@ void fm_auto::DuetflEthercatController::testEnableControllerSDO()
     ROS_INFO("testEnableControllerSDO");
     enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo);
 }
+void fm_auto::DuetflEthercatController::testSlaveZeroOperateHomingMethod()
+{
+    ROS_INFO("testSlaveZeroOperateHomingMethod");
+    operateSteeringMotorHomingMethod();
+}

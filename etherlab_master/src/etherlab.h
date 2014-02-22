@@ -175,7 +175,7 @@ public:
        void testGetHomingMethodSDO();
        /// @brief test enable controller use SDO
        void testEnableControllerSDO();
-       void testoperateHomingMethod();
+       void testSlaveZeroOperateHomingMethod();
 };
 
 }// fm_auto
