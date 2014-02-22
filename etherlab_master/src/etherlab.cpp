@@ -178,6 +178,53 @@ bool fm_auto::DuetflEthercatController::setControlwordSDO(fm_auto::fm_sdo *contr
     ROS_ERROR("setControlword 0x%04x failed",value);
     return false;
 }
+bool fm_auto::DuetflEthercatController::getControllerStateByStatusword(uint16_t &value, fm_auto::CONTROLLER_STATE &state)
+{
+    uint16_t withMask004F = value & 0x004F;
+    ROS_INFO("with mask 004F: 0x%04x ",withMask);
+    if(withMask004F == fm_auto::CS_FAULT)
+    {
+        ROS_INFO("CS_FAULT");
+        state = fm_auto::CS_FAULT;
+        return true;
+    }
+    if( withMask004F == fm_auto::CS_NOT_READY_TO_SWITCH_ON)
+    {
+        ROS_INFO("CS_NOT_READY_TO_SWITCH_ON");
+        state = fm_auto::CS_NOT_READY_TO_SWITCH_ON;
+        return true;
+    }
+    if(withMask004F == fm_auto::CS_SWITCH_ON_DISABLED)
+    {
+        ROS_INFO("CS_SWITCH_ON_DISABLED");
+        state = fm_auto::CS_SWITCH_ON_DISABLED;
+        return true;
+    }
+    //
+    uint16_t withMask006F = value & 0x006F;
+    ROS_INFO("with mask 006F: 0x%04x ",withMask006F);
+    if(withMask006F == fm_auto::CS_READY_TO_SWITCH_ON)
+    {
+        ROS_INFO("CS_READY_TO_SWITCH_ON");
+        state = fm_auto::CS_READY_TO_SWITCH_ON;
+        return true;
+    }
+    if(withMask006F == fm_auto::CS_SWITCH_ON)
+    {
+        ROS_INFO("CS_SWITCH_ON");
+        state = fm_auto::CS_SWITCH_ON;
+        return true;
+    }
+    if(withMask006F == fm_auto::CS_OPERATION_ENABLE)
+    {
+        ROS_INFO("CS_OPERATION_ENABLE");
+        state = fm_auto::CS_OPERATION_ENABLE;
+        return true;
+    }
+    ROS_ERROR("unknow controller state 0x%04x",value);
+    return false;
+
+}
 
 bool fm_auto::DuetflEthercatController::initSDOs()
 {

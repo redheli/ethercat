@@ -79,6 +79,8 @@ public:
 
        bool getStatuswordSDO(fm_sdo *statusword_fmsdo,uint16_t &value);
        bool setControlwordSDO(fm_sdo *controlword_fmsdo,uint16_t &value);
+       /// @brief get controller state according to the statusword
+       bool getControllerStateByStatusword(uint16_t &value,fm_auto::CONTROLLER_STATE &state);
 
 //       bool conductHomingOperation();
 
