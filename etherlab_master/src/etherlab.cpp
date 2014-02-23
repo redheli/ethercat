@@ -36,10 +36,10 @@ void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
 bool fm_auto::DuetflEthercatController::setSlaveZeroTargetPosition(int32_t &value)
 {
 //    int8_t v=(int8_t)value;
-    EC_WRITE_S32(ecrt_sdo_request_data(sla->sdo), value);
+    EC_WRITE_S32(ecrt_sdo_request_data(fm_auto::slave0_target_position_fmsdo->sdo), value);
 //    ecrt_master_send(master);
-    sendOneWriteSDO(sdo_operation_mode_write);
-    if(!waitSDORequestSuccess(sdo_operation_mode_write))
+    sendOneWriteSDO(fm_auto::slave0_target_position_fmsdo);
+    if(!waitSDORequestSuccess(fm_auto::slave0_target_position_fmsdo))
     {
         ROS_ERROR("setMotorHomingModeSDO: set homing method %d failed",value);
     }
