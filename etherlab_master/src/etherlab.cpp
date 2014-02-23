@@ -45,7 +45,7 @@ bool fm_auto::DuetflEthercatController::goToPositionNewSetPoint_SlaveZero()
     }
     return true;
 }
-bool fm_auto::DuetflEthercatController::clearNewSetPoint_SlaveZero()
+bool fm_auto::DuetflEthercatController::clearNewSetPoint_ChangeSetPoint_SlaveZero()
 {
     // write 0 to bit 4 of controlword,assume controller enabled
     uint16_t value = 0x0f;
