@@ -21,6 +21,8 @@ typedef std::bitset<16> Int16Bits;
 
 namespace fm_auto
 {
+class DuetflEthercatController;
+
 class fm_sdo
 {
 public:
@@ -31,6 +33,7 @@ public:
     bool isReadSDO;
     bool isOperate; // the sdo has been operated
     CallbackFunc callback;
+    DuetflEthercatController* controller;
 };
 class DuetflEthercatController
 {
@@ -46,6 +49,7 @@ public:
        void cyclic_task();
 
 public:
+       /* homing */
        bool setHomingMethod2CurrentPosition(fm_sdo* homing_method_fmSdo);
        /// trigger home position,shall be current position
        bool operateSteeringMotorHomingMethod();
@@ -92,14 +96,17 @@ public:
 
        bool setSlaveZeroMotorOperatingMode2Homing();
 
+       /* controller */
        /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor
        /// make sure motor shaft rolling is safe
        bool enableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
+       static void disableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
+
 
        void check_master_state();
 
-       static void disable_operation();
+//       static void disable_operation();
        static void my_sig_handler(int signum);
        static void signal_handler(int signum);
        static void writeSdoControlword(uint16_t &value);
@@ -147,7 +154,6 @@ private:
        struct sigaction sa;
 
        // EtherCAT
-       ec_master_t *master;
        ec_master_state_t master_state;
        ec_domain_t *domain_output;
        ec_domain_t *domain_input;
@@ -155,14 +161,14 @@ private:
        uint8_t *domain_output_pd;
        uint8_t *domain_input_pd;
 
-       fm_sdo *slave0_operation_mode_display_fmsdo;
-       fm_sdo *slave0_operation_mode_write_fmsdo;
-       fm_sdo *slave0_homing_method_fmSdo;
+//       static fm_sdo *slave0_operation_mode_display_fmsdo;
+//       static fm_sdo *slave0_operation_mode_write_fmsdo;
+//       static fm_sdo *slave0_homing_method_fmSdo;
 
-       fm_sdo *slave0_statusword_fmsdo;
-       fm_sdo *slave0_controlword_fmsdo;
+//       static fm_sdo *slave0_statusword_fmsdo;
+//       static fm_sdo *slave0_controlword_fmsdo;
 
-       fm_sdo *slave0_position_actual_value_fmsdo;
+//       static fm_sdo *slave0_position_actual_value_fmsdo;
 
 //       static ec_sdo_request_t *slave0_sdo_operation_mode_display;
 //       static ec_sdo_request_t *slave0_sdo_statusword_read;

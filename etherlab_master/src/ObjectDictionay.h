@@ -2,9 +2,11 @@
 #define __OBJECT_DICTIONARY_H__
 
 #include "ecrt.h"
+#include "etherlab.h"
 
 namespace fm_auto
 {
+class fm_sdo;
 
 enum HOMING_METHOD
 {
@@ -104,6 +106,7 @@ static ec_sync_info_t slave_0_syncs[] = {
 };
 
 // slave
+static ec_master_t *master = NULL;
 static ec_slave_config_t *slave_zero = NULL;
 static ec_slave_config_state_t sc_ana_in_state = {};
 
@@ -116,6 +119,16 @@ static ec_sdo_request_t *slave0_sdo_operation_mode_write = NULL;
 static ec_sdo_request_t *slave0_sdo_controlword_write = NULL;
 
 static ec_sdo_request_t *slave0_sdo_position_actual_value_read = NULL;
+
+
+static fm_sdo *slave0_operation_mode_display_fmsdo = NULL;
+static fm_sdo *slave0_operation_mode_write_fmsdo = NULL;
+static fm_sdo *slave0_homing_method_fmSdo = NULL;
+
+static fm_sdo *slave0_statusword_fmsdo = NULL;
+static fm_sdo *slave0_controlword_fmsdo = NULL;
+
+static fm_sdo *slave0_position_actual_value_fmsdo = NULL;
 }//fm_auto
 
 #endif

@@ -27,7 +27,8 @@ void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
             fprintf(stderr,"use ctrl+c ,need do something before exit\n");
             // disable the operation
             // send 0x0002 to controlword
-            disable_operation();
+//            disable_operation();
+            disableControlSDO(fm_auto::slave0_statusword_fmsdo,fm_auto::slave0_controlword_fmsdo);
             exit(-1);
             break;
     }
@@ -50,12 +51,12 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
     return false;
 }
 
-void fm_auto::DuetflEthercatController::disable_operation()
-{
-    //TODO
-}
+//void fm_auto::DuetflEthercatController::disable_operation()
+//{
+//    //TODO
+//}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
-    : domain_input(NULL),domain_output(NULL),master(NULL)
+    : domain_input(NULL),domain_output(NULL)
 {
 }
 bool fm_auto::DuetflEthercatController::init()
@@ -379,9 +380,10 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO modes_of_operation_display 0x6061 request.\n");
         return false;
     }
-    slave0_operation_mode_display_fmsdo = new fm_sdo();
-    slave0_operation_mode_display_fmsdo->sdo = fm_auto::slave0_sdo_operation_mode_display;
-    slave0_operation_mode_display_fmsdo->descrption = "operation_mode_display 0x6061";
+    fm_auto::slave0_operation_mode_display_fmsdo = new fm_sdo();
+    fm_auto::slave0_operation_mode_display_fmsdo->sdo = fm_auto::slave0_sdo_operation_mode_display;
+    fm_auto::slave0_operation_mode_display_fmsdo->descrption = "operation_mode_display 0x6061";
+    fm_auto::slave0_operation_mode_display_fmsdo->controller = this;
 
     ROS_INFO("Creating Homing Method read SDO requests...\n");
     if (!(fm_auto::slave0_sdo_homing_method = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
@@ -391,10 +393,10 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO slave0_sdo_homing_methiod 0x6098 request.\n");
         return false;
     }
-    slave0_homing_method_fmSdo = new fm_sdo();
-    slave0_homing_method_fmSdo->sdo = fm_auto::slave0_sdo_homing_method;
-    slave0_homing_method_fmSdo->descrption = "homing_method 0x6098";
-
+    fm_auto::slave0_homing_method_fmSdo = new fm_sdo();
+    fm_auto::slave0_homing_method_fmSdo->sdo = fm_auto::slave0_sdo_homing_method;
+    fm_auto::slave0_homing_method_fmSdo->descrption = "homing_method 0x6098";
+    fm_auto::slave0_homing_method_fmSdo->controller = this;
 
     ROS_INFO( "Creating operation mode write SDO requests...\n");
     if (!(fm_auto::slave0_sdo_operation_mode_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
@@ -404,9 +406,10 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO MODES_OF_OPERATION request.\n");
         return -1;
     }
-    slave0_operation_mode_write_fmsdo = new fm_sdo();
-    slave0_operation_mode_write_fmsdo->sdo = fm_auto::slave0_sdo_operation_mode_write;
-    slave0_operation_mode_write_fmsdo->descrption = "operation_mode_ 0x6060";
+    fm_auto::slave0_operation_mode_write_fmsdo = new fm_sdo();
+    fm_auto::slave0_operation_mode_write_fmsdo->sdo = fm_auto::slave0_sdo_operation_mode_write;
+    fm_auto::slave0_operation_mode_write_fmsdo->descrption = "operation_mode_ 0x6060";
+    fm_auto::slave0_operation_mode_write_fmsdo->controller = this;
 
     ROS_INFO("Creating controlword write SDO requests...\n");
     if (!(fm_auto::slave0_sdo_controlword_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_zero,
@@ -416,9 +419,10 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO CONTROLWORD request.\n");
         return -1;
     }
-    slave0_controlword_fmsdo = new fm_sdo();
-    slave0_controlword_fmsdo->sdo = fm_auto::slave0_sdo_controlword_write;
-    slave0_controlword_fmsdo->descrption = "statusword 0x6040";
+    fm_auto::slave0_controlword_fmsdo = new fm_sdo();
+    fm_auto::slave0_controlword_fmsdo->sdo = fm_auto::slave0_sdo_controlword_write;
+    fm_auto::slave0_controlword_fmsdo->descrption = "statusword 0x6040";
+    fm_auto::slave0_controlword_fmsdo->controller = this;
 
     ROS_INFO("Creating statusword read SDO requests...\n");
     if (!(fm_auto::slave0_sdo_statusword_read = ecrt_slave_config_create_sdo_request(slave_zero, ADDRESS_STATUSWORD,
@@ -427,9 +431,10 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO STATUSWORD request.\n");
         return -1;
     }
-    slave0_statusword_fmsdo = new fm_sdo();
-    slave0_statusword_fmsdo->sdo = fm_auto::slave0_sdo_statusword_read;
-    slave0_statusword_fmsdo->descrption = "statusword 0x6041";
+    fm_auto::slave0_statusword_fmsdo = new fm_sdo();
+    fm_auto::slave0_statusword_fmsdo->sdo = fm_auto::slave0_sdo_statusword_read;
+    fm_auto::slave0_statusword_fmsdo->descrption = "statusword 0x6041";
+    fm_auto::slave0_statusword_fmsdo->controller = this;
 
     ROS_INFO("Creating position_actual_value read SDO requests...\n");
     if (!(fm_auto::slave0_sdo_position_actual_value_read = ecrt_slave_config_create_sdo_request(slave_zero, ADDRESS_POSITION_ACTUAL_VALUE,
@@ -438,9 +443,10 @@ bool fm_auto::DuetflEthercatController::initSDOs()
         ROS_ERROR("Failed to create SDO position_actual_value request.\n");
         return -1;
     }
-    slave0_position_actual_value_fmsdo = new fm_sdo();
-    slave0_position_actual_value_fmsdo->sdo = fm_auto::slave0_sdo_position_actual_value_read;
-    slave0_position_actual_value_fmsdo->descrption = "position_actual_value 0x6064";
+    fm_auto::slave0_position_actual_value_fmsdo = new fm_sdo();
+    fm_auto::slave0_position_actual_value_fmsdo->sdo = fm_auto::slave0_sdo_position_actual_value_read;
+    fm_auto::slave0_position_actual_value_fmsdo->descrption = "position_actual_value 0x6064";
+    fm_auto::slave0_position_actual_value_fmsdo->controller = this;
 
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_display, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_write, 500); // ms
@@ -792,6 +798,34 @@ bool fm_auto::DuetflEthercatController::enableControlSDO(fm_sdo *statusword_fmSd
     }//while
 
 }
+void fm_auto::DuetflEthercatController::disableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo)
+{
+    // write controlword 0x0002
+    uint16_t value = 0x0002;//stop
+    statusword_fmSdo->controller->setControlwordSDO(controlword_fmSdo,value);
+    // check statusword
+    fm_auto::CONTROLLER_STATE state = fm_auto::CS_UNKNOWN_STATE;
+    uint16_t statusword=0x0000;
+    if(!statusword_fmSdo->controller->getStatuswordSDO(statusword_fmSdo,statusword))
+    {
+        ROS_ERROR("enableControlSDO: get statusword failed");
+        return;
+    }
+
+    if(!statusword_fmSdo->controller->getControllerStateByStatusword(statusword,state))
+    {
+        ROS_ERROR("enableControlSDO: analyst controller state failed 0x%04x",statusword);
+        return;
+    }
+    if(state == fm_auto::CS_OPERATION_ENABLE)
+    {
+        ROS_ERROR("controller still enable after send 0x2,send again");
+        statusword_fmSdo->controller->setControlwordSDO(controlword_fmSdo,value);
+        return;
+    }
+    return;
+}
+
 void fm_auto::DuetflEthercatController::check_master_state()
 {
     ec_master_state_t ms;
