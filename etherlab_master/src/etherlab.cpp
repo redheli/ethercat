@@ -33,6 +33,19 @@ void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
             break;
     }
 }
+bool fm_auto::DuetflEthercatController::setSlaveZeroTargetPosition(int32_t &value)
+{
+//    int8_t v=(int8_t)value;
+    EC_WRITE_S32(ecrt_sdo_request_data(sla->sdo), value);
+//    ecrt_master_send(master);
+    sendOneWriteSDO(sdo_operation_mode_write);
+    if(!waitSDORequestSuccess(sdo_operation_mode_write))
+    {
+        ROS_ERROR("setMotorHomingModeSDO: set homing method %d failed",value);
+    }
+    return true;
+}
+
 bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_actual_value_fmSdo,
                                                                int32_t &value)
 {
@@ -448,11 +461,24 @@ bool fm_auto::DuetflEthercatController::initSDOs()
     fm_auto::slave0_position_actual_value_fmsdo->descrption = "position_actual_value 0x6064";
     fm_auto::slave0_position_actual_value_fmsdo->controller = this;
 
+    ROS_INFO("Creating position_actual_value read SDO requests...\n");
+    if (!(fm_auto::slave0_sdo_position_actual_value_read = ecrt_slave_config_create_sdo_request(slave_zero, ADDRESS_POSITION_ACTUAL_VALUE,
+                                                                                     0, 4))) // int16 data size 2
+    {
+        ROS_ERROR("Failed to create SDO position_actual_value request.\n");
+        return -1;
+    }
+    fm_auto::slave0_target_position_fmsdo = new fm_sdo();
+    fm_auto::slave0_target_position_fmsdo->sdo = fm_auto::slave0_sdo_position_actual_value_read;
+    fm_auto::slave0_target_position_fmsdo->descrption = "position_actual_value 0x6064";
+    fm_auto::slave0_target_position_fmsdo->controller = this;
+
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_display, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_write, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_controlword_write, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_statusword_read, 500); // ms
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_position_actual_value_read, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave0_sdo_target_position_read_write, 500); // ms
 
     //TODO: slave1 sdo
 

@@ -119,6 +119,7 @@ static ec_sdo_request_t *slave0_sdo_operation_mode_write = NULL;
 static ec_sdo_request_t *slave0_sdo_controlword_write = NULL;
 
 static ec_sdo_request_t *slave0_sdo_position_actual_value_read = NULL;
+static ec_sdo_request_t *slave0_sdo_target_position_read_write = NULL;
 
 
 static fm_sdo *slave0_operation_mode_display_fmsdo = NULL;
@@ -129,6 +130,7 @@ static fm_sdo *slave0_statusword_fmsdo = NULL;
 static fm_sdo *slave0_controlword_fmsdo = NULL;
 
 static fm_sdo *slave0_position_actual_value_fmsdo = NULL;
+static fm_sdo *slave0_target_position_fmsdo = NULL;
 }//fm_auto
 
 #endif

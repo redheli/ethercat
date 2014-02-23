@@ -111,12 +111,11 @@ public:
        static void signal_handler(int signum);
        static void writeSdoControlword(uint16_t &value);
 
-       // position control
-
+       /* position control */
        /// get target position setted in 0x607A
-       int getTargetPositionSetting();
+       bool getSlaveZeroTargetPositionSetting(int &target_position);
        /// set target position to 0x607A
-       bool setTargetPosition(int &value);
+       bool setSlaveZeroTargetPosition(int32_t &value);
 
        bool getPositionActualValue(fm_sdo* position_actual_value_fmSdo,int32_t &value);
 
