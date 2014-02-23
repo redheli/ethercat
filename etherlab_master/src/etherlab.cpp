@@ -33,6 +33,18 @@ void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
             break;
     }
 }
+bool fm_auto::DuetflEthercatController::goToPositonSlaveZero()
+{
+    //make sure controller enabled
+    // write 0x1f to controlword
+    uint16_t value = 0x1f;
+    if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
+    {
+        ROS_ERROR("goToPositonSlaveZero: set controlword 0x1f failed");
+        return false;
+    }
+    return true;
+}
 bool fm_auto::DuetflEthercatController::setSlaveZeroTargetPosition(int32_t &value)
 {
 //    int8_t v=(int8_t)value;
@@ -44,6 +56,10 @@ bool fm_auto::DuetflEthercatController::setSlaveZeroTargetPosition(int32_t &valu
         ROS_ERROR("setMotorHomingModeSDO: set homing method %d failed",value);
     }
     return true;
+}
+bool fm_auto::DuetflEthercatController::getSlaveZeroTargetPositionSetting(int32_t &target_position)
+{
+
 }
 
 bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_actual_value_fmSdo,

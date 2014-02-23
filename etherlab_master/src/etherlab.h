@@ -112,8 +112,9 @@ public:
        static void writeSdoControlword(uint16_t &value);
 
        /* position control */
+       bool goToPositonSlaveZero();
        /// get target position setted in 0x607A
-       bool getSlaveZeroTargetPositionSetting(int &target_position);
+       bool getSlaveZeroTargetPositionSetting(int32_t &target_position);
        /// set target position to 0x607A
        bool setSlaveZeroTargetPosition(int32_t &value);
 
