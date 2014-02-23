@@ -115,6 +115,8 @@ public:
        /// @brief motor go to target position ,only set new_set_point (controlword bit 4)
        ///        current positioning order will be processed before starting a new one.
        bool goToPositionNewSetPoint_SlaveZero();
+       /// @brief only use when controller enabled
+       bool clearNewSetPoint_SlaveZero();
        /// @brief motor go to target position ,set both new_set_point (controlword bit 4) and
        ///        change_set_immediatly (bit 5) together
        ///        current positioning order will be interrupted by the new one.

@@ -40,11 +40,23 @@ bool fm_auto::DuetflEthercatController::goToPositionNewSetPoint_SlaveZero()
     uint16_t value = 0x1f;
     if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
     {
-        ROS_ERROR("goToPositonSlaveZero: set controlword 0x1f failed");
+        ROS_ERROR("goToPositionNewSetPoint_SlaveZero: set controlword 0x1f failed");
         return false;
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::clearNewSetPoint_SlaveZero()
+{
+    // write 0 to bit 4 of controlword,assume controller enabled
+    uint16_t value = 0x0f;
+    if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
+    {
+        ROS_ERROR("clearNewSetPoint_SlaveZero: set controlword 0x0f failed");
+        return false;
+    }
+    return true;
+}
+
 bool fm_auto::DuetflEthercatController::goToPositionChangeSetImt_SlaveZero()
 {
     //make sure controller enabled, bit 4 and bit 5 of controlword are not set
@@ -52,7 +64,7 @@ bool fm_auto::DuetflEthercatController::goToPositionChangeSetImt_SlaveZero()
     uint16_t value = 0x3f;
     if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
     {
-        ROS_ERROR("goToPositonSlaveZero: set controlword 0x1f failed");
+        ROS_ERROR("goToPositionChangeSetImt_SlaveZero: set controlword 0x3f failed");
         return false;
     }
     return true;
