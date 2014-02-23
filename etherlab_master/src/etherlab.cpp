@@ -33,9 +33,9 @@ void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
             break;
     }
 }
-bool fm_auto::DuetflEthercatController::goToPositonSlaveZero()
+bool fm_auto::DuetflEthercatController::goToPositionNewSetPoint_SlaveZero()
 {
-    //make sure controller enabled
+    //make sure controller enabled, bit 4 of controlword is not set
     // write 0x1f to controlword
     uint16_t value = 0x1f;
     if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
@@ -45,6 +45,19 @@ bool fm_auto::DuetflEthercatController::goToPositonSlaveZero()
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::goToPositionChangeSetImt_SlaveZero()
+{
+    //make sure controller enabled, bit 4 and bit 5 of controlword are not set
+    // write 0x3f to controlword
+    uint16_t value = 0x3f;
+    if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
+    {
+        ROS_ERROR("goToPositonSlaveZero: set controlword 0x1f failed");
+        return false;
+    }
+    return true;
+}
+
 bool fm_auto::DuetflEthercatController::setSlaveZeroTargetPosition(int32_t &value)
 {
 //    int8_t v=(int8_t)value;
