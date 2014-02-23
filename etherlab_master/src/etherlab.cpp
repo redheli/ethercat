@@ -643,7 +643,7 @@ ROS_INFO_ONCE("debug");
 void fm_auto::DuetflEthercatController::run()
 {
     while (1) {
-        pause();
+//        pause();
 
         ros::spinOnce();
 
@@ -910,6 +910,7 @@ void fm_auto::DuetflEthercatController::check_master_state()
 }
 void fm_auto::DuetflEthercatController::cyclic_task()
 {
+    pthread_mutex_lock( &fm_auto::mutex_PDO );
     // receive process data
     ecrt_master_receive(master);
     ecrt_domain_process(domain_output);
@@ -933,19 +934,28 @@ void fm_auto::DuetflEthercatController::cyclic_task()
     ecrt_domain_queue(domain_output);
     ecrt_domain_queue(domain_input);
     ecrt_master_send(master);
+    pthread_mutex_unlock( &fm_auto::mutex_PDO );
 }
-bool fm_auto::DuetflEthercatController::writePdoTargetPosition(int32_t &value)
+bool fm_auto::DuetflEthercatController::writeTargetPosition_PDO_SlaveZero(int32_t &value)
 {
     // TODO:check boundary
     // write process data
+//    std::unique_lock<std::mutex> lock(counter_mutex);
+    pthread_mutex_lock( &fm_auto::mutex_PDO );
+
     EC_WRITE_U32(domain_output_pd + fm_auto::OFFSET_TARGET_POSITION, value);
 
+    pthread_mutex_unlock( &fm_auto::mutex_PDO );
     return true;
 }
-bool fm_auto::DuetflEthercatController::writePdoControlword(uint16_t &value)
+bool fm_auto::DuetflEthercatController::writeControlword_PDO_SlaveZero(uint16_t &value)
 {
+//    std::unique_lock<std::mutex> lock(counter_mutex);
+    pthread_mutex_lock( &fm_auto::mutex_PDO );
+
     EC_WRITE_U16(domain_output_pd + fm_auto::OFFSET_CONTROLWORD, value);
 
+    pthread_mutex_unlock( &fm_auto::mutex_PDO );
     return true;
 }
 

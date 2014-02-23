@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <tr1/functional>
 #include <bitset>
+#include <pthread.h>
 /****************************************************************************/
 #include "ros/ros.h"
 #include "ecrt.h"
@@ -66,8 +67,8 @@ public:
 public:
        // pdo method
        bool readPDOsData();
-       bool writePdoTargetPosition(int32_t &value);
-       bool writePdoControlword(uint16_t &value);
+       bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
+       bool writeControlword_PDO_SlaveZero(uint16_t &value);
 
 public:
        /// @brief get homing operation mode
@@ -168,6 +169,8 @@ private:
 
        uint8_t *domain_output_pd;
        uint8_t *domain_input_pd;
+
+//       std::mutex counter_mutex;
 
 //       static fm_sdo *slave0_operation_mode_display_fmsdo;
 //       static fm_sdo *slave0_operation_mode_write_fmsdo;

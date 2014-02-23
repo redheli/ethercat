@@ -3,6 +3,7 @@
 
 #include "ecrt.h"
 #include "etherlab.h"
+#include <pthread.h>
 
 namespace fm_auto
 {
@@ -131,6 +132,8 @@ static fm_sdo *slave0_controlword_fmsdo = NULL;
 
 static fm_sdo *slave0_position_actual_value_fmsdo = NULL;
 static fm_sdo *slave0_target_position_fmsdo = NULL;
+
+static pthread_mutex_t mutex_PDO = PTHREAD_MUTEX_INITIALIZER;
 }//fm_auto
 
 #endif
