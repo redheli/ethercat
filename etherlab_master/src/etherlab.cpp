@@ -270,7 +270,7 @@ bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod()
     }
     if(is_success)
     {
-        //check actual position value 0x6064
+        //check actual position value 0x6064 ,shall be zero
         int32_t positionValue=0xff;
         if(getPositionActualValue(slave0_position_actual_value_fmsdo,positionValue))
         {
