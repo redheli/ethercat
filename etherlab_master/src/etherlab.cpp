@@ -351,12 +351,12 @@ bool fm_auto::DuetflEthercatController::getControllerStateByStatusword(uint16_t 
     return false;
 
 }
-bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_display,
+bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *operation_mode_display_fmsdo,
                                                                  fm_auto::OPERATION_MODE &mode)
 {
     int8_t mode_value=0x00;
     //1. send read sdo request
-    if(!sendOneReadSDO(sdo_operation_mode_display))
+    if(!sendOneReadSDO(operation_mode_display_fmsdo))
     {
         ROS_ERROR("sendOneReadSDO failed");
         return false;
@@ -366,16 +366,16 @@ bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *sdo_ope
 //    ROS_INFO("getMotorHomingModeSDO %f",time_begin.toSec());
 //    ros::Rate loop_rate(100);
 //    ROS_INFO("getMotorHomingModeSDO spinOnce");
-    if(waitSDORequestSuccess(sdo_operation_mode_display))
+    if(waitSDORequestSuccess(operation_mode_display_fmsdo))
     {
-        mode_value = EC_READ_S8(ecrt_sdo_request_data(sdo_operation_mode_display->sdo));
+        mode_value = EC_READ_S8(ecrt_sdo_request_data(operation_mode_display_fmsdo->sdo));
         ROS_INFO("get operation mode: 0x%02x %d",mode_value,mode_value);
         mode = (fm_auto::OPERATION_MODE)mode_value;
         return true;
     }
     else
     {
-        ROS_ERROR("get homing method failed");
+        ROS_ERROR("getMotorOperatingModeSDO failed");
         return false;
     }
 }
@@ -1074,9 +1074,10 @@ void fm_auto::DuetflEthercatController::testGetHomingMethodSDO_SlaveZero()
 }
 void fm_auto::DuetflEthercatController::test_getMotorOperatingModeSDO_SlaveZero()
 {
+    testGetHomingMethodSDO_SlaveZero();
     ROS_INFO("test_getMotorOperatingModeSDO_SlaveZero");
     fm_auto::OPERATION_MODE mode;
-    getMotorOperatingModeSDO(slave0_operation_mode_display_fmsdo,mode);
+    getMotorOperatingModeSDO(fm_auto::slave0_operation_mode_display_fmsdo,mode);
 }
 
 void fm_auto::DuetflEthercatController::testEnableControllerSDO()

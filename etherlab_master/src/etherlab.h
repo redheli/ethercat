@@ -92,7 +92,7 @@ public:
        /// @brief get operating mode
        /// @param slave_config slave point
        /// @return success or failed
-       bool getMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_display,fm_auto::OPERATION_MODE &mode);
+       bool getMotorOperatingModeSDO(fm_sdo *operation_mode_display_fmsdo,fm_auto::OPERATION_MODE &mode);
        bool setMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_write,fm_auto::OPERATION_MODE &value);
 
        bool setSlaveZeroMotorOperatingMode2Homing();
