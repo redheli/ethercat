@@ -111,7 +111,7 @@ public:
 //       static void disable_operation();
        static void my_sig_handler(int signum);
        static void signal_handler(int signum);
-       static void writeSdoControlword(uint16_t &value);
+//       static void writeSdoControlword(uint16_t &value);
 
        /* position control */
        /// @brief motor go to target position ,only set new_set_point (controlword bit 4)

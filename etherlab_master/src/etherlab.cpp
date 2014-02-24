@@ -10,15 +10,16 @@ void fm_auto::DuetflEthercatController::signal_handler(int signum) {
         ROS_INFO_ONCE("user ctrl+c ,need do something \n");
         // disable the operation
         // send 0x0002 to controlword
-        uint16_t value = 0x0002;
-        writeSdoControlword(value);
+//        uint16_t value = 0x0002;
+//        writeSdoControlword(value);
+        disableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo);
         break;
     }
 }
-void fm_auto::DuetflEthercatController::writeSdoControlword(uint16_t &value)
-{
-    static ec_sdo_request_t *slave0_sdo_controlword_write;
-}
+//void fm_auto::DuetflEthercatController::writeSdoControlword(uint16_t &value)
+//{
+//    static ec_sdo_request_t *slave0_sdo_controlword_write;
+//}
 
 void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
     ROS_INFO("my_sig_handler <%d>\n",signum);
@@ -118,8 +119,7 @@ fm_auto::DuetflEthercatController::~DuetflEthercatController()
     ROS_INFO_ONCE("DuetflEthercatController exit... \n");
     // disable the operation
     // send 0x0002 to controlword
-    uint16_t value = 0x0002;
-    writeSdoControlword(value);
+    disableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo);
 }
 
 bool fm_auto::DuetflEthercatController::init()
