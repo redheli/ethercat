@@ -76,6 +76,7 @@ public:
        bool readPDOsData();
        bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
+       void writeF2Controlword();
 
 public:
        /// @brief get homing operation mode
@@ -110,7 +111,10 @@ public:
        /// do check target velocity ,check target position before trigger the motor
        /// make sure motor shaft rolling is safe
        bool enableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
+       bool enableControlSDO_SlaveZero();
        static void disableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
+       bool disableControlSDO_bool(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
+       bool disableControlSDO_SlaveZero();
 
 
        void check_master_state();
@@ -179,7 +183,11 @@ private:
        uint8_t *domain_input_pd;
 
        ros::Subscriber sub;
-       int32_t steering_cmd_;
+       int32_t steering_cmd_old;
+       int32_t steering_cmd_new;
+
+       bool needWrite_0xf_2controlword;
+       int waitTick;
 
 //       std::mutex counter_mutex;
 
