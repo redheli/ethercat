@@ -23,10 +23,7 @@ int main(int argc, char**argv)
         ROS_ERROR("init failed");
         return 0;
     }
-    duetController.testGetHomingMethodSDO();
-//    ROS_INFO("2222222");
-//    duetController.testGetStatusword();
-//    ros::spin();
-//    ros::spinOnce();
+//    duetController.testGetHomingMethodSDO_SlaveZero();   // <----- tested ok
+    duetController.testSlaveZeroOperateHomingMethod();
     return 0;
 }

@@ -192,7 +192,7 @@ public:
        /// @brief test get statusword
        void testGetStatuswordSDO();
        /// @brief test get homing method
-       void testGetHomingMethodSDO();
+       void testGetHomingMethodSDO_SlaveZero();
        /// @brief test enable controller use SDO
        void testEnableControllerSDO();
        void testSlaveZeroOperateHomingMethod();

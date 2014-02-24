@@ -60,6 +60,7 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 #define ADDRESS_CONTROLWORD                 0x6040
 #define ADDRESS_STATUSWORD                  0x6041
 #define ADDRESS_POSITION_ACTUAL_VALUE       0x6064
+#define ADDRESS_TARGET_POSITION             0x607a
 
 // current only have one slave
 #define SlaveZeroAliasAndPosition  0, 0

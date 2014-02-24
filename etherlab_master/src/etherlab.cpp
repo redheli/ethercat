@@ -124,25 +124,25 @@ bool fm_auto::DuetflEthercatController::init()
         return false;
     }
 
-    // slave zero(steering motor) position zero
-    // 1. set operating mode to homing
-    if(!setSlaveZeroMotorOperatingMode2Homing())
-    {
-        ROS_ERROR("init: setSlaveZeroMotorOperatingMode2Homing failed");
-        return false;
-    }
-    // 2. enable controller
-    if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
-    {
-        ROS_ERROR("init: enableControlSDO failed");
-        return false;
-    }
-    // 3. trigger homing operation
-    if(!operateSteeringMotorHomingMethod())
-    {
-        ROS_ERROR("init: operateSteeringMotorHomingMethod failed");
-        return false;
-    }
+//    // slave zero(steering motor) position zero
+//    // 1. set operating mode to homing
+//    if(!setSlaveZeroMotorOperatingMode2Homing())
+//    {
+//        ROS_ERROR("init: setSlaveZeroMotorOperatingMode2Homing failed");
+//        return false;
+//    }
+//    // 2. enable controller
+//    if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
+//    {
+//        ROS_ERROR("init: enableControlSDO failed");
+//        return false;
+//    }
+//    // 3. trigger homing operation
+//    if(!operateSteeringMotorHomingMethod())
+//    {
+//        ROS_ERROR("init: operateSteeringMotorHomingMethod failed");
+//        return false;
+//    }
 
     return true;
 }
@@ -503,15 +503,16 @@ bool fm_auto::DuetflEthercatController::initSDOs()
     fm_auto::slave0_position_actual_value_fmsdo->controller = this;
 
     ROS_INFO("Creating position_actual_value read SDO requests...\n");
-    if (!(fm_auto::slave0_sdo_position_actual_value_read = ecrt_slave_config_create_sdo_request(slave_zero, ADDRESS_POSITION_ACTUAL_VALUE,
-                                                                                     0, 4))) // int16 data size 2
+    if (!(fm_auto::slave0_sdo_target_position_read_write = ecrt_slave_config_create_sdo_request(slave_zero,
+                                                                                                ADDRESS_TARGET_POSITION,
+                                                                                                0, 4))) // int16 data size 2
     {
         ROS_ERROR("Failed to create SDO position_actual_value request.\n");
         return -1;
     }
     fm_auto::slave0_target_position_fmsdo = new fm_sdo();
-    fm_auto::slave0_target_position_fmsdo->sdo = fm_auto::slave0_sdo_position_actual_value_read;
-    fm_auto::slave0_target_position_fmsdo->descrption = "position_actual_value 0x6064";
+    fm_auto::slave0_target_position_fmsdo->sdo = fm_auto::slave0_sdo_target_position_read_write;
+    fm_auto::slave0_target_position_fmsdo->descrption = "target position";
     fm_auto::slave0_target_position_fmsdo->controller = this;
 
     ecrt_sdo_request_timeout(fm_auto::slave0_sdo_operation_mode_display, 500); // ms
@@ -1055,7 +1056,7 @@ void fm_auto::DuetflEthercatController::testGetStatuswordSDO()
 //    }
 
 }
-void fm_auto::DuetflEthercatController::testGetHomingMethodSDO()
+void fm_auto::DuetflEthercatController::testGetHomingMethodSDO_SlaveZero()
 {
     ROS_INFO("testGetHomingMethod");
     fm_auto::HOMING_METHOD method;
