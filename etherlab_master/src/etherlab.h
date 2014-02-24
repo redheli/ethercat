@@ -42,6 +42,7 @@ class DuetflEthercatController
 
 public:
        DuetflEthercatController();
+       ~DuetflEthercatController();
        /// loop trigger
        void run();
        bool init();
@@ -61,7 +62,7 @@ public:
        bool sendOneWriteSDO(fm_sdo* fmSdo_write);
        bool processSDOs();
        bool checkSDORequestState(fm_sdo* fmSdo);
-       bool waitSDORequestSuccess(fm_sdo* fmSdo,bool isRead=true);
+       bool waitSDORequestSuccess(fm_sdo* fmSdo,bool isRead);
 
 
 public:

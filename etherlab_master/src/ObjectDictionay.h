@@ -62,6 +62,9 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 #define ADDRESS_POSITION_ACTUAL_VALUE       0x6064
 #define ADDRESS_TARGET_POSITION             0x607a
 
+#define READ  true
+#define WRITE false
+
 // current only have one slave
 #define SlaveZeroAliasAndPosition  0, 0
 #define VendorID_ProductCode  0x000000e4, 0x00001133
