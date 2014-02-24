@@ -96,6 +96,7 @@ public:
        bool getMotorOperatingModeSDO(fm_sdo *operation_mode_display_fmsdo,fm_auto::OPERATION_MODE &mode);
        bool setMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_write,fm_auto::OPERATION_MODE &value);
 
+       bool setSlaveZeroMotorOperatingMode2ProfilePosition();
        bool setSlaveZeroMotorOperatingMode2Homing();
 
        /* controller */
@@ -116,13 +117,13 @@ public:
        /* position control */
        /// @brief motor go to target position ,only set new_set_point (controlword bit 4)
        ///        current positioning order will be processed before starting a new one.
-       bool goToPositionNewSetPoint_SlaveZero();
+       bool goToPositionNewSetPoint_SDO_SlaveZero();
        /// @brief only use when controller enabled
-       bool clearNewSetPoint_ChangeSetPoint_SlaveZero();
+       bool clearNewSetPoint_ChangeSetPoint_SDO_SlaveZero();
        /// @brief motor go to target position ,set both new_set_point (controlword bit 4) and
        ///        change_set_immediatly (bit 5) together
        ///        current positioning order will be interrupted by the new one.
-       bool goToPositionChangeSetImt_SlaveZero();
+       bool goToPositionChangeSetImt_SDO_SlaveZero();
        /// get target position setted in 0x607A
        bool getSlaveZeroTargetPositionSetting(int32_t &target_position);
        /// set target position to 0x607A
@@ -198,6 +199,7 @@ public:
        /// @brief test enable controller use SDO
        void testEnableControllerSDO();
        void testOperateHomingMethod_SlaveZero();
+       void test_goToPositionNewSetPoint_SDO_SlaveZero();
 };
 
 }// fm_auto

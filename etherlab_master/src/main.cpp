@@ -25,6 +25,8 @@ int main(int argc, char**argv)
     }
 //    duetController.testGetHomingMethodSDO_SlaveZero();   // <----- tested ok
 //    duetController.test_getMotorOperatingModeSDO_SlaveZero();//  <------ tested ok
-    duetController.testOperateHomingMethod_SlaveZero();
+//    duetController.testOperateHomingMethod_SlaveZero();//  <----- tested ok
+    duetController.test_goToPositionNewSetPoint_SDO_SlaveZero();
+    duetController.run();
     return 0;
 }

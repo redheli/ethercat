@@ -34,19 +34,19 @@ void fm_auto::DuetflEthercatController::my_sig_handler(int signum) {
             break;
     }
 }
-bool fm_auto::DuetflEthercatController::goToPositionNewSetPoint_SlaveZero()
+bool fm_auto::DuetflEthercatController::goToPositionNewSetPoint_SDO_SlaveZero()
 {
     //make sure controller enabled, bit 4 of controlword is not set
     // write 0x1f to controlword
     uint16_t value = 0x1f;
-    if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
+    if(!setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
     {
         ROS_ERROR("goToPositionNewSetPoint_SlaveZero: set controlword 0x1f failed");
         return false;
     }
     return true;
 }
-bool fm_auto::DuetflEthercatController::clearNewSetPoint_ChangeSetPoint_SlaveZero()
+bool fm_auto::DuetflEthercatController::clearNewSetPoint_ChangeSetPoint_SDO_SlaveZero()
 {
     // write 0 to bit 4 of controlword,assume controller enabled
     uint16_t value = 0x0f;
@@ -58,7 +58,7 @@ bool fm_auto::DuetflEthercatController::clearNewSetPoint_ChangeSetPoint_SlaveZer
     return true;
 }
 
-bool fm_auto::DuetflEthercatController::goToPositionChangeSetImt_SlaveZero()
+bool fm_auto::DuetflEthercatController::goToPositionChangeSetImt_SDO_SlaveZero()
 {
     //make sure controller enabled, bit 4 and bit 5 of controlword are not set
     // write 0x3f to controlword
@@ -402,6 +402,42 @@ bool fm_auto::DuetflEthercatController::setMotorOperatingModeSDO(fm_sdo *sdo_ope
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2ProfilePosition()
+{
+    //1. check current operation mode
+    fm_auto::OPERATION_MODE operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(fm_auto::slave0_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfilePosition: get mode failed");
+        return false;
+    }
+//ROS_INFO("dddd1.1   %d",operation_mode);
+    if(operation_mode != fm_auto::OM_PROFILE_POSITION_MODE)
+    {
+        //2. set mode to profile position
+        fm_auto::OPERATION_MODE value = fm_auto::OM_PROFILE_POSITION_MODE;
+        if(!setMotorOperatingModeSDO(slave0_operation_mode_write_fmsdo,value))
+        {
+            ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfilePosition: set mode failed");
+            return false;
+        }
+    }
+//ROS_INFO("dddd1.2");
+    //3. verify
+    operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(slave0_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfilePosition: get mode failed 2");
+        return false;
+    }
+    if(operation_mode != fm_auto::OM_PROFILE_POSITION_MODE)
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfilePosition: mode is not profile position after set %d\n",operation_mode);
+        return false;
+    }
+    ROS_INFO("set profile position mode ok");
+    return true;
+}
 bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2Homing()
 {
     //1. check current operation mode
@@ -659,6 +695,7 @@ ROS_INFO_ONCE("debug");
 
 void fm_auto::DuetflEthercatController::run()
 {
+    ros::Rate loop_rate(FREQUENCY);
     while (1) {
 //        pause();
 
@@ -666,6 +703,7 @@ void fm_auto::DuetflEthercatController::run()
 
 //        while (sig_alarms != user_alarms) {
             cyclic_task();
+            loop_rate.sleep();
 //            user_alarms++;
 //        }
     }
@@ -951,8 +989,8 @@ void fm_auto::DuetflEthercatController::cyclic_task()
     pthread_mutex_lock( &fm_auto::mutex_PDO );
     // receive process data
     ecrt_master_receive(master);
-    ecrt_domain_process(domain_output);
-    ecrt_domain_process(domain_input);
+//    ecrt_domain_process(domain_output);
+//    ecrt_domain_process(domain_input);
 
 
     // check process data state (optional)
@@ -966,11 +1004,11 @@ void fm_auto::DuetflEthercatController::cyclic_task()
 
 
     // read PDO data
-    readPDOsData();
+//    readPDOsData();
 
     // send process data
-    ecrt_domain_queue(domain_output);
-    ecrt_domain_queue(domain_input);
+//    ecrt_domain_queue(domain_output);
+//    ecrt_domain_queue(domain_input);
     ecrt_master_send(master);
     pthread_mutex_unlock( &fm_auto::mutex_PDO );
 }
@@ -1136,4 +1174,31 @@ ROS_INFO("dddd2");
         return ;
     }
     return ;
+}
+void fm_auto::DuetflEthercatController::test_goToPositionNewSetPoint_SDO_SlaveZero()
+{
+    // make sure already conduct homing
+    // enable controller
+    // target position set from cmdline
+
+    // set motor operating mode to profile position mode
+    if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
+    {
+        ROS_ERROR(" enableControlSDO failed");
+        return ;
+    }
+    // set to profile position mode
+    if(!setSlaveZeroMotorOperatingMode2ProfilePosition())
+    {
+        ROS_ERROR(" set profle position failed");
+        return ;
+    }
+    //
+    if(!goToPositionNewSetPoint_SDO_SlaveZero())
+    {
+        ROS_ERROR(" trigger new_set_point failed");
+        return ;
+    }
+//    // run 20 sec
+//    sleep(20);
 }
