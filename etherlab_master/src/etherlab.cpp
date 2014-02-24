@@ -392,11 +392,12 @@ bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2Homing()
 {
     //1. check current operation mode
     fm_auto::OPERATION_MODE operation_mode = fm_auto::OM_UNKNOW_MODE;
-    if(!getMotorOperatingModeSDO(slave0_operation_mode_display_fmsdo,operation_mode))
+    if(!getMotorOperatingModeSDO(fm_auto::slave0_operation_mode_display_fmsdo,operation_mode))
     {
         ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing: get mode failed");
         return false;
     }
+ROS_INFO("dddd1.1");
     if(operation_mode != fm_auto::OM_HOMING_MODE)
     {
         //2. set mode to homing
@@ -683,7 +684,7 @@ bool fm_auto::DuetflEthercatController::checkSDORequestState(fm_sdo *fmSdo)
             state=true;
             break;
         case EC_REQUEST_ERROR:
-            ROS_ERROR("Failed to read SDO!\n");
+            ROS_ERROR_ONCE("Failed to read SDO!\n");
             break;
     }
     return state;
@@ -711,7 +712,7 @@ bool fm_auto::DuetflEthercatController::waitSDORequestSuccess(fm_sdo *fmSdo)
 //        ROS_INFO("getMotorHomingModeSDO %f %f",time_begin.toSec(),time_now.toSec());
         if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
         {
-            ROS_INFO("waitSDORequestSuccess timeout");
+            ROS_ERROR("waitSDORequestSuccess timeout");
             break;
         }
         ecrt_master_send(master);
@@ -1062,20 +1063,29 @@ void fm_auto::DuetflEthercatController::testGetHomingMethodSDO_SlaveZero()
     fm_auto::HOMING_METHOD method;
     getMotorHomingMethodSDO(slave0_homing_method_fmSdo,method);
 }
+void fm_auto::DuetflEthercatController::test_getMotorOperatingModeSDO_SlaveZero()
+{
+    ROS_INFO("test_getMotorOperatingModeSDO_SlaveZero");
+    fm_auto::OPERATION_MODE mode;
+    getMotorOperatingModeSDO(slave0_operation_mode_display_fmsdo,mode);
+}
+
 void fm_auto::DuetflEthercatController::testEnableControllerSDO()
 {
     ROS_INFO("testEnableControllerSDO");
     enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo);
 }
-void fm_auto::DuetflEthercatController::testSlaveZeroOperateHomingMethod()
+void fm_auto::DuetflEthercatController::testOperateHomingMethod_SlaveZero()
 {
     // slave zero(steering motor) position zero
     // 1. set operating mode to homing
+ROS_INFO("dddd1");
     if(!setSlaveZeroMotorOperatingMode2Homing())
     {
         ROS_ERROR("init: setSlaveZeroMotorOperatingMode2Homing failed");
         return ;
     }
+ROS_INFO("dddd2");
     // 2. enable controller
     if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
     {

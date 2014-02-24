@@ -193,9 +193,10 @@ public:
        void testGetStatuswordSDO();
        /// @brief test get homing method
        void testGetHomingMethodSDO_SlaveZero();
+       void test_getMotorOperatingModeSDO_SlaveZero();
        /// @brief test enable controller use SDO
        void testEnableControllerSDO();
-       void testSlaveZeroOperateHomingMethod();
+       void testOperateHomingMethod_SlaveZero();
 };
 
 }// fm_auto
