@@ -61,8 +61,15 @@ bool fm_auto::DuetflEthercatController::clearNewSetPoint_ChangeSetPoint_SDO_Slav
 bool fm_auto::DuetflEthercatController::goToPositionChangeSetImt_SDO_SlaveZero()
 {
     //make sure controller enabled, bit 4 and bit 5 of controlword are not set
-    // write 0x3f to controlword
-    uint16_t value = 0x3f;
+    // write 0x000f to controlword
+    uint16_t value = 0x000f;
+    if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
+    {
+        ROS_ERROR("goToPositionChangeSetImt_SlaveZero: set controlword 0xf failed");
+        return false;
+    }
+    // write 0x003f to controlword
+    value = 0x3f;
     if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,value))
     {
         ROS_ERROR("goToPositionChangeSetImt_SlaveZero: set controlword 0x3f failed");
@@ -1197,6 +1204,33 @@ void fm_auto::DuetflEthercatController::test_goToPositionNewSetPoint_SDO_SlaveZe
     if(!goToPositionNewSetPoint_SDO_SlaveZero())
     {
         ROS_ERROR(" trigger new_set_point failed");
+        return ;
+    }
+//    // run 20 sec
+//    sleep(20);
+}
+void fm_auto::DuetflEthercatController::test_goToPositionChangeSetImt_SDO_SlaveZero()
+{
+    // make sure already conduct homing
+    // enable controller
+    // target position set from cmdline
+
+    // set motor operating mode to profile position mode
+    if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
+    {
+        ROS_ERROR(" enableControlSDO failed");
+        return ;
+    }
+    // set to profile position mode
+    if(!setSlaveZeroMotorOperatingMode2ProfilePosition())
+    {
+        ROS_ERROR(" set profle position failed");
+        return ;
+    }
+    //
+    if(!goToPositionChangeSetImt_SDO_SlaveZero())
+    {
+        ROS_ERROR(" trigger change_set_immediately failed");
         return ;
     }
 //    // run 20 sec

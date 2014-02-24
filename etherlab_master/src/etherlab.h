@@ -200,6 +200,7 @@ public:
        void testEnableControllerSDO();
        void testOperateHomingMethod_SlaveZero();
        void test_goToPositionNewSetPoint_SDO_SlaveZero();
+       void test_goToPositionChangeSetImt_SDO_SlaveZero();
 };
 
 }// fm_auto
