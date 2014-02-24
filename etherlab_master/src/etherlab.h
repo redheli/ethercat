@@ -15,6 +15,8 @@
 #include <pthread.h>
 /****************************************************************************/
 #include "ros/ros.h"
+#include <sensor_msgs/Joy.h>
+#include "etherlab_master/steering.h"
 #include "ecrt.h"
 #include "ObjectDictionay.h"
 
@@ -48,7 +50,11 @@ public:
        bool init();
        bool initEthercat();
        bool initSDOs();
+       bool initROS();
        void cyclic_task();
+
+       /* ROS callback */
+       void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
 
 public:
        /* homing */
@@ -171,6 +177,9 @@ private:
 
        uint8_t *domain_output_pd;
        uint8_t *domain_input_pd;
+
+       ros::Subscriber sub;
+       int32_t steering_cmd_;
 
 //       std::mutex counter_mutex;
 
