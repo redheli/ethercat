@@ -356,7 +356,11 @@ bool fm_auto::DuetflEthercatController::getMotorOperatingModeSDO(fm_sdo *sdo_ope
 {
     int8_t mode_value=0x00;
     //1. send read sdo request
-    sendOneReadSDO(sdo_operation_mode_display);
+    if(!sendOneReadSDO(sdo_operation_mode_display))
+    {
+        ROS_ERROR("sendOneReadSDO failed");
+        return false;
+    }
 //    bool isGetValue=false;
 //    ros::Time time_begin = ros::Time::now();
 //    ROS_INFO("getMotorHomingModeSDO %f",time_begin.toSec());
@@ -659,6 +663,11 @@ bool fm_auto::DuetflEthercatController::sendOneReadSDO(fm_sdo *fmSdo_read)
 {
 //    ecrt_master_receive(master);
     //  upload
+    if(!fmSdo_read->sdo)
+    {
+        ROS_ERROR("sendOneReadSDO: sdo is NULL");
+        return false;
+    }
     ecrt_sdo_request_read(fmSdo_read->sdo);
 //    ecrt_master_send(master);
 }
