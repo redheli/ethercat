@@ -669,6 +669,7 @@ bool fm_auto::DuetflEthercatController::sendOneReadSDO(fm_sdo *fmSdo_read)
         return false;
     }
     ecrt_sdo_request_read(fmSdo_read->sdo);
+    return true;
 //    ecrt_master_send(master);
 }
 bool fm_auto::DuetflEthercatController::sendOneWriteSDO(fm_sdo *fmSdo_write)
@@ -698,7 +699,7 @@ bool fm_auto::DuetflEthercatController::checkSDORequestState(fm_sdo *fmSdo)
     }
     return state;
 }
-bool fm_auto::DuetflEthercatController::waitSDORequestSuccess(fm_sdo *fmSdo)
+bool fm_auto::DuetflEthercatController::waitSDORequestSuccess(fm_sdo *fmSdo,bool isRead)
 {
     bool isSuccess=false;
     ros::Time time_begin = ros::Time::now();
@@ -710,12 +711,23 @@ bool fm_auto::DuetflEthercatController::waitSDORequestSuccess(fm_sdo *fmSdo)
         //2. check sdo state
         ros::spinOnce();
         ecrt_master_receive(master);
+
+        // check for master state (optional)
+        check_master_state();
+
+        // check for islave configuration state(s) (optional)
+//        check_slave_config_states();
+
         if(checkSDORequestState(fmSdo))
         {
 //            method_value = EC_READ_S8(ecrt_sdo_request_data(homing_operation_mode_fmsdo->sdo));
 //            ROS_INFO("get homing method: 0x%02x %d",method_value,method_value);
 //            isSuccess = true;
             return true;
+        }
+        if(isRead)
+        {
+            sendOneReadSDO(fmSdo);
         }
         ros::Time time_now = ros::Time::now();
 //        ROS_INFO("getMotorHomingModeSDO %f %f",time_begin.toSec(),time_now.toSec());
@@ -1074,7 +1086,7 @@ void fm_auto::DuetflEthercatController::testGetHomingMethodSDO_SlaveZero()
 }
 void fm_auto::DuetflEthercatController::test_getMotorOperatingModeSDO_SlaveZero()
 {
-    testGetHomingMethodSDO_SlaveZero();
+//    testGetHomingMethodSDO_SlaveZero();
     ROS_INFO("test_getMotorOperatingModeSDO_SlaveZero");
     fm_auto::OPERATION_MODE mode;
     getMotorOperatingModeSDO(fm_auto::slave0_operation_mode_display_fmsdo,mode);
