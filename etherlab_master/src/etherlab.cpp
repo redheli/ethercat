@@ -1053,9 +1053,9 @@ void fm_auto::DuetflEthercatController::cyclic_task()
 {
 //    pthread_mutex_lock( &fm_auto::mutex_PDO );
     // receive process data
-//    ecrt_master_receive(master);
+    ecrt_master_receive(master);
 //    ecrt_domain_process(domain_output);
-//    ecrt_domain_process(domain_input);
+    ecrt_domain_process(domain_input);
 
 
     // check process data state (optional)
@@ -1067,14 +1067,14 @@ void fm_auto::DuetflEthercatController::cyclic_task()
     // check for islave configuration state(s) (optional)
 //    check_slave_config_states();
 
-    writeF2Controlword();
+    writePDOData_SlaveZero();
     // read PDO data
-//    readPDOsData();
+    readPDOsData();
 
     // send process data
 //    ecrt_domain_queue(domain_output);
-//    ecrt_domain_queue(domain_input);
-//    ecrt_master_send(master);
+    ecrt_domain_queue(domain_input);
+    ecrt_master_send(master);
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
 }
 void fm_auto::DuetflEthercatController::callback_steering(const etherlab_master::steering::ConstPtr &steering_cmd)
@@ -1157,7 +1157,7 @@ void fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
     {
         bool isStateChanged=false;
 
-        ecrt_master_receive(master);
+//        ecrt_master_receive(master);
         ROS_INFO("writeF2Controlword tick %d",waitTick);
         ecrt_domain_process(domain_output);
 
@@ -1215,7 +1215,7 @@ void fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 //                steering_cmd_old = steering_cmd_new;
 //            }
         ecrt_domain_queue(domain_output);
-        ecrt_master_send(master);
+//        ecrt_master_send(master);
 
         if(isStateChanged)
         {
@@ -1234,8 +1234,15 @@ void fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
 bool fm_auto::DuetflEthercatController::readPDOsData()
 {
-    printf("pdo statusword value: %04x offset %u\n",
-            EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD),OFFSET_STATUSWORD);
+    uint16_t statusword = EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD);
+    if(statusword != statusword_PDO_data)
+    {
+        statusword_PDO_data = statusword;
+        isStatusword_Bit12_Set = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
+        ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
+    }
+//    printf("pdo statusword value: %04x offset %u\n",
+//            EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD),OFFSET_STATUSWORD);
 }
 
 bool fm_auto::DuetflEthercatController::processSDOs()

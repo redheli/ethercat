@@ -188,9 +188,11 @@ private:
        int32_t steering_cmd_current;
        int32_t steering_cmd_new;
        bool hasNewSteeringData;
+       uint16_t statusword_PDO_data;
 
        bool needWrite_0xf_2controlword;
        int positionControlState;
+       bool isStatusword_Bit12_Set;
 
 //       std::mutex counter_mutex;
 
