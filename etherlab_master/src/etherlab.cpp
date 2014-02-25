@@ -717,7 +717,7 @@ void fm_auto::DuetflEthercatController::run()
 //    writeControlword_PDO_SlaveZero(value);
 //    int32_t target_positon = 0x0;
 //    writeTargetPosition_PDO_SlaveZero(target_positon);
-    sleep(1);
+    sleep(5);
     while (1) {
 //        pause();
 
@@ -1049,18 +1049,18 @@ void fm_auto::DuetflEthercatController::check_master_state()
 }
 void fm_auto::DuetflEthercatController::cyclic_task()
 {
-    pthread_mutex_lock( &fm_auto::mutex_PDO );
+//    pthread_mutex_lock( &fm_auto::mutex_PDO );
     // receive process data
-    ecrt_master_receive(master);
-    ecrt_domain_process(domain_output);
-    ecrt_domain_process(domain_input);
+//    ecrt_master_receive(master);
+//    ecrt_domain_process(domain_output);
+//    ecrt_domain_process(domain_input);
 
 
     // check process data state (optional)
 //    check_domain1_state();
 
     // check for master state (optional)
-    check_master_state();
+//    check_master_state();
 
     // check for islave configuration state(s) (optional)
 //    check_slave_config_states();
@@ -1070,14 +1070,14 @@ void fm_auto::DuetflEthercatController::cyclic_task()
 //    readPDOsData();
 
     // send process data
-    ecrt_domain_queue(domain_output);
-    ecrt_domain_queue(domain_input);
-    ecrt_master_send(master);
-    pthread_mutex_unlock( &fm_auto::mutex_PDO );
+//    ecrt_domain_queue(domain_output);
+//    ecrt_domain_queue(domain_input);
+//    ecrt_master_send(master);
+//    pthread_mutex_unlock( &fm_auto::mutex_PDO );
 }
 void fm_auto::DuetflEthercatController::callback_steering(const etherlab_master::steering::ConstPtr &steering_cmd)
 {
-    pthread_mutex_lock( &fm_auto::mutex_PDO );
+//    pthread_mutex_lock( &fm_auto::mutex_PDO );
 
     steering_cmd_new = steering_cmd->num;
     waitTick = 10;
@@ -1093,7 +1093,7 @@ void fm_auto::DuetflEthercatController::callback_steering(const etherlab_master:
 ////        waitTick = 10;
 //    }
 
-    pthread_mutex_unlock( &fm_auto::mutex_PDO );
+//    pthread_mutex_unlock( &fm_auto::mutex_PDO );
 }
 
 bool fm_auto::DuetflEthercatController::writeTargetPosition_PDO_SlaveZero(int32_t &value)
@@ -1134,18 +1134,32 @@ void fm_auto::DuetflEthercatController::writeF2Controlword()
 //    }
         if(steering_cmd_new != steering_cmd_old && waitTick >0)
         {
+            ecrt_master_receive(master);
+            ROS_INFO("writeF2Controlword tick %d",waitTick);
+            ecrt_domain_process(domain_output);
             writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
             uint16_t controlword = 0x3f;
             writeControlword_PDO_SlaveZero(controlword);
             waitTick--;
+            if(waitTick < 5 )
+            {
+                uint16_t controlword = 0xf;
+                writeControlword_PDO_SlaveZero(controlword);
+            }
+            if(waitTick == 0)
+            {
+                steering_cmd_old = steering_cmd_new;
+            }
+            ecrt_domain_queue(domain_output);
+            ecrt_master_send(master);
         }
-        else
-        {
-            writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
-            uint16_t controlword = 0xf;
-            writeControlword_PDO_SlaveZero(controlword);
-            steering_cmd_old = steering_cmd_new;
-        }
+//        else
+//        {
+//            writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+//            uint16_t controlword = 0xf;
+//            writeControlword_PDO_SlaveZero(controlword);
+//            steering_cmd_old = steering_cmd_new;
+//        }
 }
 
 bool fm_auto::DuetflEthercatController::readPDOsData()
