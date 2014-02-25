@@ -1156,7 +1156,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
     // 6.    not changed,                  cleard,               cleard
     if(hasNewSteeringData)
     {
-        ROS_INFO("writeF2Controlword tick %d",positionControlState);
+        ROS_INFO("writePDOData_SlaveZero: state %d",positionControlState);
         uint16_t controlword;
         // check state
         switch (positionControlState) {
@@ -1170,6 +1170,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                     writeControlword_PDO_SlaveZero(controlword);
 
                     positionControlState = 1;
+                    steering_cmd_current = steering_cmd_new;
                     ecrt_domain_queue(domain_output);
                 }
                 break;
@@ -1191,7 +1192,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 //                    writeControlword_PDO_SlaveZero(controlword);
 
                     positionControlState = 3;
-                    steering_cmd_current = steering_cmd_new;
+                    hasNewSteeringData = false;
 //                    ecrt_domain_queue(domain_output);
                 }
                 break;
@@ -1202,6 +1203,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 writeControlword_PDO_SlaveZero(controlword);
 
                 positionControlState = 4;
+                steering_cmd_current = steering_cmd_new;
                 ecrt_domain_queue(domain_output);
                 break;
             case 4:
@@ -1214,7 +1216,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 ecrt_domain_queue(domain_output);
                 break;
             case 5:
-                if(is_SetPointAcknowledge_Set)
+                if(!is_SetPointAcknowledge_Set)
                 {
 //                    ecrt_domain_process(domain_output);
 //                    writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
@@ -1222,7 +1224,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 //                    writeControlword_PDO_SlaveZero(controlword);
 
                     positionControlState = 6;
-                    steering_cmd_current = steering_cmd_new;
+                    hasNewSteeringData = false;
 //                    ecrt_domain_queue(domain_output);
                 }
                 break;
@@ -1232,7 +1234,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 break;
         }//switch
     }//if
-        return true;
+    return true;
 }
 
 bool fm_auto::DuetflEthercatController::readPDOsData()
