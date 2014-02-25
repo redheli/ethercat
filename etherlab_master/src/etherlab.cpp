@@ -118,7 +118,8 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
 //    //TODO
 //}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
-    : domain_input(NULL),domain_output(NULL),steering_cmd_old(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),waitTick(-1)
+    : domain_input(NULL),domain_output(NULL),steering_cmd_old(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),waitTick(-1),
+      hasNewSteeringData(false)
 {
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
@@ -1098,15 +1099,21 @@ void fm_auto::DuetflEthercatController::callback_steering(const etherlab_master:
 }
 void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 steering_cmd)
 {
-    if(waitTick == -1)
+//    if(waitTick == -1)
+//    {
+//        int32_t v = static_cast<int32_t>(steering_cmd.data);
+//        if(v != steering_cmd_old)
+//        {
+//            steering_cmd_new = v*10;
+//            waitTick = 2;
+//            ROS_INFO("callback_steering new steering value: %d",steering_cmd_new);
+//        }
+//    }
+    int32_t v = static_cast<int32_t>(steering_cmd.data);
+    if(steering_cmd_current != v)
     {
-        int32_t v = static_cast<int32_t>(steering_cmd.data);
-        if(v != steering_cmd_old)
-        {
-            steering_cmd_new = v*10;
-            waitTick = 2;
-            ROS_INFO("callback_steering new steering value: %d",steering_cmd_new);
-        }
+        steering_cmd_new = v;
+        hasNewSteeringData = true;
     }
     ROS_INFO("callback_steering: %d %d %f",steering_cmd_new,waitTick,steering_cmd.data);
 
@@ -1135,45 +1142,87 @@ bool fm_auto::DuetflEthercatController::writeControlword_PDO_SlaveZero(uint16_t 
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
     return true;
 }
-void fm_auto::DuetflEthercatController::writeF2Controlword()
+void fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 {
-//    if(needWrite_0xf_2controlword && waitTick == 0)
-//    {
-//        ROS_INFO("writeF2Controlword");
-//        uint16_t cw = 0xf;
-//        writeControlword_PDO_SlaveZero(cw);
-//        needWrite_0xf_2controlword = false;
-//    }
-//    else if(needWrite_0xf_2controlword && waitTick > 0)
-//    {
-//        ROS_INFO("writeF2Controlword 2");
-//        waitTick--;
-//    }
-//        if(steering_cmd_new != steering_cmd_old && waitTick>-1)
-    if(waitTick>-1)
+    // positionControlState states:
+    //     target position     new_set_point       set_point_acknowledge
+    // 6.   not changed,                   clear,              clear
+    // 1.   changed,                    clear,              clear
+    // 2.   not changed,                   setted,              clear
+    // 3.   not changed,                    setted               setted
+    // 4.     changed                       setted,             setted
+    // 5.     not changed,                 cleard,              setted
+    // 6.    not changed,                  cleard,               cleard
+    if(hasNewSteeringData)
+    {
+        bool isStateChanged=false;
+
+        ecrt_master_receive(master);
+        ROS_INFO("writeF2Controlword tick %d",waitTick);
+        ecrt_domain_process(domain_output);
+
+        if(positionControlState==6) // has new data come in
         {
-            ecrt_master_receive(master);
-            ROS_INFO("writeF2Controlword tick %d",waitTick);
-            ecrt_domain_process(domain_output);
+            bool isStatusword_Bit12_Cleared=false;
+            // TODO: check set_point_acknowledge is cleared,then can write new target position
+            if(isStatusword_Bit12_Cleared)
+            {
+                // step 1: only write target position (p114)
+                writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+                uint16_t controlword = 0xf;
+                writeControlword_PDO_SlaveZero(controlword);
+
+                isStateChanged = true;
+            }
+            else
+            {
+                isStateChanged = false;
+            }
+        }
+
+        if(waitTick==1)
+        {
+            //step 2: write controlword 0x3f
             writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
             uint16_t controlword = 0x3f;
             writeControlword_PDO_SlaveZero(controlword);
 
-            if(waitTick <=1 )
+            isStateChanged = true;
+        }
+
+        if(waitTick==0)
+        {
+            bool isStatusword_Bit12_Set=false;
+            // step 3: check statusword set_point_acknowledge is set
+            // TODO:
+            if(isStatusword_Bit12_Set)
             {
-                uint16_t controlword = 0xf;
-                writeControlword_PDO_SlaveZero(controlword);
+                isStateChanged = true;
             }
+            else
+            {
+                isStateChanged = false;
+            }
+        }
+
+        if(waitTick <=1 )
+        {
+            uint16_t controlword = 0xf;
+            writeControlword_PDO_SlaveZero(controlword);
+        }
 //            if(waitTick == 0)
 //            {
 //                steering_cmd_old = steering_cmd_new;
 //            }
-            ecrt_domain_queue(domain_output);
-            ecrt_master_send(master);
+        ecrt_domain_queue(domain_output);
+        ecrt_master_send(master);
 
+        if(isStateChanged)
+        {
             waitTick--;
-            steering_cmd_old = steering_cmd_new;
         }
+        steering_cmd_old = steering_cmd_new;
+    }
 //        else
 //        {
 //            writeTargetPosition_PDO_SlaveZero(steering_cmd_new);

@@ -78,7 +78,7 @@ public:
        bool readPDOsData();
        bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
-       void writeF2Controlword();
+       void writePDOData_SlaveZero();
 
 public:
        /// @brief get homing operation mode
@@ -185,11 +185,12 @@ private:
        uint8_t *domain_input_pd;
 
        ros::Subscriber sub;
-       int32_t steering_cmd_old;
+       int32_t steering_cmd_current;
        int32_t steering_cmd_new;
+       bool hasNewSteeringData;
 
        bool needWrite_0xf_2controlword;
-       int waitTick;
+       int positionControlState;
 
 //       std::mutex counter_mutex;
 
