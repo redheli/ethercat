@@ -52,7 +52,7 @@ public:
        bool initEthercat();
        bool initSDOs();
        bool initROS();
-       void cyclic_task();
+       bool cyclic_task();
 
        /* ROS callback */
 //       void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
@@ -179,16 +179,21 @@ private:
        // EtherCAT
        ec_master_state_t master_state;
        ec_domain_t *domain_output;
+//       ec_domain_t *domain_output_controlword;
+//       ec_domain_t *domain_output_target_position;
        ec_domain_t *domain_input;
 
        uint8_t *domain_output_pd;
        uint8_t *domain_input_pd;
 
        ros::Subscriber sub;
-       int32_t steering_cmd_current;
        int32_t steering_cmd_new;
+       int32_t steering_cmd_writing;
+       int32_t steering_cmd_current;
+
        bool hasNewSteeringData;
        uint16_t statusword_PDO_data;
+       bool PDO_OK;
 
        bool needWrite_0xf_2controlword;
        int positionControlState;
