@@ -53,6 +53,7 @@ public:
        bool initSDOs();
        bool initROS();
        bool cyclic_task();
+       bool cyclic_task_SDO();
 
        /* ROS callback */
 //       void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
@@ -71,6 +72,8 @@ public:
        bool processSDOs();
        bool checkSDORequestState(fm_sdo* fmSdo);
        bool waitSDORequestSuccess(fm_sdo* fmSdo,bool isRead);
+       bool checkControllerState_SDO();
+       bool writeControllerData_SDO_SlaveZero();
 
 
 public:

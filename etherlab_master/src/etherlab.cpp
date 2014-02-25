@@ -1050,6 +1050,22 @@ void fm_auto::DuetflEthercatController::check_master_state()
 
     master_state = ms;
 }
+bool fm_auto::DuetflEthercatController::cyclic_task_SDO()
+{
+
+    // read PDO data
+    bool res = checkControllerState_SDO();
+    if(!PDO_OK)
+    {
+        return false;
+    }
+    if(res)
+    {
+        ROS_INFO_ONCE("cyclic_task_SDO start");
+        writeControllerData_SDO_SlaveZero();
+    }
+}
+
 bool fm_auto::DuetflEthercatController::cyclic_task()
 {
 //    pthread_mutex_lock( &fm_auto::mutex_PDO );
@@ -1155,6 +1171,108 @@ bool fm_auto::DuetflEthercatController::writeControlword_PDO_SlaveZero(uint16_t 
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
     return true;
 }
+bool fm_auto::DuetflEthercatController::writeControllerData_SDO_SlaveZero()
+{
+    // positionControlState states:
+    //     target position     new_set_point       set_point_acknowledge
+    // 6.   not changed,                   clear,              clear
+    // 1.   changed,                    clear,              clear
+    // 2.   not changed,                   setted,              clear
+    // 3.   not changed,                    setted               setted
+    // 4.     changed                       setted,             setted
+    // 5.     not changed,                 cleard,              setted
+    // 6.    not changed,                  cleard,               cleard
+    if(hasNewSteeringData)
+    {
+        uint16_t controlword;
+        int beginState = positionControlState;
+        // check state
+        switch (positionControlState) {
+            case 6:
+                if(!is_SetPointAcknowledge_Set)
+                {
+
+                    steering_cmd_writing = steering_cmd_new;
+                    if(!setSlaveZeroTargetPosition(steering_cmd_writing))
+                    {
+                        ROS_ERROR("writeControllerData_SDO_SlaveZero: set target position failed");
+//                        return false;
+                    }
+//                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                    positionControlState = 1;
+                }
+                break;
+            case 1:
+                controlword = 0x3f;
+                if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,controlword))
+                {
+                    ROS_ERROR("writeControllerData_SDO_SlaveZero: set controlword 0x3f failed");
+                    return false;
+                }
+//                controlword = 0x3f;
+//                writeControlword_PDO_SlaveZero(controlword);
+
+                positionControlState = 2;
+                break;
+            case 2:
+                if(is_SetPointAcknowledge_Set)
+                {
+                    positionControlState = 3;
+                    restTick = 20;
+                    steering_cmd_current = steering_cmd_writing;
+                }
+                break;
+            case 3:
+//            if(restTick>1)
+//                restTick--;
+//            else
+                if(steering_cmd_current != steering_cmd_new)
+                {
+                    steering_cmd_writing = steering_cmd_new;
+//                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                    if(!setSlaveZeroTargetPosition(steering_cmd_writing))
+                    {
+                        ROS_ERROR("writeControllerData_SDO_SlaveZero: set target position failed");
+//                        return false;
+                    }
+
+                    positionControlState = 4;
+                }
+                break;
+            case 4:
+                controlword = 0xf;
+                if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,controlword))
+                {
+                    ROS_ERROR("writeControllerData_SDO_SlaveZero: set controlword 0xf failed");
+                    return false;
+                }
+//                controlword = 0xf;
+//                writeControlword_PDO_SlaveZero(controlword);
+
+                positionControlState = 5;
+                break;
+            case 5:
+                if(!is_SetPointAcknowledge_Set)
+                {
+                    positionControlState = 6;
+
+                    steering_cmd_current = steering_cmd_writing;
+                    if(steering_cmd_current == steering_cmd_new)
+                    {
+                        hasNewSteeringData = false;
+                    }
+                }
+                break;
+            default:
+                ROS_ERROR("position control unknown state");
+                return false;
+                break;
+        }//switch
+        ROS_INFO("writeControllerData_SDO_SlaveZero: state %d ----> %d",beginState,positionControlState);
+    }//if
+    return true;
+}
+
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 {
     // positionControlState states:
@@ -1264,6 +1382,39 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
         }//switch
         ROS_INFO("writePDOData_SlaveZero: state %d ----> %d",beginState,positionControlState);
     }//if
+    return true;
+}
+bool fm_auto::DuetflEthercatController::checkControllerState_SDO()
+{
+    uint16_t statusword_value;
+    if(!getStatuswordSDO(slave0_statusword_fmsdo,statusword_value))
+    {
+        ROS_ERROR("checkControllerState_SDO: get statusword failed ");
+        return false;
+    }
+    if(statusword_value != statusword_PDO_data)
+    {
+        statusword_PDO_data = statusword_value;
+        is_SetPointAcknowledge_Set = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
+        ROS_INFO("checkControllerState_SDO: statusword 0x%04x",statusword_PDO_data);
+    }
+    fm_auto::CONTROLLER_STATE state = fm_auto::CS_UNKNOWN_STATE;
+    if(!getControllerStateByStatusword(statusword_value,state))
+    {
+        ROS_ERROR("checkControllerState_SDO: analyst controller state failed 0x%04x",statusword_value);
+        return false;
+    }
+    PDO_OK = true;
+    switch (state) {
+        case fm_auto::CS_FAULT: // request was not used yet
+            ROS_ERROR("readPDOsData: CS_FAULT");
+            //TODO: error handle
+            PDO_OK = false;
+            break;
+    default:
+//        ROS_ERROR("enableControlSDO: unkown state %04x",state);
+        return true;
+    }
     return true;
 }
 
