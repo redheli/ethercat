@@ -118,7 +118,7 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
 //    //TODO
 //}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
-    : domain_input(NULL),domain_output(NULL),steering_cmd_old(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),waitTick(0)
+    : domain_input(NULL),domain_output(NULL),steering_cmd_old(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),waitTick(-1)
 {
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
@@ -593,7 +593,8 @@ bool fm_auto::DuetflEthercatController::initROS()
     ros::NodeHandle n;
     std::string str = "steering";
     ROS_INFO("asdfd");
-    sub = n.subscribe(str,10,&fm_auto::DuetflEthercatController::callback_steering,this);
+//    sub = n.subscribe(str,10,&fm_auto::DuetflEthercatController::callback_steering,this);
+    sub = n.subscribe("steer_angle", 1000, &fm_auto::DuetflEthercatController::callback_steering2, this);
 }
 
 bool fm_auto::DuetflEthercatController::initEthercat()
@@ -1095,6 +1096,22 @@ void fm_auto::DuetflEthercatController::callback_steering(const etherlab_master:
 
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
 }
+void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 steering_cmd)
+{
+    if(waitTick == -1)
+    {
+        int32_t v = static_cast<int32_t>(steering_cmd.data);
+        if(v != steering_cmd_old)
+        {
+            steering_cmd_new = v*10;
+            waitTick = 2;
+            ROS_INFO("callback_steering new steering value: %d",steering_cmd_new);
+        }
+    }
+    ROS_INFO("callback_steering: %d %d %f",steering_cmd_new,waitTick,steering_cmd.data);
+
+//    ROS_INFO("callback_steering: %f",steering_cmd.data);
+}
 
 bool fm_auto::DuetflEthercatController::writeTargetPosition_PDO_SlaveZero(int32_t &value)
 {
@@ -1132,7 +1149,8 @@ void fm_auto::DuetflEthercatController::writeF2Controlword()
 //        ROS_INFO("writeF2Controlword 2");
 //        waitTick--;
 //    }
-        if(steering_cmd_new != steering_cmd_old && waitTick >0)
+//        if(steering_cmd_new != steering_cmd_old && waitTick>-1)
+    if(waitTick>-1)
         {
             ecrt_master_receive(master);
             ROS_INFO("writeF2Controlword tick %d",waitTick);
@@ -1140,18 +1158,21 @@ void fm_auto::DuetflEthercatController::writeF2Controlword()
             writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
             uint16_t controlword = 0x3f;
             writeControlword_PDO_SlaveZero(controlword);
-            waitTick--;
-            if(waitTick < 5 )
+
+            if(waitTick <=1 )
             {
                 uint16_t controlword = 0xf;
                 writeControlword_PDO_SlaveZero(controlword);
             }
-            if(waitTick == 0)
-            {
-                steering_cmd_old = steering_cmd_new;
-            }
+//            if(waitTick == 0)
+//            {
+//                steering_cmd_old = steering_cmd_new;
+//            }
             ecrt_domain_queue(domain_output);
             ecrt_master_send(master);
+
+            waitTick--;
+            steering_cmd_old = steering_cmd_new;
         }
 //        else
 //        {

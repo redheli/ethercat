@@ -16,6 +16,7 @@
 /****************************************************************************/
 #include "ros/ros.h"
 #include <sensor_msgs/Joy.h>
+#include <std_msgs/Float64.h>
 #include "etherlab_master/steering.h"
 #include "ecrt.h"
 #include "ObjectDictionay.h"
@@ -55,6 +56,7 @@ public:
 
        /* ROS callback */
        void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
+       void callback_steering2(std_msgs::Float64 steering_cmd);
 
 public:
        /* homing */
