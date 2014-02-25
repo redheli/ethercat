@@ -118,8 +118,8 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
 //    //TODO
 //}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
-    : domain_input(NULL),domain_output(NULL),steering_cmd_old(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),waitTick(-1),
-      hasNewSteeringData(false)
+    : domain_input(NULL),domain_output(NULL),steering_cmd_current(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),
+      positionControlState(6),hasNewSteeringData(false)
 {
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
@@ -1067,9 +1067,10 @@ void fm_auto::DuetflEthercatController::cyclic_task()
     // check for islave configuration state(s) (optional)
 //    check_slave_config_states();
 
-    writePDOData_SlaveZero();
     // read PDO data
     readPDOsData();
+
+    writePDOData_SlaveZero();
 
     // send process data
 //    ecrt_domain_queue(domain_output);
@@ -1077,26 +1078,26 @@ void fm_auto::DuetflEthercatController::cyclic_task()
     ecrt_master_send(master);
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
 }
-void fm_auto::DuetflEthercatController::callback_steering(const etherlab_master::steering::ConstPtr &steering_cmd)
-{
-//    pthread_mutex_lock( &fm_auto::mutex_PDO );
+//void fm_auto::DuetflEthercatController::callback_steering(const etherlab_master::steering::ConstPtr &steering_cmd)
+//{
+////    pthread_mutex_lock( &fm_auto::mutex_PDO );
 
-    steering_cmd_new = steering_cmd->num;
-    waitTick = 10;
-    ROS_INFO("callback_steering: %d",steering_cmd_new);
-//    ROS_INFO("callback_steering: %d",steering_cmd->num);
-//    if(steering_cmd->num != steering_cmd_old)
-//    {
-//        steering_cmd_old = (int32_t)steering_cmd->num;
-//        writeTargetPosition_PDO_SlaveZero(steering_cmd_old);
-//        uint16_t controlword = 0x003f;
-//        writeControlword_PDO_SlaveZero(controlword);
-//        needWrite_0xf_2controlword = true;
-////        waitTick = 10;
-//    }
+//    steering_cmd_new = steering_cmd->num;
+//    waitTick = 10;
+//    ROS_INFO("callback_steering: %d",steering_cmd_new);
+////    ROS_INFO("callback_steering: %d",steering_cmd->num);
+////    if(steering_cmd->num != steering_cmd_old)
+////    {
+////        steering_cmd_old = (int32_t)steering_cmd->num;
+////        writeTargetPosition_PDO_SlaveZero(steering_cmd_old);
+////        uint16_t controlword = 0x003f;
+////        writeControlword_PDO_SlaveZero(controlword);
+////        needWrite_0xf_2controlword = true;
+//////        waitTick = 10;
+////    }
 
-//    pthread_mutex_unlock( &fm_auto::mutex_PDO );
-}
+////    pthread_mutex_unlock( &fm_auto::mutex_PDO );
+//}
 void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 steering_cmd)
 {
 //    if(waitTick == -1)
@@ -1115,7 +1116,7 @@ void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 ste
         steering_cmd_new = v;
         hasNewSteeringData = true;
     }
-    ROS_INFO("callback_steering: %d %d %f",steering_cmd_new,waitTick,steering_cmd.data);
+    ROS_INFO("callback_steering: %d %f %d",steering_cmd_new,steering_cmd.data,positionControlState);
 
 //    ROS_INFO("callback_steering: %f",steering_cmd.data);
 }
@@ -1142,7 +1143,7 @@ bool fm_auto::DuetflEthercatController::writeControlword_PDO_SlaveZero(uint16_t 
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
     return true;
 }
-void fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
+bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 {
     // positionControlState states:
     //     target position     new_set_point       set_point_acknowledge
@@ -1155,81 +1156,83 @@ void fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
     // 6.    not changed,                  cleard,               cleard
     if(hasNewSteeringData)
     {
-        bool isStateChanged=false;
+        ROS_INFO("writeF2Controlword tick %d",positionControlState);
+        uint16_t controlword;
+        // check state
+        switch (positionControlState) {
+            case 6:
+                if(!is_SetPointAcknowledge_Set)
+                {
+                    ecrt_domain_process(domain_output);
+                    // step 1: only write target position (p114)
+                    writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+                    controlword = 0xf;
+                    writeControlword_PDO_SlaveZero(controlword);
 
-//        ecrt_master_receive(master);
-        ROS_INFO("writeF2Controlword tick %d",waitTick);
-        ecrt_domain_process(domain_output);
-
-        if(positionControlState==6) // has new data come in
-        {
-            bool isStatusword_Bit12_Cleared=false;
-            // TODO: check set_point_acknowledge is cleared,then can write new target position
-            if(isStatusword_Bit12_Cleared)
-            {
-                // step 1: only write target position (p114)
+                    positionControlState = 1;
+                    ecrt_domain_queue(domain_output);
+                }
+                break;
+            case 1:
+                ecrt_domain_process(domain_output);
                 writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
-                uint16_t controlword = 0xf;
+                controlword = 0x3f;
                 writeControlword_PDO_SlaveZero(controlword);
 
-                isStateChanged = true;
-            }
-            else
-            {
-                isStateChanged = false;
-            }
-        }
+                positionControlState = 2;
+                ecrt_domain_queue(domain_output);
+                break;
+            case 2:
+                if(is_SetPointAcknowledge_Set)
+                {
+//                    ecrt_domain_process(domain_output);
+//                    writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+//                    uint16_t controlword = 0x3f;
+//                    writeControlword_PDO_SlaveZero(controlword);
 
-        if(waitTick==1)
-        {
-            //step 2: write controlword 0x3f
-            writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
-            uint16_t controlword = 0x3f;
-            writeControlword_PDO_SlaveZero(controlword);
+                    positionControlState = 3;
+                    steering_cmd_current = steering_cmd_new;
+//                    ecrt_domain_queue(domain_output);
+                }
+                break;
+            case 3:
+                ecrt_domain_process(domain_output);
+                writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+                controlword = 0x3f;
+                writeControlword_PDO_SlaveZero(controlword);
 
-            isStateChanged = true;
-        }
+                positionControlState = 4;
+                ecrt_domain_queue(domain_output);
+                break;
+            case 4:
+                ecrt_domain_process(domain_output);
+                writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+                controlword = 0xf;
+                writeControlword_PDO_SlaveZero(controlword);
 
-        if(waitTick==0)
-        {
-            bool isStatusword_Bit12_Set=false;
-            // step 3: check statusword set_point_acknowledge is set
-            // TODO:
-            if(isStatusword_Bit12_Set)
-            {
-                isStateChanged = true;
-            }
-            else
-            {
-                isStateChanged = false;
-            }
-        }
+                positionControlState = 5;
+                ecrt_domain_queue(domain_output);
+                break;
+            case 5:
+                if(is_SetPointAcknowledge_Set)
+                {
+//                    ecrt_domain_process(domain_output);
+//                    writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+//                    uint16_t controlword = 0xf;
+//                    writeControlword_PDO_SlaveZero(controlword);
 
-        if(waitTick <=1 )
-        {
-            uint16_t controlword = 0xf;
-            writeControlword_PDO_SlaveZero(controlword);
-        }
-//            if(waitTick == 0)
-//            {
-//                steering_cmd_old = steering_cmd_new;
-//            }
-        ecrt_domain_queue(domain_output);
-//        ecrt_master_send(master);
-
-        if(isStateChanged)
-        {
-            waitTick--;
-        }
-        steering_cmd_old = steering_cmd_new;
-    }
-//        else
-//        {
-//            writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
-//            uint16_t controlword = 0xf;
-//            writeControlword_PDO_SlaveZero(controlword);
-//            steering_cmd_old = steering_cmd_new;
-//        }
+                    positionControlState = 6;
+                    steering_cmd_current = steering_cmd_new;
+//                    ecrt_domain_queue(domain_output);
+                }
+                break;
+            default:
+                ROS_ERROR("position control unknow state");
+                return false;
+                break;
+        }//switch
+    }//if
+        return true;
 }
 
 bool fm_auto::DuetflEthercatController::readPDOsData()
@@ -1238,11 +1241,45 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
     if(statusword != statusword_PDO_data)
     {
         statusword_PDO_data = statusword;
-        isStatusword_Bit12_Set = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
+        is_SetPointAcknowledge_Set = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
         ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     }
 //    printf("pdo statusword value: %04x offset %u\n",
 //            EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD),OFFSET_STATUSWORD);
+
+    fm_auto::CONTROLLER_STATE state = fm_auto::CS_UNKNOWN_STATE;
+    if(!getControllerStateByStatusword(statusword,state))
+    {
+        ROS_ERROR("enableControlSDO: analyst controller state failed 0x%04x",statusword);
+        return false;
+    }
+    switch (state) {
+        case fm_auto::CS_FAULT: // request was not used yet
+            ROS_ERROR("readPDOsData: CS_FAULT");
+            //TODO: error handle
+            return false;
+            break;
+        case fm_auto::CS_SWITCH_ON_DISABLED:
+            return false;
+            break;
+        case fm_auto::CS_READY_TO_SWITCH_ON:
+            return false;
+            break;
+        case fm_auto::CS_SWITCH_ON:
+            return false;
+            break;
+        case fm_auto::CS_OPERATION_ENABLE:
+            // controller enabled
+            return true;
+            break;
+        case fm_auto::CS_NOT_READY_TO_SWITCH_ON:
+            return false;
+            break;
+    default:
+        ROS_ERROR("enableControlSDO: unkown state %04x",state);
+        return false;
+    }
+    return true;
 }
 
 bool fm_auto::DuetflEthercatController::processSDOs()

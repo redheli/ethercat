@@ -55,7 +55,7 @@ public:
        void cyclic_task();
 
        /* ROS callback */
-       void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
+//       void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
        void callback_steering2(std_msgs::Float64 steering_cmd);
 
 public:
@@ -78,7 +78,7 @@ public:
        bool readPDOsData();
        bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
-       void writePDOData_SlaveZero();
+       bool writePDOData_SlaveZero();
 
 public:
        /// @brief get homing operation mode
@@ -192,7 +192,7 @@ private:
 
        bool needWrite_0xf_2controlword;
        int positionControlState;
-       bool isStatusword_Bit12_Set;
+       bool is_SetPointAcknowledge_Set;
 
 //       std::mutex counter_mutex;
 
