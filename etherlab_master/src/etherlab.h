@@ -17,7 +17,7 @@
 #include "ros/ros.h"
 #include <sensor_msgs/Joy.h>
 #include <std_msgs/Float64.h>
-#include "etherlab_master/steering.h"
+//#include "etherlab_master/steering.h"
 #include "ecrt.h"
 #include "ObjectDictionay.h"
 
@@ -197,6 +197,7 @@ private:
 
        bool needWrite_0xf_2controlword;
        int positionControlState;
+       int restTick;
        bool is_SetPointAcknowledge_Set;
 
 //       std::mutex counter_mutex;
