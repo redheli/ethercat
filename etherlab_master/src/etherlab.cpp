@@ -304,7 +304,7 @@ bool fm_auto::DuetflEthercatController::getStatuswordSDO(fm_auto::fm_sdo *status
     if(waitSDORequestSuccess(statusword_fmsdo,READ))
     {
         value = EC_READ_U16(ecrt_sdo_request_data(statusword_fmsdo->sdo));
-        ROS_INFO("get statusword: 0x%04x %d",value,value);
+//        ROS_INFO("get statusword: 0x%04x %d",value,value);
         return true;
     }
     else
@@ -722,7 +722,7 @@ void fm_auto::DuetflEthercatController::run()
 //        pause();
 
         ros::spinOnce();
-        if(!cyclic_task())
+        if(!cyclic_task_SDO())
         {
             break;
         }
@@ -1200,11 +1200,21 @@ bool fm_auto::DuetflEthercatController::writeControllerData_SDO_SlaveZero()
                     }
 //                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
                     positionControlState = 1;
+                    restTick = 2;
                 }
                 break;
             case 1:
-                controlword = 0x3f;
-                if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,controlword))
+            if(restTick>1)
+            {
+                restTick--;
+            }
+            else
+            {
+                if(is_TargetReached_Set)
+                    controlword = 0x1f;
+                else
+                    controlword = 0x3f;
+                if(!setControlwordSDO(fm_auto::slave0_controlword_fmsdo,controlword))
                 {
                     ROS_ERROR("writeControllerData_SDO_SlaveZero: set controlword 0x3f failed");
                     return false;
@@ -1213,6 +1223,7 @@ bool fm_auto::DuetflEthercatController::writeControllerData_SDO_SlaveZero()
 //                writeControlword_PDO_SlaveZero(controlword);
 
                 positionControlState = 2;
+            }
                 break;
             case 2:
                 if(is_SetPointAcknowledge_Set)
@@ -1226,22 +1237,22 @@ bool fm_auto::DuetflEthercatController::writeControllerData_SDO_SlaveZero()
 //            if(restTick>1)
 //                restTick--;
 //            else
-                if(steering_cmd_current != steering_cmd_new)
-                {
-                    steering_cmd_writing = steering_cmd_new;
-//                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
-                    if(!setSlaveZeroTargetPosition(steering_cmd_writing))
-                    {
-                        ROS_ERROR("writeControllerData_SDO_SlaveZero: set target position failed");
-//                        return false;
-                    }
+//                if(steering_cmd_current != steering_cmd_new)
+//                {
+//                    steering_cmd_writing = steering_cmd_new;
+////                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+//                    if(!setSlaveZeroTargetPosition(steering_cmd_writing))
+//                    {
+//                        ROS_ERROR("writeControllerData_SDO_SlaveZero: set target position failed");
+////                        return false;
+//                    }
 
                     positionControlState = 4;
-                }
+//                }
                 break;
             case 4:
                 controlword = 0xf;
-                if(setControlwordSDO(fm_auto::slave0_controlword_fmsdo,controlword))
+                if(!setControlwordSDO(fm_auto::slave0_controlword_fmsdo,controlword))
                 {
                     ROS_ERROR("writeControllerData_SDO_SlaveZero: set controlword 0xf failed");
                     return false;
@@ -1268,7 +1279,8 @@ bool fm_auto::DuetflEthercatController::writeControllerData_SDO_SlaveZero()
                 return false;
                 break;
         }//switch
-        ROS_INFO("writeControllerData_SDO_SlaveZero: state %d ----> %d",beginState,positionControlState);
+        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d",beginState,positionControlState,
+                 steering_cmd_new,steering_cmd_writing,steering_cmd_current);
     }//if
     return true;
 }
@@ -1400,6 +1412,7 @@ bool fm_auto::DuetflEthercatController::checkControllerState_SDO()
     {
         statusword_PDO_data = statusword_value;
         is_SetPointAcknowledge_Set = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
+        is_TargetReached_Set = Int16Bits(statusword_PDO_data).test(10);
         ROS_INFO("checkControllerState_SDO: statusword 0x%04x",statusword_PDO_data);
     }
     fm_auto::CONTROLLER_STATE state = fm_auto::CS_UNKNOWN_STATE;

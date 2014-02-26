@@ -202,6 +202,7 @@ private:
        int positionControlState;
        int restTick;
        bool is_SetPointAcknowledge_Set;
+       bool is_TargetReached_Set;
 
 //       std::mutex counter_mutex;
 
