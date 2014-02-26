@@ -1350,7 +1350,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 //                    writeControlword_PDO_SlaveZero(controlword);
 
                     positionControlState = 3;
-                    restTick = 20;
+                    restTick = 5;
                     steering_cmd_current = steering_cmd_writing;
 //                    hasNewSteeringData = false;
 //                    ecrt_domain_queue(domain_output);
@@ -1394,7 +1394,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                 positionControlState = 5;
                 ecrt_domain_queue(domain_output);
-                restTick = 20;
+                restTick = 5;
             }
                 break;
             case 5:
