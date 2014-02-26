@@ -1396,9 +1396,9 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 restTick--;
             else
             {
-                steering_cmd_writing = steering_cmd_new;
+//                steering_cmd_writing = steering_cmd_new;
                 ecrt_domain_process(domain_output);
-                writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+//                writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
                 controlword = 0xf;
                 writeControlword_PDO_SlaveZero(controlword);
 
@@ -1420,7 +1420,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                     positionControlState = 6;
 
-//                    steering_cmd_current = steering_cmd_writing;
+                    steering_cmd_current = steering_cmd_writing;
 //                    if(steering_cmd_current == steering_cmd_new)
 //                    {
 //                        hasNewSteeringData = false;
