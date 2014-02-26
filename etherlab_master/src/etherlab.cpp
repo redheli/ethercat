@@ -1325,7 +1325,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                     positionControlState = 1;
                     ecrt_domain_queue(domain_output);
-                    restTick = 5;
+                    restTick = 2;
                 }
             }
                 break;
@@ -1356,7 +1356,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 //                    writeControlword_PDO_SlaveZero(controlword);
 
                     positionControlState = 3;
-                    restTick = 5;
+                    restTick = 2;
                     steering_cmd_current = steering_cmd_writing;
 //                    hasNewSteeringData = false;
 //                    ecrt_domain_queue(domain_output);
@@ -1384,7 +1384,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                     positionControlState = 4;
 //                    ecrt_domain_queue(domain_output);
-                    restTick =5;
+                    restTick =2;
 //                }
             }
                 break;
@@ -1400,7 +1400,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                 positionControlState = 5;
                 ecrt_domain_queue(domain_output);
-                restTick = 5;
+                restTick = 2;
             }
                 break;
             case 5:
@@ -1422,7 +1422,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 //                        hasNewSteeringData = false;
 //                    }
 //                    ecrt_domain_queue(domain_output);
-                    restTick = 5;
+                    restTick = 2;
                 }
                 break;
             default:
