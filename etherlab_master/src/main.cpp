@@ -36,7 +36,7 @@ int main(int argc, char**argv)
     }
     else
     {
-        ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing ok\n");
+        ROS_INFO_ONCE("setSlaveZeroMotorOperatingMode2Homing ok\n");
     }
 //    duetController.testEnableControllerSDO();
     if(!duetController.enableControlSDO_SlaveZero())
@@ -46,7 +46,7 @@ int main(int argc, char**argv)
     }
     else
     {
-        ROS_ERROR("enableControlSDO_SlaveZero ok");
+        ROS_INFO_ONCE("enableControlSDO_SlaveZero ok\n");
     }
     if(!duetController.operateSteeringMotorHomingMethod())
     {
@@ -55,7 +55,7 @@ int main(int argc, char**argv)
     }
     else
     {
-        ROS_ERROR("operateSteeringMotorHomingMethod ok");
+        ROS_INFO_ONCE("operateSteeringMotorHomingMethod ok\n");
     }
     if(!duetController.disableControlSDO_SlaveZero())
     {
@@ -64,7 +64,7 @@ int main(int argc, char**argv)
     }
     else
     {
-        ROS_ERROR("disableControlSDO_SlaveZero ok");
+        ROS_INFO_ONCE("disableControlSDO_SlaveZero ok\n");
     }
     //
     if(!duetController.setSlaveZeroMotorOperatingMode2ProfilePosition())
@@ -74,7 +74,7 @@ int main(int argc, char**argv)
     }
     else
     {
-        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfilePosition ok");
+        ROS_INFO_ONCE("setSlaveZeroMotorOperatingMode2ProfilePosition ok\n");
     }
     if(!duetController.enableControlSDO_SlaveZero())
     {
@@ -83,7 +83,7 @@ int main(int argc, char**argv)
     }
     else
     {
-        ROS_ERROR("enableControlSDO_SlaveZero ok");
+        ROS_INFO_ONCE("enableControlSDO_SlaveZero ok\n");
     }
     duetController.run();
     return 0;

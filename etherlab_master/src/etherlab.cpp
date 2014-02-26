@@ -1356,8 +1356,12 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                 positionControlState = 5;
                 ecrt_domain_queue(domain_output);
+                restTick = 20;
                 break;
             case 5:
+            if(restTick>1)
+                restTick--;
+            else
                 if(!is_SetPointAcknowledge_Set)
                 {
                     ecrt_domain_process(domain_output);
