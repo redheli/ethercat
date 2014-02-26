@@ -1356,7 +1356,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 //                    writeControlword_PDO_SlaveZero(controlword);
 
                     positionControlState = 3;
-                    restTick = 2;
+                    restTick = 1;
                     steering_cmd_current = steering_cmd_writing;
 //                    hasNewSteeringData = false;
 //                    ecrt_domain_queue(domain_output);
@@ -1384,7 +1384,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                     positionControlState = 4;
 //                    ecrt_domain_queue(domain_output);
-                    restTick =2;
+                    restTick =1;
 //                }
             }
                 break;
