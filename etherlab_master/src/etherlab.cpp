@@ -1303,6 +1303,9 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
     }
     else
         hasNewSteeringData = true;
+
+    if(!is_TargetReached_Set)
+        hasNewSteeringData = false;
     if(hasNewSteeringData)
     {
         uint16_t controlword;
@@ -1325,7 +1328,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                     positionControlState = 1;
                     ecrt_domain_queue(domain_output);
-                    restTick = 2;
+                    restTick = 1;
                 }
             }
                 break;
@@ -1393,6 +1396,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 restTick--;
             else
             {
+                steering_cmd_writing = steering_cmd_new;
                 ecrt_domain_process(domain_output);
                 writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
                 controlword = 0xf;
@@ -1416,7 +1420,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 
                     positionControlState = 6;
 
-//                    steering_cmd_current = steering_cmd_writing;
+                    steering_cmd_current = steering_cmd_writing;
 //                    if(steering_cmd_current == steering_cmd_new)
 //                    {
 //                        hasNewSteeringData = false;
