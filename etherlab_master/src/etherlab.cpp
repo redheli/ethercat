@@ -1142,7 +1142,7 @@ void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 ste
     int32_t v = static_cast<int32_t>(steering_cmd.data);
     if(steering_cmd_current != v)
     {
-        steering_cmd_new = v * 10;
+        steering_cmd_new = v * 30;
         hasNewSteeringData = true;
     }
 //    ROS_INFO("callback_steering: %d %f %d",steering_cmd_new,steering_cmd.data,positionControlState);
@@ -1297,6 +1297,10 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
     // 4.     changed                       setted,             setted
     // 5.     not changed,                 cleard,              setted
     // 6.    not changed,                  cleard,               cleard
+    if(steering_cmd_current == steering_cmd_new)
+    {
+        hasNewSteeringData = false;
+    }
     if(hasNewSteeringData)
     {
         uint16_t controlword;
@@ -1411,12 +1415,12 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                     positionControlState = 6;
 
                     steering_cmd_current = steering_cmd_writing;
-                    if(steering_cmd_current == steering_cmd_new)
-                    {
-                        hasNewSteeringData = false;
-                    }
+//                    if(steering_cmd_current == steering_cmd_new)
+//                    {
+//                        hasNewSteeringData = false;
+//                    }
                     ecrt_domain_queue(domain_output);
-                    restTick = 20;
+                    restTick = 5;
                 }
                 break;
             default:
@@ -1424,7 +1428,8 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 return false;
                 break;
         }//switch
-        ROS_INFO("writePDOData_SlaveZero: state %d ----> %d",beginState,positionControlState);
+        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d",beginState,positionControlState,
+                 steering_cmd_new,steering_cmd_writing,steering_cmd_current);
     }//if
     return true;
 }
