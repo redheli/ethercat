@@ -200,6 +200,7 @@ private:
 
        bool needWrite_0xf_2controlword;
        int positionControlState;
+       uint16_t controlword_PDO;
        int restTick;
        bool is_SetPointAcknowledge_Set;
        bool is_TargetReached_Set;

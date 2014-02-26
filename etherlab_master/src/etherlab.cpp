@@ -119,7 +119,7 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
 //}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),steering_cmd_current(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),
-      positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1)
+      positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1),controlword_PDO(0xf)
 {
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
@@ -1297,6 +1297,10 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
     // 4.     changed                       setted,             setted
     // 5.     not changed,                 cleard,              setted
     // 6.    not changed,                  cleard,               cleard
+    ecrt_domain_process(domain_output);
+//    controlword_PDO = 0xf;
+    writeControlword_PDO_SlaveZero(controlword_PDO);
+
     if(steering_cmd_current == steering_cmd_new)
     {
         hasNewSteeringData = false;
@@ -1305,7 +1309,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
         hasNewSteeringData = true;
     if(hasNewSteeringData)
     {
-        uint16_t controlword;
+//        uint16_t controlword;
         int beginState = positionControlState;
         // check state
         switch (positionControlState) {
@@ -1316,15 +1320,15 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
             {
                 if(!is_SetPointAcknowledge_Set)
                 {
-                    ecrt_domain_process(domain_output);
+//                    ecrt_domain_process(domain_output);
                     // step 1: only write target position (p114)
                     steering_cmd_writing = steering_cmd_new;
                     writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
-                    controlword = 0xf;
-                    writeControlword_PDO_SlaveZero(controlword);
+                    controlword_PDO = 0xf;
+                    writeControlword_PDO_SlaveZero(controlword_PDO);
 
                     positionControlState = 1;
-                    ecrt_domain_queue(domain_output);
+//                    ecrt_domain_queue(domain_output);
                     restTick = 2;
                 }
             }
@@ -1334,16 +1338,16 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 restTick--;
             else
             {
-                ecrt_domain_process(domain_output);
-//                writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+//                ecrt_domain_process(domain_output);
+                writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
                 if(is_TargetReached_Set)
-                    controlword = 0x1f;
+                    controlword_PDO = 0x1f;
                 else
-                    controlword = 0x3f;
-                writeControlword_PDO_SlaveZero(controlword);
+                    controlword_PDO = 0x3f;
+                writeControlword_PDO_SlaveZero(controlword_PDO);
 
                 positionControlState = 2;
-                ecrt_domain_queue(domain_output);
+//                ecrt_domain_queue(domain_output);
             }
                 break;
             case 2:
@@ -1351,12 +1355,12 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 if(is_SetPointAcknowledge_Set)
                 {
 //                    ecrt_domain_process(domain_output);
-//                    writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
 //                    uint16_t controlword = 0x3f;
-//                    writeControlword_PDO_SlaveZero(controlword);
+                    writeControlword_PDO_SlaveZero(controlword_PDO);
 
                     positionControlState = 3;
-                    restTick = 1;
+                    restTick = 5;
                     steering_cmd_current = steering_cmd_writing;
 //                    hasNewSteeringData = false;
 //                    ecrt_domain_queue(domain_output);
@@ -1371,21 +1375,21 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 restTick--;
             else
             {
-//                if(steering_cmd_current != steering_cmd_new)
-//                {
-//                    steering_cmd_writing = steering_cmd_new;
+                if(steering_cmd_current != steering_cmd_new)
+                {
+                    steering_cmd_writing = steering_cmd_new;
 //                    ecrt_domain_process(domain_output);
-//                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
 //                    if(is_TargetReached_Set)
-//                        controlword = 0x1f;
+//                        controlword_PDO = 0x1f;
 //                    else
-//                        controlword = 0x3f;
-//                    writeControlword_PDO_SlaveZero(controlword);
+//                        controlword_PDO = 0xf;
+                    writeControlword_PDO_SlaveZero(controlword_PDO);
 
                     positionControlState = 4;
 //                    ecrt_domain_queue(domain_output);
-                    restTick =1;
-//                }
+                    restTick =5;
+                }
             }
                 break;
             case 4:
@@ -1393,13 +1397,16 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 restTick--;
             else
             {
-                ecrt_domain_process(domain_output);
+//                ecrt_domain_process(domain_output);
                 writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
-                controlword = 0xf;
-                writeControlword_PDO_SlaveZero(controlword);
+                if(is_TargetReached_Set)
+                    controlword_PDO = 0x1f;
+                else
+                    controlword_PDO = 0xf;
+                writeControlword_PDO_SlaveZero(controlword_PDO);
 
                 positionControlState = 5;
-                ecrt_domain_queue(domain_output);
+//                ecrt_domain_queue(domain_output);
                 restTick = 2;
             }
                 break;
@@ -1433,6 +1440,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
         ROS_INFO("state %d ----> %d   n:%d w:%d c:%d",beginState,positionControlState,
                  steering_cmd_new,steering_cmd_writing,steering_cmd_current);
     }//if
+    ecrt_domain_queue(domain_output);
     return true;
 }
 bool fm_auto::DuetflEthercatController::checkControllerState_SDO()
