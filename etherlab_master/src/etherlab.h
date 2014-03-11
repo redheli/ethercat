@@ -172,6 +172,9 @@ private:
        bool setValueToAddress(uint &address);
 
 private:
+       bool checkNeedHal(int32_t las_cmd,int32_t new_cmd);
+
+private:
        /// store sdo request
        std::list<fm_sdo*> activeSdoPool;
 
@@ -195,6 +198,7 @@ private:
        int32_t steering_cmd_current;
 
        bool hasNewSteeringData;
+       bool isNeedHal;// when new position cmd is diff direction of last cmd, need hal
        uint16_t statusword_PDO_data;
        bool PDO_OK;
 

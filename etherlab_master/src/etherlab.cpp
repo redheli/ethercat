@@ -1375,15 +1375,25 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
             {
                 if(steering_cmd_current != steering_cmd_new)
                 {
-                    steering_cmd_writing = steering_cmd_new;
-                    ecrt_domain_process(domain_output);
-                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
-                    controlword_PDO = 0xf;
-                    writeControlword_PDO_SlaveZero(controlword_PDO);
+                    //check need hal
+                    isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
+                    if(isNeedHal)
+                    {
+                        //TODO
+                        positionControlState = 7;
+                    }
+                    else
+                    {
+                        steering_cmd_writing = steering_cmd_new;
+                        ecrt_domain_process(domain_output);
+                        writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                        controlword_PDO = 0xf;
+                        writeControlword_PDO_SlaveZero(controlword_PDO);
 
-                    positionControlState = 4;
-                    ecrt_domain_queue(domain_output);
-                    restTick =10;
+                        positionControlState = 4;
+                        ecrt_domain_queue(domain_output);
+                        restTick =10;
+                    }
                 }
             }
                 break;
@@ -1424,6 +1434,9 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                     restTick = 10;
                 }
                 break;
+        case 7:
+            // TODO: handle hal
+            break;
             default:
                 ROS_ERROR("position control unknow state");
                 return false;
@@ -1434,6 +1447,13 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
     }//if
     return true;
 }
+bool fm_auto::DuetflEthercatController::checkNeedHal(int32_t las_cmd, int32_t new_cmd)
+{
+    bool res=true;
+    //TODO
+    return res;
+}
+
 bool fm_auto::DuetflEthercatController::checkControllerState_SDO()
 {
     uint16_t statusword_value;
