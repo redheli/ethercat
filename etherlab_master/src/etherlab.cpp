@@ -1376,6 +1376,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
             {
                 if(steering_cmd_current != steering_cmd_new)
                 {
+                    ecrt_domain_process(domain_output);
                     steering_cmd_writing = steering_cmd_new;
 //                    ecrt_domain_process(domain_output);
                     writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
