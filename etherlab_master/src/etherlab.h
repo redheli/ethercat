@@ -200,6 +200,7 @@ private:
        bool hasNewSteeringData;
        bool isNeedHal;// when new position cmd is diff direction of last cmd, need hal
        uint16_t statusword_PDO_data;
+       uint32_t velocity_actual_value;
        bool PDO_OK;
 
        bool needWrite_0xf_2controlword;

@@ -119,7 +119,7 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
 //}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),steering_cmd_current(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),
-      positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1),controlword_PDO(0xf)
+      positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1),controlword_PDO(0xf),velocity_actual_value(0)
 {
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
@@ -1377,7 +1377,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 {
                     //check need hal
                     isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
-                    if(isNeedHal)
+                    if(isNeedHal || !is_TargetReached_Set) // target not reach and new cmd is diff direction with last cmd
                     {
                         //TODO
                         positionControlState = 7;
@@ -1436,6 +1436,25 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 break;
         case 7:
             // TODO: handle hal
+            ecrt_domain_process(domain_output);
+            controlword_PDO = 0x10f;//set bit 8 of controlword
+            writeControlword_PDO_SlaveZero(controlword_PDO);
+
+            positionControlState = 8;
+            ecrt_domain_queue(domain_output);
+            restTick =2;
+            break;
+        case 8:
+            if(restTick>1)
+                restTick--;
+            else
+            {
+                if(is_TargetReached_Set)
+                {
+                    positionControlState = 3;
+                }
+            }
+            // after hal, wait target reached bit set
             break;
             default:
                 ROS_ERROR("position control unknow state");
@@ -1450,6 +1469,20 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
 bool fm_auto::DuetflEthercatController::checkNeedHal(int32_t las_cmd, int32_t new_cmd)
 {
     bool res=true;
+    if(las_cmd>0 && new_cmd>0)
+    {
+        if(new_cmd > las_cmd && velocity_actual_value>0)
+        {
+            res = false;
+        }
+    }
+    if(las_cmd<0 && new_cmd<0)
+    {
+        if(new_cmd < las_cmd && velocity_actual_value<0)
+        {
+            res = false;
+        }
+    }
     //TODO
     return res;
 }
@@ -1507,6 +1540,10 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
         ROS_ERROR("enableControlSDO: analyst controller state failed 0x%04x",statusword);
         return false;
     }
+
+    // read velocity
+    velocity_actual_value = EC_READ_U16(domain_input_pd + fm_auto::OFFSET_VELOCITY_ACTUAL_VALUE);
+
     PDO_OK = true;
     switch (state) {
         case fm_auto::CS_FAULT: // request was not used yet
