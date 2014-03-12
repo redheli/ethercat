@@ -1573,7 +1573,7 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
 
     // read velocity
     velocity_actual_value = EC_READ_U16(domain_input_pd + fm_auto::OFFSET_VELOCITY_ACTUAL_VALUE);
-
+//    ROS_INFO("readPDOsData: velocity_actual_value %d",velocity_actual_value);
     PDO_OK = true;
     switch (state) {
         case fm_auto::CS_FAULT: // request was not used yet
