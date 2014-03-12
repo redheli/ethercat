@@ -1094,7 +1094,9 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     if(res)
     {
         ROS_INFO_ONCE("PDO_ok");
-        writePDOData_SlaveZero();
+//        writePDOData_SlaveZero();
+//        writePDOData_SlaveZero2();
+        writePDOData_SlaveZero3();
     }
 
 
@@ -1283,6 +1285,146 @@ bool fm_auto::DuetflEthercatController::writeControllerData_SDO_SlaveZero()
         ROS_INFO("state %d ----> %d   n:%d w:%d c:%d",beginState,positionControlState,
                  steering_cmd_new,steering_cmd_writing,steering_cmd_current);
     }//if
+    return true;
+}
+bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
+{
+    int beginState = positionControlState;
+    // check state
+    switch (positionControlState) {
+      case 6:
+        if(steering_cmd_current != steering_cmd_new)
+        {
+                steering_cmd_writing = steering_cmd_new;
+
+                ecrt_domain_process(domain_output);
+                writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                ecrt_domain_queue(domain_output);
+
+                positionControlState = 5;
+        }
+      break;
+    case 5:
+        if(is_TargetReached_Set)
+        {
+            controlword_PDO = 0x1f;
+        }
+        else
+        {
+            controlword_PDO = 0x3f;
+        }
+
+        ecrt_domain_process(domain_output);
+        writeControlword_PDO_SlaveZero(controlword_PDO);
+        ecrt_domain_queue(domain_output);
+
+        positionControlState = 4;
+    break;
+
+    case 4:
+        if(is_SetPointAcknowledge_Changed || is_TargetReached_Set)
+        {
+            positionControlState = 3;
+            steering_cmd_current = steering_cmd_writing;
+        }
+    break;
+
+    case 3:
+        controlword_PDO = 0xf;
+
+        ecrt_domain_process(domain_output);
+        writeControlword_PDO_SlaveZero(controlword_PDO);
+        ecrt_domain_queue(domain_output);
+
+        positionControlState = 2;
+        break;
+
+    case 2:
+        if(is_SetPointAcknowledge_Changed)
+        {
+            positionControlState = 6;
+        }
+        break;
+    default:
+      ROS_ERROR("position control unknow state");
+      return false;
+      break;
+    }//switch
+    if(steering_cmd_current == steering_cmd_new)
+    {
+        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+             steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
+    }
+    return true;
+}
+bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
+{
+    uint16_t controlword;
+    int beginState = positionControlState;
+    // check state
+    switch (positionControlState) {
+      case 6:
+        if(steering_cmd_current != steering_cmd_new)
+        {
+                steering_cmd_writing = steering_cmd_new;
+
+                ecrt_domain_process(domain_output);
+                writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                ecrt_domain_queue(domain_output);
+
+                positionControlState = 5;
+        }
+      break;
+    case 5:
+        if(is_TargetReached_Set)
+        {
+            controlword_PDO = 0x1f;
+        }
+        else
+        {
+            // check last controlword is 0x1f or 0x3f
+            bool is_bit5_set = Int16Bits(controlword_PDO).test(5);
+            if(is_bit5_set)
+            {
+                controlword_PDO = 0xf;
+            }
+            else
+            {
+                controlword_PDO = 0x3f;
+            }
+        }
+
+        ecrt_domain_process(domain_output);
+        writeControlword_PDO_SlaveZero(controlword_PDO);
+        ecrt_domain_queue(domain_output);
+
+        positionControlState = 4;
+    break;
+    case 4:
+        if(is_TargetReached_Set)
+        {
+            positionControlState = 6;
+            steering_cmd_current = steering_cmd_writing;
+        }
+        else
+        {
+            if(is_SetPointAcknowledge_Changed)
+            {
+                positionControlState = 6;
+                steering_cmd_current = steering_cmd_writing;
+            }
+        }
+    break;
+    default:
+      ROS_ERROR("position control unknow state");
+      return false;
+      break;
+    }//switch
+    if(steering_cmd_current == steering_cmd_new)
+    {
+        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+             steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
+    }
     return true;
 }
 

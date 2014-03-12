@@ -82,6 +82,8 @@ public:
        bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writePDOData_SlaveZero();
+       bool writePDOData_SlaveZero2();//only 3 state
+       bool writePDOData_SlaveZero3();//only change_set_immediately is set
 
 public:
        /// @brief get homing operation mode
