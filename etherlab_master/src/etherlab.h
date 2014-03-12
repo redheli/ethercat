@@ -208,6 +208,7 @@ private:
        uint16_t controlword_PDO;
        int restTick;
        bool is_SetPointAcknowledge_Set;
+       bool is_SetPointAcknowledge_Changed;
        bool is_TargetReached_Set;
 
 //       std::mutex counter_mutex;

@@ -1314,13 +1314,27 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 restTick--;
             else
             {
-                isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
-                if(isNeedHal && !is_TargetReached_Set)
+//                isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
+//                if(isNeedHal && !is_TargetReached_Set)
+//                {
+//                    positionControlState = 9;
+//                }
+//                else
                 {
-                    positionControlState = 9;
-                }
-                else
-                {
+                    if(is_TargetReached_Set)
+                    {
+                        ecrt_domain_process(domain_output);
+                        // step 1: only write target position (p114)
+                        steering_cmd_writing = steering_cmd_new;
+                        writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                        controlword_PDO = 0xf;
+                        writeControlword_PDO_SlaveZero(controlword_PDO);
+
+                        positionControlState = 1;
+                        ecrt_domain_queue(domain_output);
+                        restTick = 1;
+                    }
+
                     if(!is_SetPointAcknowledge_Set)
                     {
                         ecrt_domain_process(domain_output);
@@ -1384,19 +1398,22 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 if(steering_cmd_current != steering_cmd_new)
                 {
                     //check need hal
-                    isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
-                    if(isNeedHal && !is_TargetReached_Set) // target not reach and new cmd is diff direction with last cmd
-                    {
-                        //TODO
-                        positionControlState = 7;
-                    }
-                    else
+//                    isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
+//                    if(isNeedHal && !is_TargetReached_Set) // target not reach and new cmd is diff direction with last cmd
+//                    {
+//                        //TODO
+//                        positionControlState = 7;
+//                    }
+//                    else
                     {
                         steering_cmd_writing = steering_cmd_new;
                         ecrt_domain_process(domain_output);
                         writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
-                        controlword_PDO = 0xf;
-                        writeControlword_PDO_SlaveZero(controlword_PDO);
+//                        if(is_TargetReached_Set)
+//                            controlword_PDO = 0x1f;
+//                        else
+//                            controlword_PDO = 0x3f;
+//                        writeControlword_PDO_SlaveZero(controlword_PDO);
 
                         positionControlState = 4;
                         ecrt_domain_queue(domain_output);
@@ -1412,7 +1429,10 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
             {
                 ecrt_domain_process(domain_output);
 //                writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
-                    controlword_PDO = 0x0f;
+                if(is_TargetReached_Set)
+                    controlword_PDO = 0x1f;
+                else
+                    controlword_PDO = 0x3f;
                 writeControlword_PDO_SlaveZero(controlword_PDO);
 
                 positionControlState = 5;
@@ -1424,6 +1444,10 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
             if(restTick>1)
                 restTick--;
             else
+                if(is_TargetReached_Set)
+                {
+                    positionControlState = 6;
+                }
                 if(!is_SetPointAcknowledge_Set)
                 {
 //                    ecrt_domain_process(domain_output);
@@ -1558,7 +1582,13 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
     if(statusword != statusword_PDO_data)
     {
         statusword_PDO_data = statusword;
-        is_SetPointAcknowledge_Set = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
+        bool is_SetPointAcknowledge_Set_tmp = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
+        if(is_SetPointAcknowledge_Set != is_SetPointAcknowledge_Set_tmp)
+        {
+            is_SetPointAcknowledge_Set = is_SetPointAcknowledge_Set_tmp;
+            is_SetPointAcknowledge_Changed = true;
+        }
+
         is_TargetReached_Set = Int16Bits(statusword_PDO_data).test(10);
         ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     }
