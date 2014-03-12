@@ -1491,24 +1491,24 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 return false;
                 break;
         }//switch
-        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d",beginState,positionControlState,
-                 steering_cmd_new,steering_cmd_writing,steering_cmd_current);
+        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+                 steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
     }//if
     return true;
 }
 bool fm_auto::DuetflEthercatController::checkNeedHal(int32_t las_cmd, int32_t new_cmd)
 {
     bool res=true;
-    if(las_cmd>0 && new_cmd>0)
+    if(las_cmd>=0 && new_cmd>=0)
     {
-        if(new_cmd > las_cmd && velocity_actual_value>0)
+        if(new_cmd >= las_cmd && velocity_actual_value>=0)
         {
             res = false;
         }
     }
-    if(las_cmd<0 && new_cmd<0)
+    if(las_cmd<=0 && new_cmd<=0)
     {
-        if(new_cmd < las_cmd && velocity_actual_value<0)
+        if(new_cmd <= las_cmd && velocity_actual_value<=0)
         {
             res = false;
         }
@@ -1559,6 +1559,7 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
     {
         statusword_PDO_data = statusword;
         is_SetPointAcknowledge_Set = Int16Bits(statusword_PDO_data).test(12); //p94,114 check set_point_acknowledge
+        is_TargetReached_Set = Int16Bits(statusword_PDO_data).test(10);
         ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     }
 //    printf("pdo statusword value: %04x offset %u\n",
