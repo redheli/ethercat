@@ -1,0 +1,1379 @@
+; notice: * = internal actual value!
+[Header]
+Regler=DuetFL 48/10
+Motor=
+Description=
+Version=00.00.02
+srvc_prm_version=$00000000
+
+[CommObj]
+$0000=$000003E8    NORM:  currc_cyc_time_currc
+$0001=$000007D0    NORM:  currc_cyc_time_spdc
+$0002=$00000FA0    NORM:  currc_cyc_time_posc
+$0003=$00003E80    NORM:  main_abtast_ablauf
+$0004=$002FFD2A    NORM:  ioh_uzk_nenn
+$0005=$00153851    NORM:  currc_i_nom_dev
+$0006=$003891EB    NORM:  currc_i_max_dev
+$0007=$0013FF6C    NORM:  pfc_uzk_min
+$0007=$0013FF6C *  NORM:  pfc_uzk_min
+$0010=$00001133    NORM:  srvc_device_type
+$0011=$00000000    NORM:  main_cpu_time_remaining
+$0012=$00033291    NORM:  srvc_operation_time
+$0013=$0005BB2F    NORM:  srvc_commiss_state
+$0014=$00000FAE    NORM:  srvc_device_serial_num
+$0015=$00010000    NORM:  srvc_device_revision
+$0016=$00000000    NORM:  srvc_encoder_type
+$0017=$00040001    NORM:  srvc_soft_main
+$0018=$00004E20    NORM:  srvc_custom_main
+$0019=$00010003    NORM:  main_bootloader_version
+$001A=$00000000    NORM:  srvc_motid_ctrl
+$001B=$002FFD2A    NORM:  srvc_u_nenn_mot
+$001B=$002FFD2A *  NORM:  srvc_u_nenn_mot
+$001C=$00153851    NORM:  currc_i_nom
+$001C=$001535C2 *  NORM:  currc_i_nom
+$001D=$003891EB    NORM:  currc_i_max
+$001D=$00388F5C *  NORM:  currc_i_max
+$001E=$017D7840    NORM:  currc_iit_mot_time
+$001E=$017D7840 *  NORM:  currc_iit_mot_time
+$001F=$0000023D    NORM:  srvc_torque_const
+$001F=$0000023D *  NORM:  srvc_torque_const
+$0020=$009C4000    NORM:  srvc_nenn_mot_speed
+$0020=$009C4000 *  NORM:  srvc_nenn_mot_speed
+$0021=$00BB8000    NORM:  spdc_n_ref_lim_pos
+$0021=$00BB8000 *  NORM:  spdc_n_ref_lim_pos
+$0022=$00000004    NORM:  eeval_enc_polp_num
+$0022=$00000004 *  NORM:  eeval_enc_polp_num
+$0023=$00001451    NORM:  ioh_l_mot
+$0023=$00001450 *  NORM:  ioh_l_mot
+$0024=$0000001F    NORM:  ioh_r_mot
+$0024=$0000001E *  NORM:  ioh_r_mot
+$0025=$000005A0    NORM:  ioh_mot_temp_max
+$0025=$000005A0 *  NORM:  ioh_mot_temp_max
+$0026=$00030003    NORM:  srvc_soft_prod_step
+$0027=$00030C3F    NORM:  srvc_support_object
+$0028=$0C3F0002    NORM:  srvc_tech_stat
+$0029=$00000000    NORM:  srvc_prm_version
+$002A=$00000003    NORM:  enc_spdc_config
+$002B=$00000001    NORM:  enc_spdc_num
+$002C=$00000001    NORM:  enc_sypdc_div
+$002D=$00000003    NORM:  enc_pos_config
+$002E=$00000001    NORM:  enc_pos_num
+$002F=$00000001    NORM:  enc_pos_div
+$0030=$00000010    NORM:  seqc_opmode
+$0030=$00000010 *  NORM:  seqc_opmode
+$0031=$01000010    NORM:  stat_conf2_1
+$0031=$01000010 *  NORM:  stat_conf2_1
+$0032=$2180B310    NORM:  rs232_stat_sum
+$0033=$00000000    NORM:  seqc_brake_unlock_time
+$0033=$00000000 *  NORM:  seqc_brake_unlock_time
+$0034=$00000000    NORM:  seqc_brake_lock_time
+$0034=$00000000 *  NORM:  seqc_brake_lock_time
+$0035=$00000000    NORM:  seqc_auto_brake_time
+$0035=$00000000 *  NORM:  seqc_auto_brake_time
+$0036=$00000001    NORM:  commh_ctrlenab_log
+$0037=$00000000    NORM:  stm_status2_sum
+$0040=$00000000    NORM:  commh_null
+$0041=$00000000    NORM:  commh_eth_ip_adr
+$0041=$00000000 *  NORM:  commh_eth_ip_adr
+$0042=$00000000    NORM:  commh_eth_node_port
+$0042=$00000000 *  NORM:  commh_eth_node_port
+$0043=$00000000    NORM:  commh_eth_node_subnmask
+$0043=$00000000 *  NORM:  commh_eth_node_subnmask
+$0044=$00000000    NORM:  commh_eth_node_gtway
+$0044=$00000000 *  NORM:  commh_eth_node_gtway
+$0045=$00000000    NORM:  commh_eth_sess_timeout
+$0045=$00000000 *  NORM:  commh_eth_sess_timeout
+$0050=$0001C200    NORM:  rs232_baudrate
+$0050=$0001C200 *  NORM:  rs232_baudrate
+$0051=$00000000    NORM:  rs232_para_conf
+$0052=$00000028    NORM:  rs232_unit_x_var_i
+$0053=$FFFFFFFD    NORM:  rs232_unit_x_conv_i
+$0054=$00000001    NORM:  rs232_unit_x_numerator
+$0055=$00000001    NORM:  rs232_unit_x_divisor
+$0056=$00000003    NORM:  rs232_unit_x_decimals
+$0057=$0000000B    NORM:  rs232_unit_n_var_i
+$0058=$00000067    NORM:  rs232_unit_n_conv_i
+$0059=$00000001    NORM:  rs232_unit_n_numerator
+$005A=$00000001    NORM:  rs232_unit_n_divisor
+$005B=$00000003    NORM:  rs232_unit_n_decimals
+$005C=$0000003D    NORM:  rs232_unit_a_var_i
+$005D=$0000004B    NORM:  rs232_unit_a_conv_i
+$005E=$00000001    NORM:  rs232_unit_a_numerator
+$005F=$00000001    NORM:  rs232_unit_a_divisor
+$0060=$00000000    NORM:  rs232_unit_a_decimals
+$0062=$004C4B40    NORM:  rs232_osc_screen_time
+$0063=$00000000    NORM:  rs232_disp_free_adr_CH1_s
+$0064=$7FFFFFFF    NORM:  posi_x_end_max
+$0065=$80000000    NORM:  posi_x_end_min
+$0066=$00000000    NORM:  rs232_para_sw_mem
+$0067=$00000000    NORM:  rs232_disp_free_adr_CH1_un
+$0068=$00000000    NORM:  rs232_disp_free_adr_CH2_s
+$0069=$00000000    NORM:  rs232_disp_free_adr_CH2_un
+$0070=$00000000    NORM:  errh_err_field_0
+$0071=$00000000    NORM:  errh_err_field_1
+$0072=$FFFFFFFF    NORM:  errh_prio_field_0
+$0072=$FFFFFFFF *  NORM:  errh_prio_field_0
+$0073=$FFFFFFFF    NORM:  errh_prio_field_1
+$0073=$FFFFFFFF *  NORM:  errh_prio_field_1
+$0074=$F1FFBFFF    NORM:  errh_warn_field_0
+$0074=$F1FFBFFF *  NORM:  errh_warn_field_0
+$0075=$FFFFFFFF    NORM:  errh_warn_field_1
+$0075=$FFFFFFFF *  NORM:  errh_warn_field_1
+$0076=$00BB8000    NORM:  rs232_max_input_speed
+$0077=$0186A000    NORM:  rs232_max_input_acc
+$0080=$FFFFF5C3    NORM:  currc_i_u_act
+$0081=$000007AE    NORM:  currc_i_v_act
+$0082=$002FEF7C    NORM:  ioh_uzk_volt
+$0083=$000001F0    NORM:  ioh_mot_temp
+$0084=$000002A0    NORM:  ioh_power_stage_temp
+$0085=$0000FE00    NORM:  ioh_din
+$0086=$00000801    NORM:  ioh_dout_data
+$0087=$000A0000    NORM:  ioh_aout_range
+$0088=$00000A3D    NORM:  ioh_aout_resolution_volt
+$0089=$00000000    NORM:  ioh_dout2_1_func
+$0089=$00000000 *  NORM:  ioh_dout2_1_func
+$008A=$00000080    NORM:  ioh_aout0_ko_nr
+$008A=$000000E0 *  NORM:  ioh_aout0_ko_nr
+$008B=$00028F5C    NORM:  ioh_aout0_scale
+$008B=$00028F5C *  NORM:  ioh_aout0_scale
+$008C=$00050000    NORM:  ioh_aout0_offset
+$008C=$00050000 *  NORM:  ioh_aout0_offset
+$008D=$00000081    NORM:  ioh_aout1_ko_nr
+$008D=$000000E1 *  NORM:  ioh_aout1_ko_nr
+$008E=$00028F5C    NORM:  ioh_aout1_scale
+$008E=$00028F5C *  NORM:  ioh_aout1_scale
+$008F=$00050000    NORM:  ioh_aout1_offset
+$008F=$00050000 *  NORM:  ioh_aout1_offset
+$0090=$00000000    NORM:  ioh_ain0_offs
+$0090=$00000000 *  NORM:  ioh_ain0_offs
+$0091=$00000000    NORM:  ioh_ain1_offs
+$0091=$00000000 *  NORM:  ioh_ain1_offs
+$0092=$00000000    NORM:  ioh_ain0_safezero
+$0092=$00000000 *  NORM:  ioh_ain0_safezero
+$0093=$00000000    NORM:  ioh_ain1_safezero
+$0093=$00000000 *  NORM:  ioh_ain1_safezero
+$0094=$00000074    NORM:  ioh_control
+$0094=$00000074 *  NORM:  ioh_control
+$0095=$00000000    NORM:  ioh_pins_used
+$0095=$00000000 *  NORM:  ioh_pins_used
+$0096=$10000000    NORM:  ioh_KO_mask_amon0
+$0096=$00000007 *  NORM:  ioh_KO_mask_amon0
+$0097=$001E8480    NORM:  ioh_ignore_time
+$0097=$001E8480 *  NORM:  ioh_ignore_time
+$0098=$FFFFFEC0    NORM:  ioh_ain0_act
+$0099=$FFFFF5B0    NORM:  ioh_ain1_act
+$009A=$000005C0    NORM:  ioh_case_air_temp
+$00A0=$CC290000    NORM:  eeval_enc_phi
+$00A1=$00001002    NORM:  enc_config
+$00A1=$00001002 *  NORM:  enc_config
+$00A2=$00000000    NORM:  emu_ctrl
+$00A2=$00000000 *  NORM:  emu_ctrl
+$00A3=$35520000    NORM:  eeval_enc_phi_offs
+$00A3=$35520000 *  NORM:  eeval_enc_phi_offs
+$00A4=$00000400    NORM:  eeval_x2b_line_cnt
+$00A4=$00000400 *  NORM:  eeval_x2b_line_cnt
+$00A5=$00000400    NORM:  emu_enc_line_cnt
+$00A5=$00000400 *  NORM:  emu_enc_line_cnt
+$00A6=$00000000    NORM:  emu_enc_offset
+$00A6=$00000000 *  NORM:  emu_enc_offset
+$00A7=$00000000    NORM:  eeval_motid_w_status
+$00A8=$00000001    NORM:  enc_sync_num
+$00A9=$00000001    NORM:  enc_sync_div
+$00AA=$00000002    NORM:  enc_encoder_status
+$00AB=$00000200    NORM:  enc_hiperface_line_cnt
+$00AC=$2C600000    NORM:  eeval_enc_phi_offs_2
+$00AC=$2C600000 *  NORM:  eeval_enc_phi_offs_2
+$00AD=$00000001    NORM:  enc_pulses_per_rev
+$00C0=$FFFFF5C3    NORM:  currc_i_q_act
+$00C1=$00000000    NORM:  currc_i_d_act
+$00C2=$00000000    NORM:  currc_i_q_ref
+$00C3=$00000000    NORM:  currc_i_d_ref
+$00C4=$00000000    NORM:  currc_iit_pwr_level
+$00C5=$00000000    NORM:  currc_iit_mot_level
+$00C6=$00388F5C    NORM:  currc_i_lim_act
+$00C7=$00000000    NORM:  currc_i_ref_rs232
+$00C7=$00000000 *  NORM:  currc_i_ref_rs232
+$00C8=$00000000    NORM:  currc_i_ref_can
+$00C8=$00000000 *  NORM:  currc_i_ref_can
+$00C9=$00000000    NORM:  currc_i_ref_ftd
+$00C9=$00000000 *  NORM:  currc_i_ref_ftd
+$00CA=$00000000    NORM:  currc_i_ref_profi
+$00CA=$00000000 *  NORM:  currc_i_ref_profi
+$00CB=$00000000    NORM:  currc_i_lim_rs232
+$00CB=$00000000 *  NORM:  currc_i_lim_rs232
+$00CC=$00320000    NORM:  currc_i_lim_can
+$00CC=$00000000 *  NORM:  currc_i_lim_can
+$00CD=$00000000    NORM:  currc_i_lim_ftd
+$00CD=$00000000 *  NORM:  currc_i_lim_ftd
+$00CE=$00000000    NORM:  currc_i_lim_profi
+$00CE=$00000000 *  NORM:  currc_i_lim_profi
+$00CF=$00000000    NORM:  currc_ctrl
+$00D0=$00030000    NORM:  currc_ctrl_gain_q
+$00D0=$00030000 *  NORM:  currc_ctrl_gain_q
+$00D1=$000061A8    NORM:  currc_ctrl_time_q
+$00D1=$000061A8 *  NORM:  currc_ctrl_time_q
+$00D2=$00030000    NORM:  currc_ctrl_gain_d
+$00D2=$00030000 *  NORM:  currc_ctrl_gain_d
+$00D3=$000061A8    NORM:  currc_ctrl_time_d
+$00D3=$000061A8 *  NORM:  currc_ctrl_time_d
+$00D4=$00005553    NORM:  currc_sel_i_switch
+$00D5=$00000400    NORM:  currc_sel_i_lim_switch
+$00D6=$00010000    NORM:  ssel_ain0_i_per_volt
+$00D6=$00010000 *  NORM:  ssel_ain0_i_per_volt
+$00D7=$00010000    NORM:  ssel_ain1_i_per_volt
+$00D7=$00010000 *  NORM:  ssel_ain1_i_per_volt
+$00D8=$00000000    NORM:  currc_i_ref_jog1
+$00D8=$00000000 *  NORM:  currc_i_ref_jog1
+$00D9=$00000000    NORM:  currc_i_ref_jog2
+$00D9=$00000000 *  NORM:  currc_i_ref_jog2
+$00DA=$00000000    NORM:  currc_i_vorst
+$00DB=$00000000    NORM:  currc_i_vorst_skal
+$00DB=$00000000 *  NORM:  currc_i_vorst_skal
+$00E0=$00000000    NORM:  ssel_n_ref
+$00E1=$00000000    NORM:  ssel_n_act
+$00E2=$00000000    NORM:  ssel_n_act_disp
+$00E3=$00000000    NORM:  spdc_n_ref_rs232
+$00E3=$00000000 *  NORM:  spdc_n_ref_rs232
+$00E4=$00000000    NORM:  spdc_n_ref_can
+$00E4=$00000000 *  NORM:  spdc_n_ref_can
+$00E5=$00000000    NORM:  spdc_n_ref_ftd
+$00E5=$00000000 *  NORM:  spdc_n_ref_ftd
+$00E6=$00000000    NORM:  spdc_n_ref_profi
+$00E6=$00000000 *  NORM:  spdc_n_ref_profi
+$00E7=$00000000    NORM:  spdc_n_ref_hilf_rs232
+$00E7=$00000000 *  NORM:  spdc_n_ref_hilf_rs232
+$00E8=$00000000    NORM:  spdc_n_ref_hilf_can
+$00E8=$00000000 *  NORM:  spdc_n_ref_hilf_can
+$00E9=$00000000    NORM:  spdc_n_ref_hilf_ftd
+$00E9=$00000000 *  NORM:  spdc_n_ref_hilf_ftd
+$00EA=$00000000    NORM:  spdc_n_ref_hilf_profi
+$00EA=$00000000 *  NORM:  spdc_n_ref_hilf_profi
+$00EB=$00000007    NORM:  ssel_ctrl_stat
+$00EB=$00000007 *  NORM:  ssel_ctrl_stat
+$00EC=$00050000    NORM:  spdc_ctrl_gain
+$00EC=$00050000 *  NORM:  spdc_ctrl_gain
+$00ED=$0003D090    NORM:  spdc_ctrl_time
+$00ED=$0003D090 *  NORM:  spdc_ctrl_time
+$00EE=$00005535    NORM:  spdc_sel_n_switch
+$00EF=$00000000    NORM:  spdc_sel_h_n_switch
+$00F0=$0012C000    NORM:  ssel_ain0_n_per_volt
+$00F0=$0012C000 *  NORM:  ssel_ain0_n_per_volt
+$00F1=$0012C000    NORM:  ssel_ain1_n_per_volt
+$00F1=$0012C000 *  NORM:  ssel_ain1_n_per_volt
+$00F2=$00003E80    NORM:  ssel_time_c_n_act_filter
+$00F2=$00003E80 *  NORM:  ssel_time_c_n_act_filter
+$00F3=$004E2000    NORM:  ssel_n_acc_pos
+$00F3=$004E2000 *  NORM:  ssel_n_acc_pos
+$00F4=$004E2000    NORM:  ssel_n_dec_pos
+$00F4=$004E2000 *  NORM:  ssel_n_dec_pos
+$00F5=$004E2000    NORM:  ssel_n_acc_neg
+$00F5=$004E2000 *  NORM:  ssel_n_acc_neg
+$00F6=$004E2000    NORM:  ssel_n_dec_neg
+$00F6=$004E2000 *  NORM:  ssel_n_dec_neg
+$00F7=$00271000    NORM:  ssel_lim_sw_ramp_dec
+$00F7=$00271000 *  NORM:  ssel_lim_sw_ramp_dec
+$00F8=$00271000    NORM:  ssel_enab_off_ramp_dec
+$00F8=$00271000 *  NORM:  ssel_enab_off_ramp_dec
+$00F9=$00000000    NORM:  spdc_n_target_speed
+$00F9=$00000000 *  NORM:  spdc_n_target_speed
+$00FA=$0000A000    NORM:  spdc_n_target_win_speed
+$00FA=$0000A000 *  NORM:  spdc_n_target_win_speed
+$00FB=$05F5E100    NORM:  spdc_ramp_brake_max_time
+$00FC=$0000A000    NORM:  n_ramp_brake_min
+$00FC=$0000A000 *  NORM:  n_ramp_brake_min
+$00FD=$00000000    NORM:  spdc_n_ref_jog1
+$00FD=$00000000 *  NORM:  spdc_n_ref_jog1
+$00FE=$00000000    NORM:  spdc_n_ref_jog2
+$00FE=$00000000 *  NORM:  spdc_n_ref_jog2
+$00FF=$00000000    NORM:  ssel_n_act_ixr
+$0100=$00000000    NORM:  ssel_n_act_filter
+$0101=$05F5E100    NORM:  spdc_ramp_brake_max_time_par
+$0101=$05F5E100 *  NORM:  spdc_ramp_brake_max_time_par
+$0110=$0009FFB5    NORM:  psel_x_act
+$0111=$00000000    NORM:  ioh_pos_selector
+$0113=$00000040    NORM:  posi_bus1_pointer
+$0114=$00000000    NORM:  posi_bus2_pointer
+$0115=$00000000    NORM:  posi_bus3_pointer
+$0116=$00020000    NORM:  posc_ctrl_gain
+$0116=$00020000 *  NORM:  posc_ctrl_gain
+$0117=$001F4000    NORM:  posc_n_lim_pos
+$0117=$001F4000 *  NORM:  posc_n_lim_pos
+$0118=$00000001    NORM:  pos_sel_parameter
+$0119=$0000C350    NORM:  posc_x_diff_time
+$0119=$0000BB80 *  NORM:  posc_x_diff_time
+$011A=$00004000    NORM:  posc_x_diff_lim_pos
+$011B=$00000000    NORM:  posc_x_dead_rng_pos
+$011C=$7FFFFFFF    NORM:  ipo_sw_lim_pos
+$011D=$80000000    NORM:  ipo_sw_lim_neg
+$011F=$00000000    NORM:  posi_bus0_x_trig
+$0120=$00000CCD    NORM:  posc_x_target_win_pos
+$0121=$00000000    NORM:  posc_x_target_time
+$0121=$00000000 *  NORM:  posc_x_target_time
+$0122=$00000000    NORM:  psel_home_offs
+$012B=$00000023    NORM:  seqc_homing_method
+$012C=$00100000    NORM:  ssel_ain0_x_per_volt
+$012C=$00100000 *  NORM:  ssel_ain0_x_per_volt
+$012D=$00100000    NORM:  ssel_ain1_x_per_volt
+$012D=$00100000 *  NORM:  ssel_ain1_x_per_volt
+$012E=$00100000    NORM:  seqc_home_sw_zero_dist
+$012F=$00001000    NORM:  seqc_home_sw_zero_min
+$012F=$00001000 *  NORM:  seqc_home_sw_zero_min
+$0130=$0009FFEA    NORM:  pos_x_ref
+$0131=$00006000    NORM:  pos_control_n_korr
+$0132=$00000000    NORM:  posi_rev_dist
+$0133=$00005555    NORM:  pos_sel_x_switch
+$0134=$00005555    NORM:  pos_sel_n_switch
+$0135=$00000000    NORM:  pos_can_x_ip
+$0137=$00000035    NORM:  posc_x_diff_32b
+$0138=$00007700    NORM:  pos_sel2_x_switch
+$0139=$00008800    NORM:  pos_sel2_n_switch
+$013A=$00004002    NORM:  pos_kom_stat
+$013B=$00271000    NORM:  pos_din_halt_acc
+$013B=$00271000 *  NORM:  pos_din_halt_acc
+$013C=$00000000    NORM:  fdt_max_current_counter
+$013C=$00000000 *  NORM:  fdt_max_current_counter
+$0140=$00000002    NORM:  can_node_id
+$0141=$00000000    NORM:  can_node_id_offset
+$0142=$00000002    NORM:  can_node_id_base
+$0142=$00000002 *  NORM:  can_node_id_base
+$0143=$000001F4    NORM:  can_baudrate
+$0143=$000001F4 *  NORM:  can_baudrate
+$0144=$00000001    NORM:  can_comm_active
+$0144=$00000001 *  NORM:  can_comm_active
+$0145=$00000000    NORM:  can_options
+$0145=$00000000 *  NORM:  can_options
+$0146=$60410010    NORM:  can_pdo_tx0_mapped
+$0147=$00000000    NORM:  can_pdo_tx1_mapped
+$0148=$60400010    NORM:  can_pdo_rx0_mapped
+$0149=$00000000    NORM:  can_pdo_rx1_mapped
+$014A=$00002710    NORM:  can_sync_time_slot
+$014B=$00000001    NORM:  can_pos_fact_num
+$014C=$00000001    NORM:  can_pos_fact_div
+$014D=$00000001    NORM:  can_val_fact_num
+$014E=$00000001    NORM:  can_vel_fact_div
+$014F=$00000001    NORM:  can_acc_fact_num
+$0150=$00000001    NORM:  can_acc_fact_div
+$0151=$00000000    NORM:  can_guard_time
+$0152=$00000000    NORM:  can_lifetime_factor
+$0160=$00000000    NORM:  osc_control
+$0161=$C0020000    NORM:  osc_status
+$0162=$00000100    NORM:  osc_samples
+$0163=$000003E8    NORM:  osc_sample_time
+$0164=$FFFFFFFF    NORM:  osc_triggermask
+$0164=$0000FFFF *  NORM:  osc_triggermask
+$0165=$00010002    NORM:  osc_triggerconfig
+$0166=$005DC000    NORM:  osc_triggerlevel
+$0167=$00000014    NORM:  osc_timebase
+$0168=$FFFFFFCE    NORM:  osc_delay
+$0168=$FFFFFFCE *  NORM:  osc_delay
+$0169=$00000100    NORM:  osc_data0
+$0169=$000001AE *  NORM:  osc_data0
+$016A=$00000100    NORM:  osc_KO_nr0
+$016A=$000001AE *  NORM:  osc_KO_nr0
+$016B=$FFFFFFFF    NORM:  osc_KO_mask0
+$016B=$0000FFFF *  NORM:  osc_KO_mask0
+$016C=$000000A0    NORM:  osc_data1
+$016C=$00000117 *  NORM:  osc_data1
+$016D=$000000A0    NORM:  osc_KO_nr1
+$016D=$00000117 *  NORM:  osc_KO_nr1
+$016E=$FFFFFFFF    NORM:  osc_KO_mask1
+$016E=$0000FFFF *  NORM:  osc_KO_mask1
+$016F=$00000100    NORM:  osc_data2
+$016F=$000001AE *  NORM:  osc_data2
+$0170=$00000100    NORM:  osc_KO_nr2
+$0170=$000001AE *  NORM:  osc_KO_nr2
+$0171=$FFFFFFFF    NORM:  osc_KO_mask2
+$0171=$0000FFFF *  NORM:  osc_KO_mask2
+$0180=$00000003    NORM:  mmc_conf
+$0181=$0000C350    NORM:  mmc_wait_time
+$0182=$4C4B4150    NORM:  mmc_filename0
+$0183=$41523030    NORM:  mmc_filename1
+$0190=$00000000    NORM:  ftd_pointer_course_prog
+$0191=$00000000    NORM:  ftd_line_course_prog
+$0192=$00000000    NORM:  ftd_line_course_prog_akt
+$0193=$00000000    NORM:  ftd_line_course_prog_start
+$01F0=$00000000    NORM:  srvc_device_brd_num_mid
+$01F1=$00000000    NORM:  srvc_device_brd_num_lo
+$01F2=$38303139    NORM:  srvc_art_hi_tech1
+$01F3=$39323438    NORM:  srvc_art_mid_tech1
+$01F4=$00003030    NORM:  srvc_art_lo_tech1
+$01F5=$00000241    NORM:  srvc_typ_tech1
+$01F6=$31313435    NORM:  srvc_ser_hi_tech1
+$01F7=$38323035    NORM:  srvc_ser_mid_tech1
+$01F8=$00003035    NORM:  srvc_ser_lo_tech1
+$01F9=$00000000    NORM:  srvc_rev_idx_tech1
+$01FA=$00000001    NORM:  srvc_soft_rev_idx_tech1
+$1000=$00001133    NORM:  unknown_0x1000_NORM
+$1002=$0003328D    NORM:  unknown_0x1002_NORM
+$1004=$00010000    NORM:  unknown_0x1004_NORM
+$1006=$00000FAE    NORM:  unknown_0x1006_NORM
+$1008=$00030003    NORM:  unknown_0x1008_NORM
+$100A=$00040001    NORM:  unknown_0x100A_NORM
+$100C=$00004E20    NORM:  unknown_0x100C_NORM
+$100E=$00010003    NORM:  unknown_0x100E_NORM
+$1010=$00000000    NORM:  unknown_0x1010_NORM
+$1012=$00020000    NORM:  unknown_0x1012_NORM
+$1014=$00030C3F    NORM:  unknown_0x1014_NORM
+$1016=$00000000    NORM:  unknown_0x1016_NORM
+$1018=$08493BA3    NORM:  unknown_0x1018_NORM
+$101A=$186A1618    NORM:  unknown_0x101A_NORM
+$101C=$09C4023D    NORM:  unknown_0x101C_NORM
+$101E=$00040BB8    NORM:  unknown_0x101E_NORM
+$1020=$000C001F    NORM:  unknown_0x1020_NORM
+$1022=$0000005A    NORM:  unknown_0x1022_NORM
+$1024=$0005BB2F    NORM:  unknown_0x1024_NORM
+$1026=$00030000    NORM:  unknown_0x1026_NORM
+$1028=$00010001    NORM:  unknown_0x1028_NORM
+$102A=$00010003    NORM:  unknown_0x102A_NORM
+$102C=$00000001    NORM:  unknown_0x102C_NORM
+$102E=$00000000    NORM:  unknown_0x102E_NORM
+$1030=$00001400    NORM:  unknown_0x1030_NORM
+$1032=$00021032    NORM:  unknown_0x1032_NORM
+$1034=$00070004    NORM:  unknown_0x1034_NORM
+$1036=$00000004    NORM:  unknown_0x1036_NORM
+$1038=$00381038    NORM:  unknown_0x1038_NORM
+$103A=$00000001    NORM:  unknown_0x103A_NORM
+$103C=$00000000    NORM:  unknown_0x103C_NORM
+$103E=$0E700000    NORM:  unknown_0x103E_NORM
+$1040=$00C80064    NORM:  unknown_0x1040_NORM
+$1042=$06400190    NORM:  unknown_0x1042_NORM
+$1044=$084A3BA3    NORM:  unknown_0x1044_NORM
+$1046=$13881619    NORM:  unknown_0x1046_NORM
+$1048=$00000000    NORM:  unknown_0x1048_NORM
+$104A=$00000000    NORM:  unknown_0x104A_NORM
+$104C=$000018DA    NORM:  unknown_0x104C_NORM
+$104E=$1B7F0000    NORM:  unknown_0x104E_NORM
+$1050=$00000010    NORM:  unknown_0x1050_NORM
+$1052=$2180B310    NORM:  unknown_0x1052_NORM
+$1054=$7FC72000    NORM:  unknown_0x1054_NORM
+$1056=$1FFE3FFB    NORM:  unknown_0x1056_NORM
+$1058=$00568399    NORM:  unknown_0x1058_NORM
+$105A=$0000012D    NORM:  unknown_0x105A_NORM
+$105C=$00000000    NORM:  unknown_0x105C_NORM
+$105E=$00000000    NORM:  unknown_0x105E_NORM
+$1060=$01000010    NORM:  unknown_0x1060_NORM
+$1062=$00000010    NORM:  unknown_0x1062_NORM
+$1064=$00000000    NORM:  unknown_0x1064_NORM
+$1066=$00010000    NORM:  unknown_0x1066_NORM
+$1068=$00000000    NORM:  unknown_0x1068_NORM
+$106A=$00000000    NORM:  unknown_0x106A_NORM
+$106C=$00000000    NORM:  unknown_0x106C_NORM
+$106E=$00000000    NORM:  unknown_0x106E_NORM
+$1070=$00000000    NORM:  unknown_0x1070_NORM
+$1072=$00000000    NORM:  unknown_0x1072_NORM
+$1074=$00000000    NORM:  unknown_0x1074_NORM
+$1076=$00000000    NORM:  unknown_0x1076_NORM
+$1078=$00000000    NORM:  unknown_0x1078_NORM
+$107A=$00000000    NORM:  unknown_0x107A_NORM
+$107C=$00000000    NORM:  unknown_0x107C_NORM
+$107E=$00000000    NORM:  unknown_0x107E_NORM
+$1080=$00000000    NORM:  unknown_0x1080_NORM
+$1082=$00000000    NORM:  unknown_0x1082_NORM
+$1084=$00BE2D60    NORM:  unknown_0x1084_NORM
+$1086=$00000000    NORM:  unknown_0x1086_NORM
+$1088=$0001C200    NORM:  unknown_0x1088_NORM
+$108A=$00030000    NORM:  unknown_0x108A_NORM
+$108C=$00000003    NORM:  unknown_0x108C_NORM
+$108E=$00000028    NORM:  unknown_0x108E_NORM
+$1090=$FFFFFFFD    NORM:  unknown_0x1090_NORM
+$1092=$00000001    NORM:  unknown_0x1092_NORM
+$1094=$00000001    NORM:  unknown_0x1094_NORM
+$1096=$0000000B    NORM:  unknown_0x1096_NORM
+$1098=$00000067    NORM:  unknown_0x1098_NORM
+$109A=$00000001    NORM:  unknown_0x109A_NORM
+$109C=$00000001    NORM:  unknown_0x109C_NORM
+$109E=$0000003D    NORM:  unknown_0x109E_NORM
+$10A0=$0000004B    NORM:  unknown_0x10A0_NORM
+$10A2=$00000001    NORM:  unknown_0x10A2_NORM
+$10A4=$00000001    NORM:  unknown_0x10A4_NORM
+$10A6=$004C4B40    NORM:  unknown_0x10A6_NORM
+$10A8=$00000000    NORM:  unknown_0x10A8_NORM
+$10AA=$7FFFFFFF    NORM:  unknown_0x10AA_NORM
+$10AC=$80000000    NORM:  unknown_0x10AC_NORM
+$10AE=$00000000    NORM:  unknown_0x10AE_NORM
+$10B0=$00000000    NORM:  unknown_0x10B0_NORM
+$10B2=$00000000    NORM:  unknown_0x10B2_NORM
+$10B4=$00000000    NORM:  unknown_0x10B4_NORM
+$10B6=$00000000    NORM:  unknown_0x10B6_NORM
+$10B8=$00000000    NORM:  unknown_0x10B8_NORM
+$10BA=$00000000    NORM:  unknown_0x10BA_NORM
+$10BC=$00000000    NORM:  unknown_0x10BC_NORM
+$10BE=$00000000    NORM:  unknown_0x10BE_NORM
+$10C0=$00000000    NORM:  unknown_0x10C0_NORM
+$10C2=$00000000    NORM:  unknown_0x10C2_NORM
+$10C4=$00000000    NORM:  unknown_0x10C4_NORM
+$10C6=$00000000    NORM:  unknown_0x10C6_NORM
+$10C8=$FFFFFFFF    NORM:  unknown_0x10C8_NORM
+$10CA=$FFFFFFFF    NORM:  unknown_0x10CA_NORM
+$10CC=$F1FFBFFF    NORM:  unknown_0x10CC_NORM
+$10CE=$FFFFFFFF    NORM:  unknown_0x10CE_NORM
+$10D0=$00186A00    NORM:  unknown_0x10D0_NORM
+$10D2=$00000BB8    NORM:  unknown_0x10D2_NORM
+$10D4=$00000000    NORM:  unknown_0x10D4_NORM
+$10D6=$00000000    NORM:  unknown_0x10D6_NORM
+$10D8=$00000000    NORM:  unknown_0x10D8_NORM
+$10DA=$00000000    NORM:  unknown_0x10DA_NORM
+$10DC=$00000000    NORM:  unknown_0x10DC_NORM
+$10DE=$00000000    NORM:  unknown_0x10DE_NORM
+$10E0=$0000FFFC    NORM:  unknown_0x10E0_NORM
+$10E2=$3FB93FF5    NORM:  unknown_0x10E2_NORM
+$10E4=$4F484860    NORM:  unknown_0x10E4_NORM
+$10E6=$4F384868    NORM:  unknown_0x10E6_NORM
+$10E8=$001F3B99    NORM:  unknown_0x10E8_NORM
+$10EA=$5AF1002A    NORM:  unknown_0x10EA_NORM
+$10EC=$005D2E32    NORM:  unknown_0x10EC_NORM
+$10EE=$0078133B    NORM:  unknown_0x10EE_NORM
+$10F0=$FE00FE00    NORM:  unknown_0x10F0_NORM
+$10F2=$03E80801    NORM:  unknown_0x10F2_NORM
+$10F4=$00000004    NORM:  unknown_0x10F4_NORM
+$10F6=$00000000    NORM:  unknown_0x10F6_NORM
+$10F8=$00E00000    NORM:  unknown_0x10F8_NORM
+$10FA=$0080FFFF    NORM:  unknown_0x10FA_NORM
+$10FC=$FFFF00E1    NORM:  unknown_0x10FC_NORM
+$10FE=$00000080    NORM:  unknown_0x10FE_NORM
+$1100=$00000000    NORM:  unknown_0x1100_NORM
+$1102=$00740000    NORM:  unknown_0x1102_NORM
+$1104=$00000000    NORM:  unknown_0x1104_NORM
+$1106=$00000007    NORM:  unknown_0x1106_NORM
+$1108=$000007D0    NORM:  unknown_0x1108_NORM
+$110A=$00000000    NORM:  unknown_0x110A_NORM
+$110C=$00000000    NORM:  unknown_0x110C_NORM
+$110E=$00000000    NORM:  unknown_0x110E_NORM
+$1110=$00000000    NORM:  unknown_0x1110_NORM
+$1112=$00000000    NORM:  unknown_0x1112_NORM
+$1114=$FA140000    NORM:  unknown_0x1114_NORM
+$1116=$CC29FA14    NORM:  unknown_0x1116_NORM
+$1118=$7FFE0000    NORM:  unknown_0x1118_NORM
+$111A=$00000000    NORM:  unknown_0x111A_NORM
+$111C=$00000000    NORM:  unknown_0x111C_NORM
+$111E=$00020198    NORM:  unknown_0x111E_NORM
+$1120=$00000000    NORM:  unknown_0x1120_NORM
+$1122=$3FA0054D    NORM:  unknown_0x1122_NORM
+$1124=$7F813FA1    NORM:  unknown_0x1124_NORM
+$1126=$40007FFF    NORM:  unknown_0x1126_NORM
+$1128=$7FF84000    NORM:  unknown_0x1128_NORM
+$112A=$02007FF8    NORM:  unknown_0x112A_NORM
+$112C=$00000000    NORM:  unknown_0x112C_NORM
+$112E=$00000000    NORM:  unknown_0x112E_NORM
+$1130=$10020000    NORM:  unknown_0x1130_NORM
+$1132=$00083552    NORM:  unknown_0x1132_NORM
+$1134=$7FFF0001    NORM:  unknown_0x1134_NORM
+$1136=$10007FFF    NORM:  unknown_0x1136_NORM
+$1138=$00001000    NORM:  unknown_0x1138_NORM
+$113A=$00010001    NORM:  unknown_0x113A_NORM
+$113C=$00002C60    NORM:  unknown_0x113C_NORM
+$113E=$FFCB0CA1    NORM:  unknown_0x113E_NORM
+$1140=$FFFCFFFC    NORM:  unknown_0x1140_NORM
+$1142=$00000000    NORM:  unknown_0x1142_NORM
+$1144=$00000000    NORM:  unknown_0x1144_NORM
+$1146=$FFFFFDD4    NORM:  unknown_0x1146_NORM
+$1148=$00001142    NORM:  unknown_0x1148_NORM
+$114A=$00000000    NORM:  unknown_0x114A_NORM
+$114C=$10019860    NORM:  unknown_0x114C_NORM
+$114E=$00000000    NORM:  unknown_0x114E_NORM
+$1150=$1400A8AC    NORM:  unknown_0x1150_NORM
+$1152=$00001618    NORM:  unknown_0x1152_NORM
+$1154=$FFFCFFFF    NORM:  unknown_0x1154_NORM
+$1156=$00000000    NORM:  unknown_0x1156_NORM
+$1158=$00000000    NORM:  unknown_0x1158_NORM
+$115A=$16180000    NORM:  unknown_0x115A_NORM
+$115C=$FFFBFFFF    NORM:  unknown_0x115C_NORM
+$115E=$00000000    NORM:  unknown_0x115E_NORM
+$1160=$00000000    NORM:  unknown_0x1160_NORM
+$1162=$00000000    NORM:  unknown_0x1162_NORM
+$1164=$00000000    NORM:  unknown_0x1164_NORM
+$1166=$00000000    NORM:  unknown_0x1166_NORM
+$1168=$03000000    NORM:  unknown_0x1168_NORM
+$116A=$03000019    NORM:  unknown_0x116A_NORM
+$116C=$55530019    NORM:  unknown_0x116C_NORM
+$116E=$03E80400    NORM:  unknown_0x116E_NORM
+$1170=$000003E8    NORM:  unknown_0x1170_NORM
+$1172=$00000000    NORM:  unknown_0x1172_NORM
+$1174=$00000000    NORM:  unknown_0x1174_NORM
+$1176=$034E0000    NORM:  unknown_0x1176_NORM
+$1178=$07D000C8    NORM:  unknown_0x1178_NORM
+$117A=$01000000    NORM:  unknown_0x117A_NORM
+$117C=$00003BA3    NORM:  unknown_0x117C_NORM
+$117E=$00000000    NORM:  unknown_0x117E_NORM
+$1180=$0000017B    NORM:  unknown_0x1180_NORM
+$1182=$0000017B    NORM:  unknown_0x1182_NORM
+$1184=$FFFFFFFF    NORM:  unknown_0x1184_NORM
+$1186=$00000000    NORM:  unknown_0x1186_NORM
+$1188=$00005960    NORM:  unknown_0x1188_NORM
+$118A=$00000005    NORM:  unknown_0x118A_NORM
+$118C=$0000137A    NORM:  unknown_0x118C_NORM
+$118E=$00000000    NORM:  unknown_0x118E_NORM
+$1190=$00000000    NORM:  unknown_0x1190_NORM
+$1192=$000249F0    NORM:  unknown_0x1192_NORM
+$1194=$00000000    NORM:  unknown_0x1194_NORM
+$1196=$FFF3FFFE    NORM:  unknown_0x1196_NORM
+$1198=$00000000    NORM:  unknown_0x1198_NORM
+$119A=$00000006    NORM:  unknown_0x119A_NORM
+$119C=$00000000    NORM:  unknown_0x119C_NORM
+$119E=$00000000    NORM:  unknown_0x119E_NORM
+$11A0=$FFF3FFFE    NORM:  unknown_0x11A0_NORM
+$11A2=$00000000    NORM:  unknown_0x11A2_NORM
+$11A4=$00000006    NORM:  unknown_0x11A4_NORM
+$11A6=$00000000    NORM:  unknown_0x11A6_NORM
+$11A8=$186A0000    NORM:  unknown_0x11A8_NORM
+$11AA=$00000000    NORM:  unknown_0x11AA_NORM
+$11AC=$00000000    NORM:  unknown_0x11AC_NORM
+$11AE=$C0000000    NORM:  unknown_0x11AE_NORM
+$11B0=$05000007    NORM:  unknown_0x11B0_NORM
+$11B2=$553500FA    NORM:  unknown_0x11B2_NORM
+$11B4=$0BB80000    NORM:  unknown_0x11B4_NORM
+$11B6=$00080BB8    NORM:  unknown_0x11B6_NORM
+$11B8=$0003E800    NORM:  unknown_0x11B8_NORM
+$11BA=$0003E800    NORM:  unknown_0x11BA_NORM
+$11BC=$0003E800    NORM:  unknown_0x11BC_NORM
+$11BE=$0003E800    NORM:  unknown_0x11BE_NORM
+$11C0=$000A0000    NORM:  unknown_0x11C0_NORM
+$11C2=$00000000    NORM:  unknown_0x11C2_NORM
+$11C4=$00000000    NORM:  unknown_0x11C4_NORM
+$11C6=$0001F400    NORM:  unknown_0x11C6_NORM
+$11C8=$0001F400    NORM:  unknown_0x11C8_NORM
+$11CA=$186A000A    NORM:  unknown_0x11CA_NORM
+$11CC=$00000000    NORM:  unknown_0x11CC_NORM
+$11CE=$00000000    NORM:  unknown_0x11CE_NORM
+$11D0=$0009FFEA    NORM:  unknown_0x11D0_NORM
+$11D2=$00000000    NORM:  unknown_0x11D2_NORM
+$11D4=$0009FFB5    NORM:  unknown_0x11D4_NORM
+$11D6=$00000035    NORM:  unknown_0x11D6_NORM
+$11D8=$00060000    NORM:  unknown_0x11D8_NORM
+$11DA=$00000000    NORM:  unknown_0x11DA_NORM
+$11DC=$FFFFFE40    NORM:  unknown_0x11DC_NORM
+$11DE=$00000000    NORM:  unknown_0x11DE_NORM
+$11E0=$00000000    NORM:  unknown_0x11E0_NORM
+$11E2=$0009FFE9    NORM:  unknown_0x11E2_NORM
+$11E4=$0009FFEA    NORM:  unknown_0x11E4_NORM
+$11E6=$00000000    NORM:  unknown_0x11E6_NORM
+$11E8=$00000000    NORM:  unknown_0x11E8_NORM
+$11EA=$FFFE0000    NORM:  unknown_0x11EA_NORM
+$11EC=$0000FFF4    NORM:  unknown_0x11EC_NORM
+$11EE=$00000000    NORM:  unknown_0x11EE_NORM
+$11F0=$00000000    NORM:  unknown_0x11F0_NORM
+$11F2=$00000000    NORM:  unknown_0x11F2_NORM
+$11F4=$00000000    NORM:  unknown_0x11F4_NORM
+$11F6=$00000040    NORM:  unknown_0x11F6_NORM
+$11F8=$00010000    NORM:  unknown_0x11F8_NORM
+$11FA=$00000001    NORM:  unknown_0x11FA_NORM
+$11FC=$000009C4    NORM:  unknown_0x11FC_NORM
+$11FE=$00045D30    NORM:  unknown_0x11FE_NORM
+$1200=$00045D30    NORM:  unknown_0x1200_NORM
+$1202=$0009FFEA    NORM:  unknown_0x1202_NORM
+$1204=$00000000    NORM:  unknown_0x1204_NORM
+$1206=$00014002    NORM:  unknown_0x1206_NORM
+$1208=$00E6007D    NORM:  unknown_0x1208_NORM
+$120A=$00000000    NORM:  unknown_0x120A_NORM
+$120C=$00000000    NORM:  unknown_0x120C_NORM
+$120E=$00000000    NORM:  unknown_0x120E_NORM
+$1210=$01F40200    NORM:  unknown_0x1210_NORM
+$1212=$000C0000    NORM:  unknown_0x1212_NORM
+$1214=$00004000    NORM:  unknown_0x1214_NORM
+$1216=$00000000    NORM:  unknown_0x1216_NORM
+$1218=$7FFFFFFF    NORM:  unknown_0x1218_NORM
+$121A=$80000000    NORM:  unknown_0x121A_NORM
+$121C=$55550000    NORM:  unknown_0x121C_NORM
+$121E=$00000000    NORM:  unknown_0x121E_NORM
+$1220=$00010000    NORM:  unknown_0x1220_NORM
+$1222=$00000CCD    NORM:  unknown_0x1222_NORM
+$1224=$00000000    NORM:  unknown_0x1224_NORM
+$1226=$00100023    NORM:  unknown_0x1226_NORM
+$1228=$00000000    NORM:  unknown_0x1228_NORM
+$122A=$00000000    NORM:  unknown_0x122A_NORM
+$122C=$00005555    NORM:  unknown_0x122C_NORM
+$122E=$00000000    NORM:  unknown_0x122E_NORM
+$1230=$00100000    NORM:  unknown_0x1230_NORM
+$1232=$00100000    NORM:  unknown_0x1232_NORM
+$1234=$00100000    NORM:  unknown_0x1234_NORM
+$1236=$00001000    NORM:  unknown_0x1236_NORM
+$1238=$77000000    NORM:  unknown_0x1238_NORM
+$123A=$00008800    NORM:  unknown_0x123A_NORM
+$123C=$0001F400    NORM:  unknown_0x123C_NORM
+$123E=$00000000    NORM:  unknown_0x123E_NORM
+$1240=$00000002    NORM:  unknown_0x1240_NORM
+$1242=$00000000    NORM:  unknown_0x1242_NORM
+$1244=$0000007F    NORM:  unknown_0x1244_NORM
+$1246=$00000000    NORM:  unknown_0x1246_NORM
+$1248=$01F40002    NORM:  unknown_0x1248_NORM
+$124A=$00000001    NORM:  unknown_0x124A_NORM
+$124C=$00000000    NORM:  unknown_0x124C_NORM
+$124E=$00000000    NORM:  unknown_0x124E_NORM
+$1250=$FC100040    NORM:  unknown_0x1250_NORM
+$1252=$00000081    NORM:  unknown_0x1252_NORM
+$1254=$00002710    NORM:  unknown_0x1254_NORM
+$1256=$00000001    NORM:  unknown_0x1256_NORM
+$1258=$00000001    NORM:  unknown_0x1258_NORM
+$125A=$00000001    NORM:  unknown_0x125A_NORM
+$125C=$00000001    NORM:  unknown_0x125C_NORM
+$125E=$00000001    NORM:  unknown_0x125E_NORM
+$1260=$00000001    NORM:  unknown_0x1260_NORM
+$1262=$C0000201    NORM:  unknown_0x1262_NORM
+$1264=$60400010    NORM:  unknown_0x1264_NORM
+$1266=$00000000    NORM:  unknown_0x1266_NORM
+$1268=$00000000    NORM:  unknown_0x1268_NORM
+$126A=$00000000    NORM:  unknown_0x126A_NORM
+$126C=$0000FF01    NORM:  unknown_0x126C_NORM
+$126E=$C0000301    NORM:  unknown_0x126E_NORM
+$1270=$60400010    NORM:  unknown_0x1270_NORM
+$1272=$60600008    NORM:  unknown_0x1272_NORM
+$1274=$00000000    NORM:  unknown_0x1274_NORM
+$1276=$00000000    NORM:  unknown_0x1276_NORM
+$1278=$0000FF02    NORM:  unknown_0x1278_NORM
+$127A=$C0000181    NORM:  unknown_0x127A_NORM
+$127C=$60410010    NORM:  unknown_0x127C_NORM
+$127E=$00000000    NORM:  unknown_0x127E_NORM
+$1280=$00000000    NORM:  unknown_0x1280_NORM
+$1282=$00000000    NORM:  unknown_0x1282_NORM
+$1284=$0000FF01    NORM:  unknown_0x1284_NORM
+$1286=$FFFFFFFF    NORM:  unknown_0x1286_NORM
+$1288=$FFFFFFFF    NORM:  unknown_0x1288_NORM
+$128A=$C0000281    NORM:  unknown_0x128A_NORM
+$128C=$60410010    NORM:  unknown_0x128C_NORM
+$128E=$60610008    NORM:  unknown_0x128E_NORM
+$1290=$00000000    NORM:  unknown_0x1290_NORM
+$1292=$00000000    NORM:  unknown_0x1292_NORM
+$1294=$0000FF02    NORM:  unknown_0x1294_NORM
+$1296=$FFFFFFFF    NORM:  unknown_0x1296_NORM
+$1298=$FFFFFFFF    NORM:  unknown_0x1298_NORM
+$129A=$00000000    NORM:  unknown_0x129A_NORM
+$129C=$00000000    NORM:  unknown_0x129C_NORM
+$129E=$00000000    NORM:  unknown_0x129E_NORM
+$12A0=$01000000    NORM:  unknown_0x12A0_NORM
+$12A2=$C0020000    NORM:  unknown_0x12A2_NORM
+$12A4=$00000064    NORM:  unknown_0x12A4_NORM
+$12A6=$00000000    NORM:  unknown_0x12A6_NORM
+$12A8=$00000000    NORM:  unknown_0x12A8_NORM
+$12AA=$05DC0000    NORM:  unknown_0x12AA_NORM
+$12AC=$00000000    NORM:  unknown_0x12AC_NORM
+$12AE=$02000000    NORM:  unknown_0x12AE_NORM
+$12B0=$00010002    NORM:  unknown_0x12B0_NORM
+$12B2=$FFCE0014    NORM:  unknown_0x12B2_NORM
+$12B4=$011701AE    NORM:  unknown_0x12B4_NORM
+$12B6=$000001AE    NORM:  unknown_0x12B6_NORM
+$12B8=$005DC000    NORM:  unknown_0x12B8_NORM
+$12BA=$0000FFFF    NORM:  unknown_0x12BA_NORM
+$12BC=$0000FFFF    NORM:  unknown_0x12BC_NORM
+$12BE=$0000FFFF    NORM:  unknown_0x12BE_NORM
+$12C0=$00000000    NORM:  unknown_0x12C0_NORM
+$12C2=$00000000    NORM:  unknown_0x12C2_NORM
+$12C4=$00000000    NORM:  unknown_0x12C4_NORM
+$12C6=$00000000    NORM:  unknown_0x12C6_NORM
+$12C8=$C3500003    NORM:  unknown_0x12C8_NORM
+$12CA=$4C4B4150    NORM:  unknown_0x12CA_NORM
+$12CC=$41523030    NORM:  unknown_0x12CC_NORM
+$12CE=$00000000    NORM:  unknown_0x12CE_NORM
+$12D0=$00000000    NORM:  unknown_0x12D0_NORM
+$12D2=$00000000    NORM:  unknown_0x12D2_NORM
+$12D4=$00000000    NORM:  unknown_0x12D4_NORM
+$12D6=$00000000    NORM:  unknown_0x12D6_NORM
+$12D8=$00000000    NORM:  unknown_0x12D8_NORM
+$12DA=$00000000    NORM:  unknown_0x12DA_NORM
+$12DC=$00000000    NORM:  unknown_0x12DC_NORM
+$12DE=$00000000    NORM:  unknown_0x12DE_NORM
+$12E0=$00000000    NORM:  unknown_0x12E0_NORM
+$12E2=$00000000    NORM:  unknown_0x12E2_NORM
+$12E4=$00000000    NORM:  unknown_0x12E4_NORM
+$12E6=$00000000    NORM:  unknown_0x12E6_NORM
+$12E8=$00000000    NORM:  unknown_0x12E8_NORM
+$12EA=$00000000    NORM:  unknown_0x12EA_NORM
+$12EC=$00000000    NORM:  unknown_0x12EC_NORM
+$12EE=$00000000    NORM:  unknown_0x12EE_NORM
+$12F0=$00000000    NORM:  unknown_0x12F0_NORM
+$12F2=$00000000    NORM:  unknown_0x12F2_NORM
+$12F4=$00000000    NORM:  unknown_0x12F4_NORM
+$12F6=$00000000    NORM:  unknown_0x12F6_NORM
+$12F8=$00000000    NORM:  unknown_0x12F8_NORM
+$12FA=$00000000    NORM:  unknown_0x12FA_NORM
+$12FC=$00000000    NORM:  unknown_0x12FC_NORM
+$12FE=$00000000    NORM:  unknown_0x12FE_NORM
+$1300=$00000000    NORM:  unknown_0x1300_NORM
+$1302=$00000000    NORM:  unknown_0x1302_NORM
+$1304=$00000000    NORM:  unknown_0x1304_NORM
+$1306=$00000000    NORM:  unknown_0x1306_NORM
+$1308=$00000000    NORM:  unknown_0x1308_NORM
+$130A=$00000000    NORM:  unknown_0x130A_NORM
+$130C=$00000000    NORM:  unknown_0x130C_NORM
+$130E=$00000000    NORM:  unknown_0x130E_NORM
+$1310=$00000000    NORM:  unknown_0x1310_NORM
+$1312=$00000000    NORM:  unknown_0x1312_NORM
+$1314=$0000007D    NORM:  unknown_0x1314_NORM
+$1316=$00000000    NORM:  unknown_0x1316_NORM
+$1318=$00000000    NORM:  unknown_0x1318_NORM
+$131A=$00000000    NORM:  unknown_0x131A_NORM
+$131C=$00000000    NORM:  unknown_0x131C_NORM
+$131E=$00000000    NORM:  unknown_0x131E_NORM
+
+[CommObj_RS232]
+
+[position_0000]
+$0112=$00000000    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000001    NORM:  posi_bus0_ctrl
+$0125=$009C4000    NORM:  posi_bus0_v_max
+$0125=$009C4000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$0061A800    NORM:  posi_bus0_a_acc
+$0127=$0061A800 *  NORM:  posi_bus0_a_acc
+$0128=$0061A800    NORM:  posi_bus0_a_dec
+$0128=$0061A800 *  NORM:  posi_bus0_a_dec
+$0129=$0007A120    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$0007A120 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$0007A120    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$0007A120 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0001]
+$0112=$00000001    NORM:  posi_bus0_pointer
+$0124=$000A0000    NORM:  posi_bus0_x_end_h
+
+[position_0002]
+$0112=$00000002    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0003]
+$0112=$00000003    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0004]
+$0112=$00000004    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0005]
+$0112=$00000005    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0006]
+$0112=$00000006    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0007]
+$0112=$00000007    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0008]
+$0112=$00000008    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0009]
+$0112=$00000009    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_000A]
+$0112=$0000000A    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_000B]
+$0112=$0000000B    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_000C]
+$0112=$0000000C    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_000D]
+$0112=$0000000D    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_000E]
+$0112=$0000000E    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_000F]
+$0112=$0000000F    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0010]
+$0112=$00000010    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000041    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0011]
+$0112=$00000011    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0012]
+$0112=$00000012    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0013]
+$0112=$00000013    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0014]
+$0112=$00000014    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0015]
+$0112=$00000015    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0016]
+$0112=$00000016    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0017]
+$0112=$00000017    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0018]
+$0112=$00000018    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0019]
+$0112=$00000019    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_001A]
+$0112=$0000001A    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_001B]
+$0112=$0000001B    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_001C]
+$0112=$0000001C    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_001D]
+$0112=$0000001D    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_001E]
+$0112=$0000001E    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_001F]
+$0112=$0000001F    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0020]
+$0112=$00000020    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000041    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0021]
+$0112=$00000021    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0022]
+$0112=$00000022    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0023]
+$0112=$00000023    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0024]
+$0112=$00000024    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0025]
+$0112=$00000025    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0026]
+$0112=$00000026    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0027]
+$0112=$00000027    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0028]
+$0112=$00000028    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0029]
+$0112=$00000029    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_002A]
+$0112=$0000002A    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_002B]
+$0112=$0000002B    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_002C]
+$0112=$0000002C    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_002D]
+$0112=$0000002D    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_002E]
+$0112=$0000002E    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_002F]
+$0112=$0000002F    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0030]
+$0112=$00000030    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000041    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0031]
+$0112=$00000031    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0032]
+$0112=$00000032    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0033]
+$0112=$00000033    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0034]
+$0112=$00000034    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0035]
+$0112=$00000035    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0036]
+$0112=$00000036    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0037]
+$0112=$00000037    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0038]
+$0112=$00000038    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0039]
+$0112=$00000039    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_003A]
+$0112=$0000003A    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_003B]
+$0112=$0000003B    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_003C]
+$0112=$0000003C    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_003D]
+$0112=$0000003D    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_003E]
+$0112=$0000003E    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_003F]
+$0112=$0000003F    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+
+[position_0040]
+$0112=$00000040    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000041    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$0000E6D0    NORM:  posi_bus0_a_acc
+$0127=$0000E6D0 *  NORM:  posi_bus0_a_acc
+$0128=$0000E6D0    NORM:  posi_bus0_a_dec
+$0128=$0000E6D0 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0041]
+$0112=$00000041    NORM:  posi_bus0_pointer
+$0124=$FFFF8001    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000001    NORM:  posi_bus0_ctrl
+$0125=$00064000    NORM:  posi_bus0_v_max
+$0125=$00064000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$0003E800    NORM:  posi_bus0_a_acc
+$0127=$0003E800 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0042]
+$0112=$00000042    NORM:  posi_bus0_pointer
+$0124=$00007FFF    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000001    NORM:  posi_bus0_ctrl
+$0125=$00019000    NORM:  posi_bus0_v_max
+$0125=$00019000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$0000FA00    NORM:  posi_bus0_a_acc
+$0127=$0000FA00 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0043]
+$0112=$00000043    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000001    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0044]
+$0112=$00000044    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000041    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0045]
+$0112=$00000045    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000041    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0046]
+$0112=$00000046    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000001    NORM:  posi_bus0_ctrl
+$0125=$00028000    NORM:  posi_bus0_v_max
+$0125=$00028000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+[position_0047]
+$0112=$00000047    NORM:  posi_bus0_pointer
+$0124=$00000000    NORM:  posi_bus0_x_end_h
+$011E=$00000000    NORM:  posi_bus0_start_delay
+$011E=$00000000 *  NORM:  posi_bus0_start_delay
+$0123=$00000041    NORM:  posi_bus0_ctrl
+$0125=$003E8000    NORM:  posi_bus0_v_max
+$0125=$003E8000 *  NORM:  posi_bus0_v_max
+$0126=$00000000    NORM:  posi_bus0_v_end
+$0126=$00000000 *  NORM:  posi_bus0_v_end
+$0127=$00271000    NORM:  posi_bus0_a_acc
+$0127=$00271000 *  NORM:  posi_bus0_a_acc
+$0128=$00271000    NORM:  posi_bus0_a_dec
+$0128=$00271000 *  NORM:  posi_bus0_a_dec
+$0129=$00000000    NORM:  posi_bus0_a_acc_jerkfree
+$0129=$00000000 *  NORM:  posi_bus0_a_acc_jerkfree
+$012A=$00000000    NORM:  posi_bus0_a_dec_jerkfree
+$012A=$00000000 *  NORM:  posi_bus0_a_dec_jerkfree
+
+Comment=
+$0001=done by Davide bagnacani
+$0002=
+$0003=
+$0004=
+$0005=
+$0006=
+$0007=
+$0008=
+$0009=
+$000A=
+$000B=
+$000C=
+$000D=
+$000E=
+$000F=
+$0010=
+$0011=
+$0012=
+$0013=
+$0014=
+$0015=
+$0016=
+$0017=
+$0018=
+$0019=
+$001A=
+$001B=
+$001C=
+$001D=
+$001E=
+$001F=
+$0020=
+$0021=
+$0022=
+$0023=
+$0024=
+$0025=
+$0026=
+$0027=
+$0028=
+$0029=
+$002A=
+$002B=
+$002C=
+$002D=
+$002E=
+$002F=
+$0030=
+$0031=
+$0032=
+$0033=
+$0034=
+$0035=
+$0036=
+$0037=
+$0038=
+$0039=
+$003A=
+$003B=
+$003C=
+$003D=
+$003E=
+$003F=
+$0040=
+$0041=
+$0042=
+$0043=
+$0044=
+$0045=
+$0046=
+$0047=
+$0048=
+$0049=
+$004A=
+$004B=
+$004C=
+$004D=
+$004E=
+$004F=
+$0050=
+$0051=
+$0052=
+$0053=
+$0054=
+$0055=
+$0056=
+$0057=
+$0058=
+$0059=
+$005A=
+$005B=
+$005C=
+$005D=
+$005E=
+$005F=
+$0060=
+$0061=
+$0062=
+$0063=
+$0064=
+
+

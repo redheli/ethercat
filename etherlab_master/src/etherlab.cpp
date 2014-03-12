@@ -1314,18 +1314,26 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 restTick--;
             else
             {
-                if(!is_SetPointAcknowledge_Set)
+                isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
+                if(isNeedHal && !is_TargetReached_Set)
                 {
-                    ecrt_domain_process(domain_output);
-                    // step 1: only write target position (p114)
-                    steering_cmd_writing = steering_cmd_new;
-                    writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
-                    controlword_PDO = 0xf;
-                    writeControlword_PDO_SlaveZero(controlword_PDO);
+                    positionControlState = 9;
+                }
+                else
+                {
+                    if(!is_SetPointAcknowledge_Set)
+                    {
+                        ecrt_domain_process(domain_output);
+                        // step 1: only write target position (p114)
+                        steering_cmd_writing = steering_cmd_new;
+                        writeTargetPosition_PDO_SlaveZero(steering_cmd_writing);
+                        controlword_PDO = 0xf;
+                        writeControlword_PDO_SlaveZero(controlword_PDO);
 
-                    positionControlState = 1;
-                    ecrt_domain_queue(domain_output);
-                    restTick = 2;
+                        positionControlState = 1;
+                        ecrt_domain_queue(domain_output);
+                        restTick = 2;
+                    }
                 }
             }
                 break;
@@ -1377,7 +1385,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 {
                     //check need hal
                     isNeedHal = checkNeedHal(steering_cmd_current,steering_cmd_new);
-                    if(isNeedHal || !is_TargetReached_Set) // target not reach and new cmd is diff direction with last cmd
+                    if(isNeedHal && !is_TargetReached_Set) // target not reach and new cmd is diff direction with last cmd
                     {
                         //TODO
                         positionControlState = 7;
@@ -1452,6 +1460,28 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero()
                 if(is_TargetReached_Set)
                 {
                     positionControlState = 3;
+                }
+            }
+            // after hal, wait target reached bit set
+            break;
+        case 9:
+            // TODO: handle hal
+            ecrt_domain_process(domain_output);
+            controlword_PDO = 0x10f;//set bit 8 of controlword
+            writeControlword_PDO_SlaveZero(controlword_PDO);
+
+            positionControlState = 10;
+            ecrt_domain_queue(domain_output);
+            restTick =2;
+            break;
+        case 10:
+            if(restTick>1)
+                restTick--;
+            else
+            {
+                if(is_TargetReached_Set)
+                {
+                    positionControlState = 6;
                 }
             }
             // after hal, wait target reached bit set
