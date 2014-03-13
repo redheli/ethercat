@@ -1085,6 +1085,7 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     // check for islave configuration state(s) (optional)
 //    check_slave_config_states();
 
+    writeControlword_PDO_SlaveZero(controlword_PDO);
     // read PDO data
     bool res = readPDOsData();
     if(!PDO_OK)
@@ -1095,8 +1096,8 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     {
         ROS_INFO_ONCE("PDO_ok");
 //        writePDOData_SlaveZero();
-//        writePDOData_SlaveZero2();
-        writePDOData_SlaveZero3();
+        writePDOData_SlaveZero2();
+//        writePDOData_SlaveZero3();
     }
 
 
@@ -1350,7 +1351,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
       return false;
       break;
     }//switch
-    if(steering_cmd_current == steering_cmd_new)
+    if(steering_cmd_current != steering_cmd_new)
     {
         ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
              steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
@@ -1373,14 +1374,16 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
                 ecrt_domain_queue(domain_output);
 
                 positionControlState = 5;
+                ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+                     steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
         }
       break;
     case 5:
-        if(is_TargetReached_Set)
-        {
-            controlword_PDO = 0x1f;
-        }
-        else
+//        if(is_TargetReached_Set)
+//        {
+//            controlword_PDO = 0x1f;
+//        }
+//        else
         {
             // check last controlword is 0x1f or 0x3f
             bool is_bit5_set = Int16Bits(controlword_PDO).test(5);
@@ -1399,12 +1402,16 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
         ecrt_domain_queue(domain_output);
 
         positionControlState = 4;
+        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+             steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
     break;
     case 4:
         if(is_TargetReached_Set)
         {
             positionControlState = 6;
             steering_cmd_current = steering_cmd_writing;
+            ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+                 steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
         }
         else
         {
@@ -1412,6 +1419,8 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
             {
                 positionControlState = 6;
                 steering_cmd_current = steering_cmd_writing;
+                ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+                     steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
             }
         }
     break;
@@ -1420,11 +1429,11 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
       return false;
       break;
     }//switch
-    if(steering_cmd_current == steering_cmd_new)
-    {
-        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
-             steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
-    }
+//    if(steering_cmd_current != steering_cmd_new)
+//    {
+//        ROS_INFO("state %d ----> %d   n:%d w:%d c:%d 0x%04x",beginState,positionControlState,
+//             steering_cmd_new,steering_cmd_writing,steering_cmd_current,controlword_PDO);
+//    }
     return true;
 }
 
