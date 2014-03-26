@@ -83,6 +83,7 @@ public:
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
+       bool writePDOData_SlaveZero_VelocityControl(); // use velocity mode
        bool writePDOData_SlaveZero3();//only change_set_immediately is set
 
 public:
@@ -111,6 +112,7 @@ public:
        bool setMotorOperatingModeSDO(fm_sdo *sdo_operation_mode_write,fm_auto::OPERATION_MODE &value);
 
        bool setSlaveZeroMotorOperatingMode2ProfilePosition();
+       bool setSlaveZeroMotorOperatingMode2ProfileVelocity();
        bool setSlaveZeroMotorOperatingMode2Homing();
 
        /* controller */
@@ -187,11 +189,13 @@ private:
        // EtherCAT
        ec_master_state_t master_state;
        ec_domain_t *domain_output;
+       ec_domain_t *domain_output_target_velocity;
 //       ec_domain_t *domain_output_controlword;
 //       ec_domain_t *domain_output_target_position;
        ec_domain_t *domain_input;
 
        uint8_t *domain_output_pd;
+       uint8_t *domain_output_target_velocity_pd;
        uint8_t *domain_input_pd;
 
        ros::Subscriber sub;

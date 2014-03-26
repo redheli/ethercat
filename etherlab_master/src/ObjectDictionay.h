@@ -26,6 +26,12 @@ enum OPERATION_MODE
     OM_UNKNOW_MODE=9
 
 };
+enum OPERATION_MODE_DISPALY
+{
+    OMD_PROFILE_POSITION_MODE=1,
+    OMD_PROFILE_VELOCITY_MODE=3
+
+};
 // canopen doc p91
 enum CONTROLLER_STATE
 {
@@ -41,6 +47,8 @@ enum CONTROLLER_STATE
 };
 
 static unsigned int OFFSET_CONTROLWORD;/* Controlword */
+static unsigned int OFFSET_PROFILE_VELOCITY;/* Profile_Velocity */
+static unsigned int OFFSET_PROFILE_ACCELERATION;/* Profile_Acceleration */
 static unsigned int OFFSET_MODE_OF_OPERATION;/* Mode_of_Operation */
 static unsigned int OFFSET_HOMING_METHOD;/* Homing_Method */
 static unsigned int OFFSET_TARGET_POSITION;/* Target_Position */
@@ -72,14 +80,14 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 
 const static ec_pdo_entry_reg_t domain_output_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &OFFSET_CONTROLWORD,NULL},
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x607a, 0, &OFFSET_TARGET_POSITION,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6081, 0, &OFFSET_PROFILE_VELOCITY,NULL},
     {}
 };
-//const static ec_pdo_entry_reg_t domain_output_regs_target_position[] = {
-////    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &OFFSET_CONTROLWORD,NULL},
-//    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x607a, 0, &OFFSET_TARGET_POSITION,NULL},
-//    {}
-//};
+const static ec_pdo_entry_reg_t domain_output_regs_target_velocity[] = {
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x60ff, 0, &OFFSET_TARGET_VELOCITY,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6083, 0, &OFFSET_PROFILE_ACCELERATION,NULL},
+    {}
+};
 const static ec_pdo_entry_reg_t domain_input_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6061, 0, &OFFSET_MODES_OF_OPERATION_DISPLAY,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &OFFSET_STATUSWORD,NULL},
@@ -92,11 +100,12 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
 
 static ec_pdo_entry_info_t slave_0_pdo_entries[] = {
     {0x6040, 0x00, 16}, /* Controlword */
-//    {0x6060, 0x00, 8}, /* Mode_of_Operation */
-//    {0x6098, 0x00, 8}, /* Homing_Method */
-    {0x607a, 0x00, 32}, /* Target_Position */
-//    {0x60ff, 0x00, 32}, /* Target_Velocity */
-//    {0x6071, 0x00, 16}, /* Target_Torque */
+    {0x6081, 0x00, 32}, /* Profile_Velocity */
+
+    {0x60ff, 0x00, 32}, /* Target_Velocity */
+    {0x6083, 0x00, 32}, /* Profile_Acceleration */
+
+
     {0x6061, 0x00, 8}, /* Modes_Of_Operation_Display */
     {0x6041, 0x00, 16}, /* Statusword */
     {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
@@ -109,15 +118,16 @@ static ec_pdo_entry_info_t slave_0_pdo_entries[] = {
 };
 static ec_pdo_info_t slave_0_pdos[] = {
     {0x1600, 2, slave_0_pdo_entries + 0}, /* Outputs */
-    {0x1A00, 4, slave_0_pdo_entries + 2}, /* Inputs */
-    {0x1A01, 2, slave_0_pdo_entries + 6}, /* Inputs */
+    {0x1601, 2, slave_0_pdo_entries + 2}, /* Outputs */
+    {0x1A00, 4, slave_0_pdo_entries + 4}, /* Inputs */
+    {0x1A01, 2, slave_0_pdo_entries + 8}, /* Inputs */
 };
 
 static ec_sync_info_t slave_0_syncs[] = {
     {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
     {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
-    {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_DISABLE},
-    {3, EC_DIR_INPUT, 2, slave_0_pdos + 1, EC_WD_DISABLE},
+    {2, EC_DIR_OUTPUT, 2, slave_0_pdos + 0, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 2, slave_0_pdos + 2, EC_WD_DISABLE},
     {0xff}
 };
 

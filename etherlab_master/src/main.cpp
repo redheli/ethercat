@@ -67,14 +67,14 @@ int main(int argc, char**argv)
         ROS_INFO_ONCE("disableControlSDO_SlaveZero ok\n");
     }
     //
-    if(!duetController.setSlaveZeroMotorOperatingMode2ProfilePosition())
+    if(!duetController.setSlaveZeroMotorOperatingMode2ProfileVelocity())
     {
-        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfilePosition failed");
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfileVelocity failed");
         return 0;
     }
     else
     {
-        ROS_INFO_ONCE("setSlaveZeroMotorOperatingMode2ProfilePosition ok\n");
+        ROS_INFO_ONCE("setSlaveZeroMotorOperatingMode2ProfileVelocity ok\n");
     }
     if(!duetController.enableControlSDO_SlaveZero())
     {

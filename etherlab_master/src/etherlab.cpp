@@ -118,7 +118,7 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
 //    //TODO
 //}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
-    : domain_input(NULL),domain_output(NULL),steering_cmd_current(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),
+    : domain_input(NULL),domain_output(NULL),domain_output_target_velocity(NULL),steering_cmd_current(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),
       positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1),controlword_PDO(0xf),velocity_actual_value(0)
 {
 }
@@ -337,7 +337,7 @@ bool fm_auto::DuetflEthercatController::getControllerStateByStatusword(uint16_t 
     }
     if( withMask004F == fm_auto::CS_NOT_READY_TO_SWITCH_ON)
     {
-        ROS_INFO("CS_NOT_READY_TO_SWITCH_ON");
+        ROS_INFO("getControllerStateByStatusword: CS_NOT_READY_TO_SWITCH_ON");
         state = fm_auto::CS_NOT_READY_TO_SWITCH_ON;
         return true;
     }
@@ -411,6 +411,42 @@ bool fm_auto::DuetflEthercatController::setMotorOperatingModeSDO(fm_sdo *sdo_ope
     {
         ROS_ERROR("setMotorHomingModeSDO: set homing method %d failed",value);
     }
+    return true;
+}
+bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2ProfileVelocity()
+{
+    //1. check current operation mode
+    fm_auto::OPERATION_MODE operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(fm_auto::slave0_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfileVelocity: get mode failed");
+        return false;
+    }
+//ROS_INFO("dddd1.1   %d",operation_mode);
+    if(operation_mode != fm_auto::OM_PROFILE_VELOCITY_MODE)
+    {
+        //2. set mode to profile velocity
+        fm_auto::OPERATION_MODE value = fm_auto::OM_PROFILE_VELOCITY_MODE;
+        if(!setMotorOperatingModeSDO(slave0_operation_mode_write_fmsdo,value))
+        {
+            ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfileVelocity: set mode failed");
+            return false;
+        }
+    }
+//ROS_INFO("dddd1.2");
+    //3. verify
+    operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(slave0_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfileVelocity: get mode failed 2");
+        return false;
+    }
+    if(operation_mode != fm_auto::OMD_PROFILE_VELOCITY_MODE)
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfileVelocity: mode is not profile velocity after set %d\n",operation_mode);
+        return false;
+    }
+    ROS_INFO("set profile velocity mode ok");
     return true;
 }
 bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2ProfilePosition()
@@ -629,10 +665,15 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         return false;
     }
     domain_output= ecrt_master_create_domain(master);
-//    domain_output_target_position = ecrt_master_create_domain(master);
     if(!domain_output)
     {
         ROS_ERROR("init domain_output failed!\n");
+        return false;
+    }
+    domain_output_target_velocity = ecrt_master_create_domain(master);
+    if(!domain_output_target_velocity)
+    {
+        ROS_ERROR("init domain_output_target_velocity failed!\n");
         return false;
     }
     printf("Configuring PDOs...\n");
@@ -643,6 +684,10 @@ bool fm_auto::DuetflEthercatController::initEthercat()
     // domain entry list
     if (ecrt_domain_reg_pdo_entry_list(domain_output, fm_auto::domain_output_regs)) {
         ROS_ERROR("Output PDO entry registration failed!\n");
+        return false;
+    }
+    if (ecrt_domain_reg_pdo_entry_list(domain_output_target_velocity, fm_auto::domain_output_regs_target_velocity)) {
+        ROS_ERROR("Output PDO entry target velocity registration failed!\n");
         return false;
     }
     if (ecrt_domain_reg_pdo_entry_list(domain_input, fm_auto::domain_input_regs)) {
@@ -661,6 +706,10 @@ bool fm_auto::DuetflEthercatController::initEthercat()
 ROS_INFO_ONCE("debug1");
 //    // pdo domain data point
     if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
+        return false;
+    }
+ROS_INFO_ONCE("debug1.1");
+    if (!(domain_output_target_velocity_pd = ecrt_domain_data(domain_output_target_velocity))) {
         return false;
     }
 ROS_INFO_ONCE("debug1---1");
@@ -1095,8 +1144,9 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     if(res)
     {
         ROS_INFO_ONCE("PDO_ok");
+        writePDOData_SlaveZero_VelocityControl();
 //        writePDOData_SlaveZero();
-        writePDOData_SlaveZero2();
+//        writePDOData_SlaveZero2();
 //        writePDOData_SlaveZero3();
     }
 
@@ -1358,6 +1408,13 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
+{
+    ecrt_domain_process(domain_output_target_velocity);
+    writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
+    ecrt_domain_queue(domain_output_target_velocity);
+}
+
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
 {
     uint16_t controlword;
@@ -1743,6 +1800,7 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
         is_TargetReached_Set = Int16Bits(statusword_PDO_data).test(10);
         ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     }
+    ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     position_actual_value_PDO_data = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_POSITION_ACTURAL_VALUE);
         printf("pdo position_actual_value: %04d \n",
                 position_actual_value_PDO_data);
