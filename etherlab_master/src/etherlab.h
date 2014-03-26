@@ -21,6 +21,10 @@
 #include "ecrt.h"
 #include "ObjectDictionay.h"
 #include <etherlab_master/EthercatPDO.h>
+
+#include <fmutil/fm_math.h>
+#include <fmutil/fm_filter.h>
+
 typedef std::bitset<16> Int16Bits;
 
 namespace fm_auto
@@ -86,6 +90,7 @@ public:
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
+       bool calculateTargetVelocity(); // use pid calculate target velocity
        bool writePDOData_SlaveZero_VelocityControl(); // use velocity mode
        bool writePDOData_SlaveZero3();//only change_set_immediately is set
 
@@ -224,6 +229,25 @@ private:
        bool is_SetPointAcknowledge_Set;
        bool is_SetPointAcknowledge_Changed;
        bool is_TargetReached_Set;
+public:
+       fmutil::LowPassFilter vFilter;
+
+       int32_t target_velocity;
+       double kp;
+       double ki;
+       double kd;
+
+       double kp_sat;
+       double ki_sat;
+       double kd_sat;
+       double v_sat; //velocity limit
+
+       double dt;
+       ros::Time last_time;
+       ros::Time current_time;
+       double e_now;
+       double iTerm;
+       double e_pre;
 
 //       std::mutex counter_mutex;
 
