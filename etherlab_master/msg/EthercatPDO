@@ -1,0 +1,3 @@
+int32 postion
+int32 velocity
+int32 current
