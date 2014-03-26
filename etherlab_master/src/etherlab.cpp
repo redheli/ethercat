@@ -1743,6 +1743,9 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
         is_TargetReached_Set = Int16Bits(statusword_PDO_data).test(10);
         ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     }
+    position_actual_value_PDO_data = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_POSITION_ACTURAL_VALUE);
+        printf("pdo position_actual_value: %04d \n",
+                position_actual_value_PDO_data);
 //    printf("pdo statusword value: %04x offset %u\n",
 //            EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD),OFFSET_STATUSWORD);
 

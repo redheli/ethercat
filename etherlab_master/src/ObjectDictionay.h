@@ -48,7 +48,8 @@ static unsigned int OFFSET_TARGET_VELOCITY;/* Target_Velocity */
 static unsigned int OFFSET_TARGET_TORQUE;/* Target_Torque */
 
 static unsigned int OFFSET_STATUSWORD;/* Statusword */
-static unsigned int OFFSET_ACTURAL_VALUE;/* Position_Actual_Value */
+static unsigned int OFFSET_POSITION_ACTURAL_VALUE;/* Position_Actual_Value */
+static unsigned int OFFSET_CURRENT_ACTURAL_VALUE;/* Current_Actual_Value */
 static unsigned int OFFSET_MODES_OF_OPERATION_DISPLAY;/* Modes_Of_Operation_Display */
 static unsigned int OFFSET_REGISTER;/* Error_Register */
 static unsigned int OFFSET_VELOCITY_ACTUAL_VALUE;/* Velocity_Actual_Value */
@@ -84,6 +85,8 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &OFFSET_STATUSWORD,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x606c, 0, &OFFSET_VELOCITY_ACTUAL_VALUE,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x1001, 0, &OFFSET_REGISTER,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6064, 0, &OFFSET_POSITION_ACTURAL_VALUE,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6078, 0, &OFFSET_CURRENT_ACTURAL_VALUE,NULL},
     {}
 };
 
@@ -97,21 +100,24 @@ static ec_pdo_entry_info_t slave_0_pdo_entries[] = {
     {0x6061, 0x00, 8}, /* Modes_Of_Operation_Display */
     {0x6041, 0x00, 16}, /* Statusword */
     {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
-//    {0x6064, 0x00, 32}, /* Position_Actual_Value */
     {0x1001, 0x00, 8}, /* Error_Register */
+
+    {0x6064, 0x00, 32}, /* Position_Actual_Value */
+    {0x6078, 0x00, 16}, /* Current_Actual_Value */
 //    {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
 //    {0x6077, 0x00, 16}, /* Torque_Actual_Value */
 };
 static ec_pdo_info_t slave_0_pdos[] = {
     {0x1600, 2, slave_0_pdo_entries + 0}, /* Outputs */
     {0x1A00, 4, slave_0_pdo_entries + 2}, /* Inputs */
+    {0x1A01, 2, slave_0_pdo_entries + 6}, /* Inputs */
 };
 
 static ec_sync_info_t slave_0_syncs[] = {
     {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
     {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
     {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_DISABLE},
-    {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 2, slave_0_pdos + 1, EC_WD_DISABLE},
     {0xff}
 };
 
