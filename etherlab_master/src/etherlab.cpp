@@ -1193,11 +1193,11 @@ void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 ste
 //        }
 //    }
     int32_t v = static_cast<int32_t>(steering_cmd.data);
-    if(steering_cmd_current != v)
-    {
+//    if(steering_cmd_current != v)
+//    {
         steering_cmd_new = v * 30;
-        hasNewSteeringData = true;
-    }
+//        hasNewSteeringData = true;
+//    }
 //    ROS_INFO("callback_steering: %d %f %d",steering_cmd_new,steering_cmd.data,positionControlState);
 
 //    ROS_INFO("callback_steering: %f",steering_cmd.data);
