@@ -20,10 +20,7 @@
 //#include "etherlab_master/steering.h"
 #include "ecrt.h"
 #include "ObjectDictionay.h"
-
-#include <fmutil/fm_math.h>
-#include <fmutil/fm_filter.h>
-
+#include <etherlab_master/EthercatPDO.h>
 typedef std::bitset<16> Int16Bits;
 
 namespace fm_auto
@@ -34,7 +31,9 @@ class fm_sdo
 {
 public:
     typedef std::tr1::function<void()> CallbackFunc;
-    fm_sdo():sdo(NULL),isReadSDO(true),isOperate(false) {}
+    fm_sdo():sdo(NULL),isReadSDO(true),isOperate(false) 
+    {
+    }
     ec_sdo_request_t *sdo;
     std::string descrption;
     bool isReadSDO;
@@ -55,14 +54,13 @@ public:
        bool initEthercat();
        bool initSDOs();
        bool initROS();
-       bool initPID();
        bool cyclic_task();
        bool cyclic_task_SDO();
-
+       bool enable_mode;
        /* ROS callback */
 //       void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
        void callback_steering2(std_msgs::Float64 steering_cmd);
-
+       void callback_joy(sensor_msgs::Joy joy_cmd);
 public:
        /* homing */
        bool setHomingMethod2CurrentPosition(fm_sdo* homing_method_fmSdo);
@@ -88,7 +86,6 @@ public:
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
-       bool calculateTargetVelocity(); // use pid calculate target velocity
        bool writePDOData_SlaveZero_VelocityControl(); // use velocity mode
        bool writePDOData_SlaveZero3();//only change_set_immediately is set
 
@@ -204,7 +201,8 @@ private:
        uint8_t *domain_output_target_velocity_pd;
        uint8_t *domain_input_pd;
 
-       ros::Subscriber sub;
+       ros::Subscriber sub, brake_sub;
+       ros::Publisher pub;
        int32_t steering_cmd_new;
        int32_t steering_cmd_writing;
        int32_t steering_cmd_current;
@@ -213,6 +211,9 @@ private:
        bool isNeedHal;// when new position cmd is diff direction of last cmd, need hal
        uint16_t statusword_PDO_data;
        int32_t position_actual_value_PDO_data;
+       int32_t velocity_actual_value_PDO_data;
+       int16_t current_actual_value_PDO_data;
+       int16_t torque_actual_value_PDO_data;
        uint32_t velocity_actual_value;
        bool PDO_OK;
 
@@ -223,26 +224,6 @@ private:
        bool is_SetPointAcknowledge_Set;
        bool is_SetPointAcknowledge_Changed;
        bool is_TargetReached_Set;
-
-public:
-       fmutil::LowPassFilter vFilter;
-
-       int32_t target_velocity;
-       double kp;
-       double ki;
-       double kd;
-
-       double kp_sat;
-       double ki_sat;
-       double kd_sat;
-       double v_sat; //velocity limit
-
-       double dt;
-       ros::Time last_time;
-       ros::Time current_time;
-       double e_now;
-       double iTerm;
-       double e_pre;
 
 //       std::mutex counter_mutex;
 

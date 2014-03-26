@@ -70,7 +70,6 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 #define ADDRESS_STATUSWORD                  0x6041
 #define ADDRESS_POSITION_ACTUAL_VALUE       0x6064
 #define ADDRESS_TARGET_POSITION             0x607a
-
 #define READ  true
 #define WRITE false
 
@@ -97,6 +96,7 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x1001, 0, &OFFSET_REGISTER,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6064, 0, &OFFSET_POSITION_ACTURAL_VALUE,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6078, 0, &OFFSET_CURRENT_ACTURAL_VALUE,NULL},
+    //{SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6077, 0, &OFFSET_TORQUE_ACTURAL_VALUE, NULL},
     {}
 };
 

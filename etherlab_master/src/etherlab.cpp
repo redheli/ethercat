@@ -625,17 +625,15 @@ bool fm_auto::DuetflEthercatController::initSDOs()
 
     return true;
 }
-bool fm_auto::DuetflEthercatController::initPID()
-{
-    vFilter = fmutil::LowPassFilter(0.2); // time constant?
-}
 bool fm_auto::DuetflEthercatController::initROS()
 {
     ros::NodeHandle n;
     std::string str = "steering";
     ROS_INFO("asdfd");
 //    sub = n.subscribe(str,10,&fm_auto::DuetflEthercatController::callback_steering,this);
-    sub = n.subscribe("steer_angle", 1000, &fm_auto::DuetflEthercatController::callback_steering2, this);
+    sub = n.subscribe("steer_angle", 1, &fm_auto::DuetflEthercatController::callback_steering2, this);
+    brake_sub = n.subscribe("joy", 1, &fm_auto::DuetflEthercatController::callback_joy, this);
+    pub = n.advertise<etherlab_master::EthercatPDO>("pdo_ethercat", 1);
 }
 
 bool fm_auto::DuetflEthercatController::initEthercat()
@@ -1138,8 +1136,6 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     // check for islave configuration state(s) (optional)
 //    check_slave_config_states();
 
-    current_time = ros::Time::now();
-
     writeControlword_PDO_SlaveZero(controlword_PDO);
     // read PDO data
     bool res = readPDOsData();
@@ -1156,14 +1152,12 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
 //        writePDOData_SlaveZero3();
     }
 
-    dt = (current_time - last_time).toSec();
-    last_time = current_time;
+
 
     // send process data
 //    ecrt_domain_queue(domain_output);
     ecrt_domain_queue(domain_input);
     ecrt_master_send(master);
-
 
     return true;
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
@@ -1188,6 +1182,24 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
 
 ////    pthread_mutex_unlock( &fm_auto::mutex_PDO );
 //}
+
+
+void fm_auto::DuetflEthercatController::callback_joy(sensor_msgs::Joy joy_cmd)
+{
+  int button_trig = joy_cmd.buttons[5];
+  if(button_trig == 1){
+    if(fm_auto::DuetflEthercatController::enable_mode){
+      fm_auto::DuetflEthercatController::disableControlSDO_SlaveZero();
+      fm_auto::DuetflEthercatController::enable_mode = false;
+      ROS_WARN("Disabling mode");
+    }
+    else {
+      fm_auto::DuetflEthercatController::enableControlSDO_SlaveZero();
+      fm_auto::DuetflEthercatController::enable_mode = true;
+      ROS_WARN("Enabling mode");
+    }
+  }
+}
 void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 steering_cmd)
 {
 //    if(waitTick == -1)
@@ -1203,7 +1215,7 @@ void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 ste
     int32_t v = static_cast<int32_t>(steering_cmd.data);
 //    if(steering_cmd_current != v)
 //    {
-        steering_cmd_new = v * 30;
+        steering_cmd_new = v * 25;
 //        hasNewSteeringData = true;
 //    }
 //    ROS_INFO("callback_steering: %d %f %d",steering_cmd_new,steering_cmd.data,positionControlState);
@@ -1427,54 +1439,16 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
     }
     return true;
 }
-bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
-{
-    kp = 1.5;
-    ki = 0.0;
-    kd = 0.0;
-
-    kp_sat = 1000;
-    ki_sat = 1000;
-    kd_sat = 1000;
-
-    v_sat = 1000000;
-
-    if(dt==0) dt=0.0000001;
-
-    e_now = steering_cmd_new - position_actual_value_PDO_data;
-
-    // P
-    double p_gain = fmutil::symbound<double>(kp * e_now, kp_sat);
-
-
-    // I
-    // Accumulate integral error and limit its range
-    iTerm += ki * (e_pre + e_now)/2 * dt;
-    double i_gain = iTerm = fmutil::symbound<double>(iTerm, ki_sat);
-
-    // D
-    double dTerm = kd * (e_now - e_pre) / dt;
-    double d_gain = fmutil::symbound<double>(dTerm, kd_sat);
-
-    double u = p_gain + i_gain + d_gain;
-
-    target_velocity = fmutil::symbound<int>(u, v_sat);
-
-    e_pre = e_now;
-}
-
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {
 //    uint16_t controlword = 0xf;
-    calculateTargetVelocity();
-
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
-    writeTargetVelocity_PDO_SlaveZero(target_velocity);
+    writeTargetVelocity_PDO_SlaveZero(steering_cmd_new);
     ecrt_domain_queue(domain_output);
 
-    ROS_INFO("steering_cmd_new %d   target_velocity %d"
-         ,steering_cmd_new,target_velocity);
+    ROS_INFO("steering_cmd_new %d   "
+         ,steering_cmd_new);
 }
 
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
@@ -1864,11 +1838,20 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
     }
     ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     position_actual_value_PDO_data = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_POSITION_ACTURAL_VALUE);
-        printf("pdo position_actual_value: %04d \n",
-                position_actual_value_PDO_data);
+    velocity_actual_value_PDO_data = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_VELOCITY_ACTUAL_VALUE);
+    current_actual_value_PDO_data = EC_READ_S16(domain_input_pd + fm_auto::OFFSET_CURRENT_ACTURAL_VALUE);
+    torque_actual_value_PDO_data = EC_READ_S16(domain_input_pd + fm_auto::OFFSET_TORQUE_ACTURAL_VALUE);
+        printf("pdo pos: %04d  vel: %04d cur: %04d tor: %04d\n",
+                position_actual_value_PDO_data, velocity_actual_value_PDO_data, current_actual_value_PDO_data, torque_actual_value_PDO_data);
+    etherlab_master::EthercatPDO pdo_msg;
+    pdo_msg.position = position_actual_value_PDO_data;
+    pdo_msg.velocity = velocity_actual_value_PDO_data;
+    pdo_msg.current = current_actual_value_PDO_data;
+    pdo_msg.torque = torque_actual_value_PDO_data;
+    fm_auto::DuetflEthercatController::pub.publish(pdo_msg);
 //    printf("pdo statusword value: %04x offset %u\n",
 //            EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD),OFFSET_STATUSWORD);
-
+    
     fm_auto::CONTROLLER_STATE state = fm_auto::CS_UNKNOWN_STATE;
     if(!getControllerStateByStatusword(statusword,state))
     {
