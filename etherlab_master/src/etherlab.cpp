@@ -1421,7 +1421,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
 }
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {
-    uint16_t controlword = 0xf;
+//    uint16_t controlword = 0xf;
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
     writeTargetVelocity_PDO_SlaveZero(steering_cmd_new);
