@@ -31,6 +31,7 @@ static ec_sdo_request_t *sdo;
 // PDO items
 // process data
 static uint8_t *domain_output_pd = NULL;
+static uint8_t *domain_output_target_velocity_pd = NULL;
 static uint8_t *domain_input_pd = NULL;
 // offsets for PDO entries
 //static unsigned int off_ana_in_status;
@@ -139,6 +140,7 @@ static ec_master_t *master = NULL;
 static ec_master_state_t master_state = {};
 
 static ec_domain_t *domain_output = NULL;
+static ec_domain_t *domain_output_target_velocity = NULL;
 static ec_domain_t *domain_input = NULL;
 static ec_domain_state_t domain_input_state = {};
 
@@ -362,7 +364,10 @@ int main(int argc, char **argv)
     if (ecrt_master_activate(master))
         return -1;
 
-    if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
+//    if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
+//        return -1;
+//    }
+    if (!(domain_output_target_velocity_pd = ecrt_domain_data(domain_output_target_velocity))) {
         return -1;
     }
     if (!(domain_input_pd = ecrt_domain_data(domain_input))) {

@@ -81,6 +81,8 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 const static ec_pdo_entry_reg_t domain_output_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &OFFSET_CONTROLWORD,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6081, 0, &OFFSET_PROFILE_VELOCITY,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x60ff, 0, &OFFSET_TARGET_VELOCITY,NULL},
+    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6083, 0, &OFFSET_PROFILE_ACCELERATION,NULL},
     {}
 };
 const static ec_pdo_entry_reg_t domain_output_regs_target_velocity[] = {

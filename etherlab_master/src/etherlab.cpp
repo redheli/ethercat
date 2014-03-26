@@ -670,12 +670,12 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         ROS_ERROR("init domain_output failed!\n");
         return false;
     }
-    domain_output_target_velocity = ecrt_master_create_domain(master);
-    if(!domain_output_target_velocity)
-    {
-        ROS_ERROR("init domain_output_target_velocity failed!\n");
-        return false;
-    }
+//    domain_output_target_velocity = ecrt_master_create_domain(master);
+//    if(!domain_output_target_velocity)
+//    {
+//        ROS_ERROR("init domain_output_target_velocity failed!\n");
+//        return false;
+//    }
     printf("Configuring PDOs...\n");
     if (ecrt_slave_config_pdos(fm_auto::slave_zero, EC_END, fm_auto::slave_0_syncs)) {
         fprintf(stderr, "Failed to configure PDOs.\n");
@@ -686,10 +686,10 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         ROS_ERROR("Output PDO entry registration failed!\n");
         return false;
     }
-    if (ecrt_domain_reg_pdo_entry_list(domain_output_target_velocity, fm_auto::domain_output_regs_target_velocity)) {
-        ROS_ERROR("Output PDO entry target velocity registration failed!\n");
-        return false;
-    }
+//    if (ecrt_domain_reg_pdo_entry_list(domain_output_target_velocity, fm_auto::domain_output_regs_target_velocity)) {
+//        ROS_ERROR("Output PDO entry target velocity registration failed!\n");
+//        return false;
+//    }
     if (ecrt_domain_reg_pdo_entry_list(domain_input, fm_auto::domain_input_regs)) {
         ROS_ERROR("Input PDO entry registration failed!\n");
         return false;
@@ -704,14 +704,14 @@ bool fm_auto::DuetflEthercatController::initEthercat()
 
 #if 1
 ROS_INFO_ONCE("debug1");
-//    // pdo domain data point
+    // pdo domain data point
     if (!(domain_output_pd = ecrt_domain_data(domain_output))) {
         return false;
     }
-ROS_INFO_ONCE("debug1.1");
-    if (!(domain_output_target_velocity_pd = ecrt_domain_data(domain_output_target_velocity))) {
-        return false;
-    }
+//ROS_INFO_ONCE("debug1.1");
+//    if (!(domain_output_target_velocity_pd = ecrt_domain_data(domain_output_target_velocity))) {
+//        return false;
+//    }
 ROS_INFO_ONCE("debug1---1");
     if (!(domain_input_pd = ecrt_domain_data(domain_input))) {
         return false;
@@ -1202,7 +1202,18 @@ void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 ste
 
 //    ROS_INFO("callback_steering: %f",steering_cmd.data);
 }
+bool fm_auto::DuetflEthercatController::writeTargetVelocity_PDO_SlaveZero(int32_t &value)
+{
+    // TODO:check boundary
+    // write process data
+//    std::unique_lock<std::mutex> lock(counter_mutex);
+//    pthread_mutex_lock( &fm_auto::mutex_PDO );
 
+    EC_WRITE_U32(domain_output_pd + fm_auto::OFFSET_TARGET_VELOCITY, value);
+
+//    pthread_mutex_unlock( &fm_auto::mutex_PDO );
+    return true;
+}
 bool fm_auto::DuetflEthercatController::writeTargetPosition_PDO_SlaveZero(int32_t &value)
 {
     // TODO:check boundary
@@ -1410,9 +1421,14 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
 }
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {
-    ecrt_domain_process(domain_output_target_velocity);
-    writeTargetPosition_PDO_SlaveZero(steering_cmd_new);
-    ecrt_domain_queue(domain_output_target_velocity);
+    uint16_t controlword = 0xf;
+    ecrt_domain_process(domain_output);
+//    writeControlword_PDO_SlaveZero(controlword);
+    writeTargetVelocity_PDO_SlaveZero(steering_cmd_new);
+    ecrt_domain_queue(domain_output);
+
+    ROS_INFO("steering_cmd_new %d   "
+         ,steering_cmd_new);
 }
 
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()

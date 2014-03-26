@@ -80,6 +80,7 @@ public:
        // pdo method
        bool readPDOsData();
        bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
+       bool writeTargetVelocity_PDO_SlaveZero(int32_t &value);
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
