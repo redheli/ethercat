@@ -1220,7 +1220,7 @@ void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 ste
     int32_t v = static_cast<int32_t>(steering_cmd.data);
 //    if(steering_cmd_current != v)
 //    {
-        steering_cmd_new = v * 25;
+        steering_cmd_new = v * 10;
 //        hasNewSteeringData = true;
 //    }
 //    ROS_INFO("callback_steering: %d %f %d",steering_cmd_new,steering_cmd.data,positionControlState);
@@ -1450,7 +1450,7 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
     ki = 0.0;
     kd = 0.0;
 
-    kp_sat = 1000;
+    kp_sat = 10000;
     ki_sat = 1000;
     kd_sat = 1000;
 
@@ -1476,6 +1476,10 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
     double u = p_gain + i_gain + d_gain;
 
     target_velocity = fmutil::symbound<int>(u, v_sat);
+    if(abs(target_velocity) < 2)
+    {
+        target_velocity = 0;
+    }
 
     e_pre = e_now;
 }
