@@ -1458,7 +1458,7 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
 
     double u = p_gain + i_gain + d_gain;
 
-    target_velocity = fmutil::symbound<double>(u, v_sat);
+    target_velocity = fmutil::symbound<int>(u, v_sat);
 
     e_pre = e_now;
 }
