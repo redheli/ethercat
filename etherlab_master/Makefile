@@ -143,6 +143,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named DuetflController
+
+# Build rule for target.
+DuetflController: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 DuetflController
+.PHONY : DuetflController
+
+# fast build rule for target.
+DuetflController/fast:
+	$(MAKE) -f CMakeFiles/DuetflController.dir/build.make CMakeFiles/DuetflController.dir/build
+.PHONY : DuetflController/fast
+
+#=============================================================================
 # Target rules for targets named ROSBUILD_genmsg_cpp
 
 # Build rule for target.
@@ -167,6 +180,19 @@ ROSBUILD_genmsg_lisp: cmake_check_build_system
 ROSBUILD_genmsg_lisp/fast:
 	$(MAKE) -f CMakeFiles/ROSBUILD_genmsg_lisp.dir/build.make CMakeFiles/ROSBUILD_genmsg_lisp.dir/build
 .PHONY : ROSBUILD_genmsg_lisp/fast
+
+#=============================================================================
+# Target rules for targets named ROSBUILD_genmsg_py
+
+# Build rule for target.
+ROSBUILD_genmsg_py: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ROSBUILD_genmsg_py
+.PHONY : ROSBUILD_genmsg_py
+
+# fast build rule for target.
+ROSBUILD_genmsg_py/fast:
+	$(MAKE) -f CMakeFiles/ROSBUILD_genmsg_py.dir/build.make CMakeFiles/ROSBUILD_genmsg_py.dir/build
+.PHONY : ROSBUILD_genmsg_py/fast
 
 #=============================================================================
 # Target rules for targets named ROSBUILD_gensrv_cpp
@@ -221,6 +247,19 @@ clean_test_results/fast:
 .PHONY : clean_test_results/fast
 
 #=============================================================================
+# Target rules for targets named coe_example
+
+# Build rule for target.
+coe_example: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 coe_example
+.PHONY : coe_example
+
+# fast build rule for target.
+coe_example/fast:
+	$(MAKE) -f CMakeFiles/coe_example.dir/build.make CMakeFiles/coe_example.dir/build
+.PHONY : coe_example/fast
+
+#=============================================================================
 # Target rules for targets named doxygen
 
 # Build rule for target.
@@ -234,17 +273,43 @@ doxygen/fast:
 .PHONY : doxygen/fast
 
 #=============================================================================
-# Target rules for targets named etherlab_mastr
+# Target rules for targets named etherlab_master
 
 # Build rule for target.
-etherlab_mastr: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 etherlab_mastr
-.PHONY : etherlab_mastr
+etherlab_master: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 etherlab_master
+.PHONY : etherlab_master
 
 # fast build rule for target.
-etherlab_mastr/fast:
-	$(MAKE) -f CMakeFiles/etherlab_mastr.dir/build.make CMakeFiles/etherlab_mastr.dir/build
-.PHONY : etherlab_mastr/fast
+etherlab_master/fast:
+	$(MAKE) -f CMakeFiles/etherlab_master.dir/build.make CMakeFiles/etherlab_master.dir/build
+.PHONY : etherlab_master/fast
+
+#=============================================================================
+# Target rules for targets named etherlab_master2
+
+# Build rule for target.
+etherlab_master2: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 etherlab_master2
+.PHONY : etherlab_master2
+
+# fast build rule for target.
+etherlab_master2/fast:
+	$(MAKE) -f CMakeFiles/etherlab_master2.dir/build.make CMakeFiles/etherlab_master2.dir/build
+.PHONY : etherlab_master2/fast
+
+#=============================================================================
+# Target rules for targets named etherlab_master_sdo
+
+# Build rule for target.
+etherlab_master_sdo: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 etherlab_master_sdo
+.PHONY : etherlab_master_sdo
+
+# fast build rule for target.
+etherlab_master_sdo/fast:
+	$(MAKE) -f CMakeFiles/etherlab_master_sdo.dir/build.make CMakeFiles/etherlab_master_sdo.dir/build
+.PHONY : etherlab_master_sdo/fast
 
 #=============================================================================
 # Target rules for targets named rosbuild_clean-test-results
@@ -297,6 +362,19 @@ rospack_genmsg: cmake_check_build_system
 rospack_genmsg/fast:
 	$(MAKE) -f CMakeFiles/rospack_genmsg.dir/build.make CMakeFiles/rospack_genmsg.dir/build
 .PHONY : rospack_genmsg/fast
+
+#=============================================================================
+# Target rules for targets named rospack_genmsg_all
+
+# Build rule for target.
+rospack_genmsg_all: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rospack_genmsg_all
+.PHONY : rospack_genmsg_all
+
+# fast build rule for target.
+rospack_genmsg_all/fast:
+	$(MAKE) -f CMakeFiles/rospack_genmsg_all.dir/build.make CMakeFiles/rospack_genmsg_all.dir/build
+.PHONY : rospack_genmsg_all/fast
 
 #=============================================================================
 # Target rules for targets named rospack_genmsg_libexe
@@ -428,12 +506,60 @@ gtest_main/fast:
 	$(MAKE) -f gtest/CMakeFiles/gtest_main.dir/build.make gtest/CMakeFiles/gtest_main.dir/build
 .PHONY : gtest_main/fast
 
+src/coe_example.o: src/coe_example.c.o
+.PHONY : src/coe_example.o
+
+# target to build an object file
+src/coe_example.c.o:
+	$(MAKE) -f CMakeFiles/coe_example.dir/build.make CMakeFiles/coe_example.dir/src/coe_example.c.o
+.PHONY : src/coe_example.c.o
+
+src/coe_example.i: src/coe_example.c.i
+.PHONY : src/coe_example.i
+
+# target to preprocess a source file
+src/coe_example.c.i:
+	$(MAKE) -f CMakeFiles/coe_example.dir/build.make CMakeFiles/coe_example.dir/src/coe_example.c.i
+.PHONY : src/coe_example.c.i
+
+src/coe_example.s: src/coe_example.c.s
+.PHONY : src/coe_example.s
+
+# target to generate assembly for a file
+src/coe_example.c.s:
+	$(MAKE) -f CMakeFiles/coe_example.dir/build.make CMakeFiles/coe_example.dir/src/coe_example.c.s
+.PHONY : src/coe_example.c.s
+
+src/etherlab.o: src/etherlab.cpp.o
+.PHONY : src/etherlab.o
+
+# target to build an object file
+src/etherlab.cpp.o:
+	$(MAKE) -f CMakeFiles/DuetflController.dir/build.make CMakeFiles/DuetflController.dir/src/etherlab.cpp.o
+.PHONY : src/etherlab.cpp.o
+
+src/etherlab.i: src/etherlab.cpp.i
+.PHONY : src/etherlab.i
+
+# target to preprocess a source file
+src/etherlab.cpp.i:
+	$(MAKE) -f CMakeFiles/DuetflController.dir/build.make CMakeFiles/DuetflController.dir/src/etherlab.cpp.i
+.PHONY : src/etherlab.cpp.i
+
+src/etherlab.s: src/etherlab.cpp.s
+.PHONY : src/etherlab.s
+
+# target to generate assembly for a file
+src/etherlab.cpp.s:
+	$(MAKE) -f CMakeFiles/DuetflController.dir/build.make CMakeFiles/DuetflController.dir/src/etherlab.cpp.s
+.PHONY : src/etherlab.cpp.s
+
 src/etherlab_master.o: src/etherlab_master.cpp.o
 .PHONY : src/etherlab_master.o
 
 # target to build an object file
 src/etherlab_master.cpp.o:
-	$(MAKE) -f CMakeFiles/etherlab_mastr.dir/build.make CMakeFiles/etherlab_mastr.dir/src/etherlab_master.cpp.o
+	$(MAKE) -f CMakeFiles/etherlab_master.dir/build.make CMakeFiles/etherlab_master.dir/src/etherlab_master.cpp.o
 .PHONY : src/etherlab_master.cpp.o
 
 src/etherlab_master.i: src/etherlab_master.cpp.i
@@ -441,7 +567,7 @@ src/etherlab_master.i: src/etherlab_master.cpp.i
 
 # target to preprocess a source file
 src/etherlab_master.cpp.i:
-	$(MAKE) -f CMakeFiles/etherlab_mastr.dir/build.make CMakeFiles/etherlab_mastr.dir/src/etherlab_master.cpp.i
+	$(MAKE) -f CMakeFiles/etherlab_master.dir/build.make CMakeFiles/etherlab_master.dir/src/etherlab_master.cpp.i
 .PHONY : src/etherlab_master.cpp.i
 
 src/etherlab_master.s: src/etherlab_master.cpp.s
@@ -449,8 +575,80 @@ src/etherlab_master.s: src/etherlab_master.cpp.s
 
 # target to generate assembly for a file
 src/etherlab_master.cpp.s:
-	$(MAKE) -f CMakeFiles/etherlab_mastr.dir/build.make CMakeFiles/etherlab_mastr.dir/src/etherlab_master.cpp.s
+	$(MAKE) -f CMakeFiles/etherlab_master.dir/build.make CMakeFiles/etherlab_master.dir/src/etherlab_master.cpp.s
 .PHONY : src/etherlab_master.cpp.s
+
+src/etherlab_master2.o: src/etherlab_master2.cpp.o
+.PHONY : src/etherlab_master2.o
+
+# target to build an object file
+src/etherlab_master2.cpp.o:
+	$(MAKE) -f CMakeFiles/etherlab_master2.dir/build.make CMakeFiles/etherlab_master2.dir/src/etherlab_master2.cpp.o
+.PHONY : src/etherlab_master2.cpp.o
+
+src/etherlab_master2.i: src/etherlab_master2.cpp.i
+.PHONY : src/etherlab_master2.i
+
+# target to preprocess a source file
+src/etherlab_master2.cpp.i:
+	$(MAKE) -f CMakeFiles/etherlab_master2.dir/build.make CMakeFiles/etherlab_master2.dir/src/etherlab_master2.cpp.i
+.PHONY : src/etherlab_master2.cpp.i
+
+src/etherlab_master2.s: src/etherlab_master2.cpp.s
+.PHONY : src/etherlab_master2.s
+
+# target to generate assembly for a file
+src/etherlab_master2.cpp.s:
+	$(MAKE) -f CMakeFiles/etherlab_master2.dir/build.make CMakeFiles/etherlab_master2.dir/src/etherlab_master2.cpp.s
+.PHONY : src/etherlab_master2.cpp.s
+
+src/etherlab_master_sdo.o: src/etherlab_master_sdo.cpp.o
+.PHONY : src/etherlab_master_sdo.o
+
+# target to build an object file
+src/etherlab_master_sdo.cpp.o:
+	$(MAKE) -f CMakeFiles/etherlab_master_sdo.dir/build.make CMakeFiles/etherlab_master_sdo.dir/src/etherlab_master_sdo.cpp.o
+.PHONY : src/etherlab_master_sdo.cpp.o
+
+src/etherlab_master_sdo.i: src/etherlab_master_sdo.cpp.i
+.PHONY : src/etherlab_master_sdo.i
+
+# target to preprocess a source file
+src/etherlab_master_sdo.cpp.i:
+	$(MAKE) -f CMakeFiles/etherlab_master_sdo.dir/build.make CMakeFiles/etherlab_master_sdo.dir/src/etherlab_master_sdo.cpp.i
+.PHONY : src/etherlab_master_sdo.cpp.i
+
+src/etherlab_master_sdo.s: src/etherlab_master_sdo.cpp.s
+.PHONY : src/etherlab_master_sdo.s
+
+# target to generate assembly for a file
+src/etherlab_master_sdo.cpp.s:
+	$(MAKE) -f CMakeFiles/etherlab_master_sdo.dir/build.make CMakeFiles/etherlab_master_sdo.dir/src/etherlab_master_sdo.cpp.s
+.PHONY : src/etherlab_master_sdo.cpp.s
+
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/DuetflController.dir/build.make CMakeFiles/DuetflController.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/DuetflController.dir/build.make CMakeFiles/DuetflController.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/DuetflController.dir/build.make CMakeFiles/DuetflController.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -458,15 +656,20 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... DuetflController"
 	@echo "... ROSBUILD_genmsg_cpp"
 	@echo "... ROSBUILD_genmsg_lisp"
+	@echo "... ROSBUILD_genmsg_py"
 	@echo "... ROSBUILD_gensrv_cpp"
 	@echo "... ROSBUILD_gensrv_lisp"
 	@echo "... _catkin_empty_exported_target"
 	@echo "... clean_test_results"
+	@echo "... coe_example"
 	@echo "... doxygen"
 	@echo "... edit_cache"
-	@echo "... etherlab_mastr"
+	@echo "... etherlab_master"
+	@echo "... etherlab_master2"
+	@echo "... etherlab_master_sdo"
 	@echo "... install"
 	@echo "... install/local"
 	@echo "... install/strip"
@@ -476,6 +679,7 @@ help:
 	@echo "... rosbuild_precompile"
 	@echo "... rosbuild_premsgsrvgen"
 	@echo "... rospack_genmsg"
+	@echo "... rospack_genmsg_all"
 	@echo "... rospack_genmsg_libexe"
 	@echo "... rospack_gensrv"
 	@echo "... run_tests"
@@ -486,9 +690,24 @@ help:
 	@echo "... tests"
 	@echo "... gtest"
 	@echo "... gtest_main"
+	@echo "... src/coe_example.o"
+	@echo "... src/coe_example.i"
+	@echo "... src/coe_example.s"
+	@echo "... src/etherlab.o"
+	@echo "... src/etherlab.i"
+	@echo "... src/etherlab.s"
 	@echo "... src/etherlab_master.o"
 	@echo "... src/etherlab_master.i"
 	@echo "... src/etherlab_master.s"
+	@echo "... src/etherlab_master2.o"
+	@echo "... src/etherlab_master2.i"
+	@echo "... src/etherlab_master2.s"
+	@echo "... src/etherlab_master_sdo.o"
+	@echo "... src/etherlab_master_sdo.i"
+	@echo "... src/etherlab_master_sdo.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 

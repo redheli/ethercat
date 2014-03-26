@@ -625,6 +625,10 @@ bool fm_auto::DuetflEthercatController::initSDOs()
 
     return true;
 }
+bool fm_auto::DuetflEthercatController::initPID()
+{
+    vFilter = fmutil::LowPassFilter(0.2); // time constant?
+}
 bool fm_auto::DuetflEthercatController::initROS()
 {
     ros::NodeHandle n;
@@ -1134,6 +1138,8 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     // check for islave configuration state(s) (optional)
 //    check_slave_config_states();
 
+    current_time = ros::Time::now();
+
     writeControlword_PDO_SlaveZero(controlword_PDO);
     // read PDO data
     bool res = readPDOsData();
@@ -1150,12 +1156,14 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
 //        writePDOData_SlaveZero3();
     }
 
-
+    dt = (current_time - last_time).toSec();
+    last_time = current_time;
 
     // send process data
 //    ecrt_domain_queue(domain_output);
     ecrt_domain_queue(domain_input);
     ecrt_master_send(master);
+
 
     return true;
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
@@ -1419,9 +1427,47 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
+{
+    kp = 1.5;
+    ki = 0.0;
+    kd = 0.0;
+
+    kp_sat = 1000;
+    ki_sat = 1000;
+    kd_sat = 1000;
+
+    v_sat = 1000000;
+
+    if(dt==0) dt=0.0000001;
+
+    e_now = steering_cmd_new - position_actual_value_PDO_data;
+
+    // P
+    double p_gain = fmutil::symbound<double>(kp * e_now, kp_sat);
+
+
+    // I
+    // Accumulate integral error and limit its range
+    iTerm += ki * (e_pre + e_now)/2 * dt;
+    double i_gain = iTerm = fmutil::symbound<double>(iTerm, ki_sat);
+
+    // D
+    double dTerm = kd * (e_now - e_pre) / dt;
+    double d_gain = fmutil::symbound<double>(dTerm, kd_sat);
+
+    double u = p_gain + i_gain + d_gain;
+
+    target_velocity = fmutil::symbound<double>(u, v_sat);
+
+    e_pre = e_now;
+}
+
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {
 //    uint16_t controlword = 0xf;
+    calculateTargetVelocity();
+
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
     writeTargetVelocity_PDO_SlaveZero(steering_cmd_new);
