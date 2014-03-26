@@ -1470,11 +1470,11 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
-    writeTargetVelocity_PDO_SlaveZero(steering_cmd_new);
+    writeTargetVelocity_PDO_SlaveZero(target_velocity);
     ecrt_domain_queue(domain_output);
 
-    ROS_INFO("steering_cmd_new %d   "
-         ,steering_cmd_new);
+    ROS_INFO("steering_cmd_new %d   target_velocity %d"
+         ,steering_cmd_new,target_velocity);
 }
 
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
