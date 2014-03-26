@@ -635,6 +635,7 @@ bool fm_auto::DuetflEthercatController::initROS()
     sub = n.subscribe("steer_angle", 1, &fm_auto::DuetflEthercatController::callback_steering2, this);
     brake_sub = n.subscribe("joy", 1, &fm_auto::DuetflEthercatController::callback_joy, this);
     pub = n.advertise<etherlab_master::EthercatPDO>("pdo_ethercat", 1);
+    pub_position_cmd = n.advertise<std_msgs::Float64>("position_cmd_receive", 1);
 }
 
 bool fm_auto::DuetflEthercatController::initEthercat()
@@ -1456,7 +1457,7 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
     v_sat = 1000000;
 
     if(dt==0) return true;
-
+    fm_auto::DuetflEthercatController::pub_position_cmd.publish(steering_cmd_new);
     e_now = steering_cmd_new - position_actual_value_PDO_data;
 
     // P

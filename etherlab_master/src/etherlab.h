@@ -208,6 +208,7 @@ private:
 
        ros::Subscriber sub, brake_sub;
        ros::Publisher pub;
+       ros::Publisher pub_position_cmd;
        int32_t steering_cmd_new;
        int32_t steering_cmd_writing;
        int32_t steering_cmd_current;
