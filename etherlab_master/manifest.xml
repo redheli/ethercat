@@ -12,6 +12,7 @@
   <depend package="rospy"/>
   <depend package="roscpp"/>
   <depend package="joy"/>
+<depend package="fmutil"/>
 
 </package>
 

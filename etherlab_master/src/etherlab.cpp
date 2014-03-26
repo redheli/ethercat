@@ -121,6 +121,7 @@ fm_auto::DuetflEthercatController::DuetflEthercatController()
     : domain_input(NULL),domain_output(NULL),domain_output_target_velocity(NULL),steering_cmd_current(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),
       positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1),controlword_PDO(0xf),velocity_actual_value(0)
 {
+    dt=0.0;
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
 {
@@ -1454,7 +1455,7 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
 
     v_sat = 1000000;
 
-    if(dt==0) dt=0.0000001;
+    if(dt==0) return true;
 
     e_now = steering_cmd_new - position_actual_value_PDO_data;
 
