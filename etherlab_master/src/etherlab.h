@@ -55,7 +55,7 @@ public:
        /// loop trigger
        void run();
        bool init();
-       bool initEthercat_SlaveZero();
+       bool initEthercat();
        bool initEthercat_SlaveOne();
        bool initSDOs_SlaveZero();
        bool initSDOs_SlaveOne();

@@ -142,8 +142,8 @@ bool fm_auto::DuetflEthercatController::init()
 {
     FREQUENCY = 300; //hz
 
-    // init ethercat master and slave zero
-    if(!initEthercat_SlaveZero())
+    // init ethercat master and slave zero and slave one
+    if(!initEthercat())
     {
         ROS_ERROR("Failed to init ethercat slave zero: %s\n", strerror(errno));
         return false;
@@ -993,7 +993,7 @@ bool fm_auto::DuetflEthercatController::initROS()
 
 }
 
-bool fm_auto::DuetflEthercatController::initEthercat_SlaveZero()
+bool fm_auto::DuetflEthercatController::initEthercat()
 {
     // we only have one master,who is g...
     master = ecrt_request_master(0);
