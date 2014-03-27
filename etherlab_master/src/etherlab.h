@@ -234,12 +234,17 @@ private:
 
        bool hasNewSteeringData;
        bool isNeedHal;// when new position cmd is diff direction of last cmd, need hal
+
+       // slave zero PDO data
        uint16_t statusword_PDO_data;
        int32_t position_actual_value_PDO_data_slave_zero;
        int32_t velocity_actual_value_PDO_data;
        int16_t current_actual_value_PDO_data;
        int16_t torque_actual_value_PDO_data;
        uint32_t velocity_actual_value;
+       // slave one PDO data
+       int32_t position_actual_value_PDO_data_slave_one;
+
        bool PDO_OK;
 
        bool needWrite_0xf_2controlword;

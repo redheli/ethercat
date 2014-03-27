@@ -126,6 +126,9 @@ fm_auto::DuetflEthercatController::DuetflEthercatController()
 
     needDoHoming_SlaveZero = false;
     needDoHoming_SlaveOne = false;
+
+    steering_slave_number = 1;
+    braking_slave_number = 0;
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
 {
@@ -967,11 +970,15 @@ bool fm_auto::DuetflEthercatController::initROS()
     n.param("need_do_homing_slave_zero", needDoHoming_SlaveZero, true);
     n.param("need_do_homing_slave_one", needDoHoming_SlaveOne, false);
     n.param("max_steering_angle", maxSteeringCmd, 4500); // 450 degree
+    n.param("steering_slave_number", steering_slave_number, 1); // steering is default salve one
+    n.param("braking_slave_number", braking_slave_number, 0); // braking is default salve zero
 
-    ROS_INFO("has_slave_one %d",hasSlaveOne);
-    ROS_INFO("need_do_homing_slave_zero %d",needDoHoming_SlaveZero);
-    ROS_INFO("need_do_homing_slave_one %d",needDoHoming_SlaveOne);
-    ROS_INFO("max_steering_angle %f",maxSteeringCmd);
+    ROS_INFO("has_slave_one %d\n",hasSlaveOne);
+    ROS_INFO("need_do_homing_slave_zero %d\n",needDoHoming_SlaveZero);
+    ROS_INFO("need_do_homing_slave_one %d\n",needDoHoming_SlaveOne);
+    ROS_INFO("max_steering_angle %f\n",maxSteeringCmd);
+    ROS_INFO("steering_slave_number %d\n",steering_slave_number);
+    ROS_INFO("braking_slave_number %d\n",braking_slave_number);
 
     ROS_INFO("asdfd");
 //    sub = n.subscribe(str,10,&fm_auto::DuetflEthercatController::callback_steering,this);
@@ -1858,7 +1865,7 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero(int32_
 
     v_sat = 9000;
 
-    if(dt==0) return true;
+    if(dt==0) return false;
 
 //    steering_cmd_new = fmutil::symbound<int32_t>(steering_cmd_new,maxSteeringCmd);
 //    std_msgs::Float64 cmd;
@@ -1889,6 +1896,8 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero(int32_
     }
 
     e_pre = e_now;
+
+    return true;
 }
 bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveOne(int32_t &target_pos)
 {
@@ -1906,7 +1915,7 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveOne(int32_t
 
     v_sat_slave_one = 9000;
 
-    if(dt==0) return true;
+    if(dt==0) return false;
 
 //    steering_cmd_new = fmutil::symbound<int32_t>(steering_cmd_new,maxSteeringCmd);
 //    std_msgs::Float64 cmd;
@@ -1937,6 +1946,8 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveOne(int32_t
     }
 
     e_pre_slave_one = e_now_slave_one;
+
+    return true;
 }
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {

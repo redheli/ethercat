@@ -63,6 +63,24 @@ static unsigned int OFFSET_REGISTER;/* Error_Register */
 static unsigned int OFFSET_VELOCITY_ACTUAL_VALUE;/* Velocity_Actual_Value */
 static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 
+// slave one
+static unsigned int OFFSET_CONTROLWORD_SLAVE_ONE;/* Controlword */
+static unsigned int OFFSET_PROFILE_VELOCITY_SLAVE_ONE;/* Profile_Velocity */
+static unsigned int OFFSET_PROFILE_ACCELERATION_SLAVE_ONE;/* Profile_Acceleration */
+static unsigned int OFFSET_MODE_OF_OPERATION_SLAVE_ONE;/* Mode_of_Operation */
+static unsigned int OFFSET_HOMING_METHOD_SLAVE_ONE;/* Homing_Method */
+static unsigned int OFFSET_TARGET_POSITION_SLAVE_ONE;/* Target_Position */
+static unsigned int OFFSET_TARGET_VELOCITY_SLAVE_ONE;/* Target_Velocity */
+static unsigned int OFFSET_TARGET_TORQUE_SLAVE_ONE;/* Target_Torque */
+
+static unsigned int OFFSET_STATUSWORD_SLAVE_ONE;/* Statusword */
+static unsigned int OFFSET_POSITION_ACTURAL_VALUE_SLAVE_ONE;/* Position_Actual_Value */
+static unsigned int OFFSET_CURRENT_ACTURAL_VALUE_SLAVE_ONE;/* Current_Actual_Value */
+static unsigned int OFFSET_MODES_OF_OPERATION_DISPLAY_SLAVE_ONE;/* Modes_Of_Operation_Display */
+static unsigned int OFFSET_REGISTER_SLAVE_ONE;/* Error_Register */
+static unsigned int OFFSET_VELOCITY_ACTUAL_VALUE_SLAVE_ONE;/* Velocity_Actual_Value */
+static unsigned int OFFSET_TORQUE_ACTURAL_VALUE_SLAVE_ONE;/* Torque_Actual_Value */
+
 #define ADDRESS_MODES_OF_OPERATION_DISPLAY  0x6061
 #define ADDRESS_MODES_OF_OPERATION          0x6060
 #define ADDRESS_HOMING_METHOD               0X6098
@@ -83,13 +101,14 @@ const static ec_pdo_entry_reg_t domain_output_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6081, 0, &OFFSET_PROFILE_VELOCITY,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x60ff, 0, &OFFSET_TARGET_VELOCITY,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6083, 0, &OFFSET_PROFILE_ACCELERATION,NULL},
+
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x6040, 0, &OFFSET_CONTROLWORD_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x6081, 0, &OFFSET_PROFILE_VELOCITY_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x60ff, 0, &OFFSET_TARGET_VELOCITY_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x6083, 0, &OFFSET_PROFILE_ACCELERATION_SLAVE_ONE,NULL},
     {}
 };
-const static ec_pdo_entry_reg_t domain_output_regs_target_velocity[] = {
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x60ff, 0, &OFFSET_TARGET_VELOCITY,NULL},
-    {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6083, 0, &OFFSET_PROFILE_ACCELERATION,NULL},
-    {}
-};
+
 const static ec_pdo_entry_reg_t domain_input_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6061, 0, &OFFSET_MODES_OF_OPERATION_DISPLAY,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &OFFSET_STATUSWORD,NULL},
@@ -98,6 +117,13 @@ const static ec_pdo_entry_reg_t domain_input_regs[] = {
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6064, 0, &OFFSET_POSITION_ACTURAL_VALUE,NULL},
     {SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6078, 0, &OFFSET_CURRENT_ACTURAL_VALUE,NULL},
     //{SlaveZeroAliasAndPosition,  VendorID_ProductCode, 0x6077, 0, &OFFSET_TORQUE_ACTURAL_VALUE, NULL},
+
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x6061, 0, &OFFSET_MODES_OF_OPERATION_DISPLAY_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x6041, 0, &OFFSET_STATUSWORD_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x606c, 0, &OFFSET_VELOCITY_ACTUAL_VALUE_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x1001, 0, &OFFSET_REGISTER_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x6064, 0, &OFFSET_POSITION_ACTURAL_VALUE_SLAVE_ONE,NULL},
+    {SlaveOneAliasAndPosition,  VendorID_ProductCode, 0x6078, 0, &OFFSET_CURRENT_ACTURAL_VALUE_SLAVE_ONE,NULL},
     {}
 };
 
