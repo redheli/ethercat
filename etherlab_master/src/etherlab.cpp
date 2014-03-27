@@ -1842,7 +1842,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
     }
     return true;
 }
-bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero()
+bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero(int32_t &target_pos)
 {
     // good but over a bit
 //    kp = 8.5;
@@ -1860,12 +1860,12 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero()
 
     if(dt==0) return true;
 
-    steering_cmd_new = fmutil::symbound<int32_t>(steering_cmd_new,maxSteeringCmd);
-    std_msgs::Float64 cmd;
-    cmd.data = steering_cmd_new;
-    fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
-    e_now = steering_cmd_new - position_actual_value_PDO_data;
-
+//    steering_cmd_new = fmutil::symbound<int32_t>(steering_cmd_new,maxSteeringCmd);
+//    std_msgs::Float64 cmd;
+//    cmd.data = steering_cmd_new;
+//    fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
+//    e_now = steering_cmd_new - position_actual_value_PDO_data;
+    e_now = target_pos - position_actual_value_PDO_data_slave_zero;
     // P
     double p_gain = fmutil::symbound<double>(kp * e_now, kp_sat);
 
@@ -1893,8 +1893,15 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero()
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {
 //    uint16_t controlword = 0xf;
+    steering_cmd_new = fmutil::symbound<int32_t>(steering_cmd_new,maxSteeringCmd);
+    std_msgs::Float64 cmd;
+    cmd.data = steering_cmd_new;
+    fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
 
-    calculateTargetVelocity_SlaveZero();
+    if(steering_slave_number == 0)
+    {
+        calculateTargetVelocity_SlaveZero(steering_cmd_new);
+    }
 
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
@@ -2291,14 +2298,14 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
         ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
     }
     ROS_INFO("readPDOsData: statusword 0x%04x",statusword_PDO_data);
-    position_actual_value_PDO_data = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_POSITION_ACTURAL_VALUE);
+    position_actual_value_PDO_data_slave_zero = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_POSITION_ACTURAL_VALUE);
     velocity_actual_value_PDO_data = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_VELOCITY_ACTUAL_VALUE);
     current_actual_value_PDO_data = EC_READ_S16(domain_input_pd + fm_auto::OFFSET_CURRENT_ACTURAL_VALUE);
     torque_actual_value_PDO_data = EC_READ_S16(domain_input_pd + fm_auto::OFFSET_TORQUE_ACTURAL_VALUE);
         printf("pdo pos: %04d  vel: %04d cur: %04d tor: %04d\n",
-                position_actual_value_PDO_data, velocity_actual_value_PDO_data, current_actual_value_PDO_data, torque_actual_value_PDO_data);
+                position_actual_value_PDO_data_slave_zero, velocity_actual_value_PDO_data, current_actual_value_PDO_data, torque_actual_value_PDO_data);
     etherlab_master::EthercatPDO pdo_msg;
-    pdo_msg.position = position_actual_value_PDO_data;
+    pdo_msg.position = position_actual_value_PDO_data_slave_zero;
     pdo_msg.velocity = velocity_actual_value_PDO_data;
     pdo_msg.current = current_actual_value_PDO_data;
     pdo_msg.torque = torque_actual_value_PDO_data;

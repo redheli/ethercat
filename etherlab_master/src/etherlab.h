@@ -93,7 +93,7 @@ public:
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
-       bool calculateTargetVelocity_SlaveZero(); // use pid calculate target velocity
+       bool calculateTargetVelocity_SlaveZero(int32_t &target_pos); // use pid calculate target velocity
        bool writePDOData_SlaveZero_VelocityControl(); // use velocity mode
        bool writePDOData_SlaveZero3();//only change_set_immediately is set
 
@@ -201,6 +201,8 @@ public:
        bool hasSlaveOne; // has two motor connected to master
        bool needDoHoming_SlaveZero; // do homing operate , normally do once
        bool needDoHoming_SlaveOne;
+       int steering_slave_number; // steering motor is which slave, default shall be slave one
+       int braking_slave_number; // braking motor is which slave ,default slave zero
 private:
        /// store sdo request
        std::list<fm_sdo*> activeSdoPool;
@@ -231,7 +233,7 @@ private:
        bool hasNewSteeringData;
        bool isNeedHal;// when new position cmd is diff direction of last cmd, need hal
        uint16_t statusword_PDO_data;
-       int32_t position_actual_value_PDO_data;
+       int32_t position_actual_value_PDO_data_slave_zero;
        int32_t velocity_actual_value_PDO_data;
        int16_t current_actual_value_PDO_data;
        int16_t torque_actual_value_PDO_data;
