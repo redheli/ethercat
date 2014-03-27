@@ -118,7 +118,7 @@ bool fm_auto::DuetflEthercatController::getPositionActualValue(fm_sdo* position_
 //    //TODO
 //}
 fm_auto::DuetflEthercatController::DuetflEthercatController()
-    : domain_input(NULL),domain_output(NULL),domain_output_target_velocity(NULL),steering_cmd_current(0),steering_cmd_new(0),needWrite_0xf_2controlword(false),
+    : domain_input(NULL),domain_output(NULL),domain_output_target_velocity(NULL),steering_cmd_current(0),steering_cmd_new(0),braking_cmd_new(0),needWrite_0xf_2controlword(false),
       positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1),controlword_PDO(0xf),velocity_actual_value(0)
 {
     dt=0.0;
@@ -1890,6 +1890,54 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero(int32_
 
     e_pre = e_now;
 }
+bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveOne(int32_t &target_pos)
+{
+    // good but over a bit
+//    kp = 8.5;
+//    ki = 10.0;
+
+    kp_slave_one = 13.5;
+    ki_slave_one = 0.0;
+    kd_slave_one = 0.0;
+
+    kp_sat_slave_one = 9000;
+    ki_sat_slave_one = 900;
+    kd_sat_slave_one = 900;
+
+    v_sat_slave_one = 9000;
+
+    if(dt==0) return true;
+
+//    steering_cmd_new = fmutil::symbound<int32_t>(steering_cmd_new,maxSteeringCmd);
+//    std_msgs::Float64 cmd;
+//    cmd.data = steering_cmd_new;
+//    fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
+//    e_now = steering_cmd_new - position_actual_value_PDO_data;
+    e_now_slave_one = target_pos - position_actual_value_PDO_data_slave_one;
+    // P
+    double p_gain = fmutil::symbound<double>(kp_slave_one * e_now_slave_one, kp_sat_slave_one);
+
+
+    // I
+    // Accumulate integral error and limit its range
+    iTerm_slave_one += ki_slave_one * (e_pre_slave_one + e_now_slave_one)/2 * dt;
+    double i_gain = fmutil::symbound<double>(iTerm_slave_one, ki_sat_slave_one);
+
+    // D
+    double dTerm = kd_slave_one * (e_now_slave_one - e_pre_slave_one) / dt;
+    double d_gain = fmutil::symbound<double>(dTerm, kd_sat_slave_one);
+
+    double u = p_gain + i_gain + d_gain;
+    ROS_INFO("kp_slave_one %f ki_slave_one %f kd_slave_one %f"
+            ,p_gain,i_gain,d_gain);
+    target_velocity_slave_one = fmutil::symbound<int>(u, v_sat_slave_one);
+    if(abs(target_velocity_slave_one) < 2)
+    {
+        target_velocity_slave_one = 0;
+    }
+
+    e_pre_slave_one = e_now_slave_one;
+}
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {
 //    uint16_t controlword = 0xf;
@@ -1898,14 +1946,33 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
     cmd.data = steering_cmd_new;
     fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
 
-    if(steering_slave_number == 0)
-    {
-        calculateTargetVelocity_SlaveZero(steering_cmd_new);
-    }
+
 
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
-    writeTargetVelocity_PDO_SlaveZero(target_velocity_slave_zero);
+    if(steering_slave_number == 0)  // slave zero
+    {
+        calculateTargetVelocity_SlaveZero(steering_cmd_new);
+        writeTargetVelocity_PDO_SlaveZero(target_velocity_slave_zero);
+
+        if(braking_slave_number == 1)
+        {
+            calculateTargetVelocity_SlaveOne(braking_cmd_new);
+            writeTargetVelocity_PDO_SlaveOne(target_velocity_slave_One);
+        }
+    }
+    else if(steering_slave_number == 1)
+    {
+        calculateTargetVelocity_SlaveOne(steering_cmd_new);
+        writeTargetVelocity_PDO_SlaveOne(target_velocity_slave_One);
+
+        if(steering_slave_number == 0)  // slave zero
+        {
+            calculateTargetVelocity_SlaveZero(steering_cmd_new);
+            writeTargetVelocity_PDO_SlaveZero(target_velocity_slave_zero);
+        }
+    }
+
     ecrt_domain_queue(domain_output);
 
     ROS_INFO("steering_cmd_new %d   target_velocity_slave_zero %d "

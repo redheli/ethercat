@@ -94,6 +94,7 @@ public:
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
        bool calculateTargetVelocity_SlaveZero(int32_t &target_pos); // use pid calculate target velocity
+       bool calculateTargetVelocity_SlaveOne(int32_t &target_pos);
        bool writePDOData_SlaveZero_VelocityControl(); // use velocity mode
        bool writePDOData_SlaveZero3();//only change_set_immediately is set
 
@@ -227,6 +228,7 @@ private:
        ros::Publisher pub;
        ros::Publisher pub_position_cmd;
        int32_t steering_cmd_new;
+       int32_t braking_cmd_new;
        int32_t steering_cmd_writing;
        int32_t steering_cmd_current;
 
@@ -266,6 +268,20 @@ public:
        double e_now;
        double iTerm;
        double e_pre;
+
+       //slave one PID para
+       double kp_slave_one;
+       double ki_slave_one;
+       double kd_slave_one;
+
+       double kp_sat_slave_one;
+       double ki_sat_slave_one;
+       double kd_sat_slave_one;
+       double v_sat_slave_one; //velocity limit
+
+       double e_now_slave_one;
+       double iTerm_slave_one;
+       double e_pre_slave_one;
 
 //       std::mutex counter_mutex;
 
