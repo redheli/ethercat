@@ -127,6 +127,8 @@ public:
 
        bool doHoming_SlaveZero();
 
+       //slave one
+       bool setSlaveOneMotorOperatingMode2Homing();
        /* controller */
        /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor

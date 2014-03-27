@@ -569,7 +569,42 @@ ROS_INFO("dddd1.2");
     ROS_INFO("set homing mode ok");
     return true;
 }
-
+bool fm_auto::DuetflEthercatController::setSlaveOneMotorOperatingMode2Homing()
+{
+    //1. check current operation mode
+    fm_auto::OPERATION_MODE operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(fm_auto::slave1_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveOneMotorOperatingMode2Homing: get mode failed");
+        return false;
+    }
+ROS_INFO("dddd1.1   %d",operation_mode);
+    if(operation_mode != fm_auto::OM_HOMING_MODE)
+    {
+        //2. set mode to homing
+        fm_auto::OPERATION_MODE value = fm_auto::OM_HOMING_MODE;
+        if(!setMotorOperatingModeSDO(slave1_operation_mode_write_fmsdo,value))
+        {
+            ROS_ERROR("setSlaveOneMotorOperatingMode2Homing: set mode failed");
+            return false;
+        }
+    }
+ROS_INFO("dddd1.2");
+    //3. verify
+    operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(slave1_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveOneMotorOperatingMode2Homing: get mode failed 2");
+        return false;
+    }
+    if(operation_mode != fm_auto::OM_HOMING_MODE)
+    {
+        ROS_ERROR("setSlaveOneMotorOperatingMode2Homing: mode not homing after set %d\n",operation_mode);
+        return false;
+    }
+    ROS_INFO("set slave one homing mode ok");
+    return true;
+}
 bool fm_auto::DuetflEthercatController::initSDOs_SlaveZero()
 {
     // slave0 sdo
