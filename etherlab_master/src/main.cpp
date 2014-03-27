@@ -37,7 +37,7 @@ int main(int argc, char**argv)
             return 0;
         }
     }// if need homing slave zero
-    if(duetController.needDoHoming_SlaveOne)
+    if(duetController.hasSlaveOne && duetController.needDoHoming_SlaveOne)
     {
         if(!duetController.doHoming_SlaveOne())
         {
@@ -56,6 +56,21 @@ int main(int argc, char**argv)
     {
         ROS_INFO_ONCE("setSlaveZeroMotorOperatingMode2ProfileVelocity ok\n");
     }
+    if(duetController.hasSlaveOne)
+    {
+        if(!duetController.setSlaveOneMotorOperatingMode2ProfileVelocity())
+        {
+            ROS_ERROR("setSlaveOneMotorOperatingMode2ProfileVelocity failed");
+            return 0;
+        }
+        else
+        {
+            ROS_INFO_ONCE("setSlaveOneMotorOperatingMode2ProfileVelocity ok\n");
+        }
+    }
+
+
+
     if(!duetController.enableControlSDO_SlaveZero())
     {
         ROS_ERROR("enableControlSDO_SlaveZero failed");
