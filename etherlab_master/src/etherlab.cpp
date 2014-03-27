@@ -142,14 +142,14 @@ bool fm_auto::DuetflEthercatController::init()
 {
     FREQUENCY = 300; //hz
 
+    initROS();
+
     // init ethercat master and slave zero and slave one
     if(!initEthercat())
     {
         ROS_ERROR("Failed to init ethercat slave zero: %s\n", strerror(errno));
         return false;
     }
-
-    initROS();
 
 //    // slave zero(steering motor) position zero
 //    // 1. set operating mode to homing
@@ -966,7 +966,7 @@ bool fm_auto::DuetflEthercatController::initSDOs_SlaveOne()
 bool fm_auto::DuetflEthercatController::initROS()
 {
     ros::NodeHandle n;
-    n.param("has_slave_one", hasSlaveOne, false);
+    n.param("has_slave_one", hasSlaveOne, true);
     n.param("need_do_homing_slave_zero", needDoHoming_SlaveZero, true);
     n.param("need_do_homing_slave_one", needDoHoming_SlaveOne, true);
     n.param("max_steering_angle", maxSteeringCmd, 4500); // 450 degree
