@@ -1604,12 +1604,26 @@ void fm_auto::DuetflEthercatController::callback_joy(sensor_msgs::Joy joy_cmd)
   int button_trig = joy_cmd.buttons[5];
   if(button_trig == 1){
     if(fm_auto::DuetflEthercatController::enable_mode){
-      fm_auto::DuetflEthercatController::disableControlSDO_SlaveZero();
+        if(steering_slave_number == 0)
+        {
+            fm_auto::DuetflEthercatController::disableControlSDO_SlaveZero();
+        }
+        else if(steering_slave_number == 1)
+        {
+            fm_auto::DuetflEthercatController::disableControlSDO_SlaveOne();
+        }
       fm_auto::DuetflEthercatController::enable_mode = false;
       ROS_WARN("Disabling mode");
     }
     else {
-      fm_auto::DuetflEthercatController::enableControlSDO_SlaveZero();
+        if(steering_slave_number == 0)
+        {
+            fm_auto::DuetflEthercatController::enableControlSDO_SlaveOne();
+        }
+        else if(steering_slave_number == 1)
+        {
+            fm_auto::DuetflEthercatController::enableControlSDO_SlaveZero();
+        }
       fm_auto::DuetflEthercatController::enable_mode = true;
       ROS_WARN("Enabling mode");
     }
