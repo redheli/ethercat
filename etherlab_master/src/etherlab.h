@@ -55,8 +55,10 @@ public:
        /// loop trigger
        void run();
        bool init();
-       bool initEthercat();
-       bool initSDOs();
+       bool initEthercat_SlaveZero();
+       bool initEthercat_SlaveOne();
+       bool initSDOs_SlaveZero();
+       bool initSDOs_SlaveOne();
        bool initROS();
        bool cyclic_task();
        bool cyclic_task_SDO();
@@ -187,6 +189,7 @@ private:
        bool checkNeedHal(int32_t las_cmd,int32_t new_cmd);
 
 private:
+       bool hasSlaveOne; // has two motor connected to master
        /// store sdo request
        std::list<fm_sdo*> activeSdoPool;
 

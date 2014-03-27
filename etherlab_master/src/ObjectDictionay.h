@@ -75,6 +75,7 @@ static unsigned int OFFSET_TORQUE_ACTURAL_VALUE;/* Torque_Actual_Value */
 
 // current only have one slave
 #define SlaveZeroAliasAndPosition  0, 0
+#define SlaveOneAliasAndPosition  0, 1
 #define VendorID_ProductCode  0x000000e4, 0x00001133
 
 const static ec_pdo_entry_reg_t domain_output_regs[] = {
@@ -130,6 +131,39 @@ static ec_sync_info_t slave_0_syncs[] = {
     {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
     {2, EC_DIR_OUTPUT, 2, slave_0_pdos + 0, EC_WD_DISABLE},
     {3, EC_DIR_INPUT, 2, slave_0_pdos + 2, EC_WD_DISABLE},
+    {0xff}
+};
+
+static ec_pdo_entry_info_t slave_1_pdo_entries[] = {
+    {0x6040, 0x00, 16}, /* Controlword */
+    {0x6081, 0x00, 32}, /* Profile_Velocity */
+
+    {0x60ff, 0x00, 32}, /* Target_Velocity */
+    {0x6083, 0x00, 32}, /* Profile_Acceleration */
+
+
+    {0x6061, 0x00, 8}, /* Modes_Of_Operation_Display */
+    {0x6041, 0x00, 16}, /* Statusword */
+    {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
+    {0x1001, 0x00, 8}, /* Error_Register */
+
+    {0x6064, 0x00, 32}, /* Position_Actual_Value */
+    {0x6078, 0x00, 16}, /* Current_Actual_Value */
+//    {0x606c, 0x00, 32}, /* Velocity_Actual_Value */
+//    {0x6077, 0x00, 16}, /* Torque_Actual_Value */
+};
+static ec_pdo_info_t slave_1_pdos[] = {
+    {0x1600, 2, slave_1_pdo_entries + 0}, /* Outputs */
+    {0x1601, 2, slave_1_pdo_entries + 2}, /* Outputs */
+    {0x1A00, 4, slave_1_pdo_entries + 4}, /* Inputs */
+    {0x1A01, 2, slave_1_pdo_entries + 8}, /* Inputs */
+};
+
+static ec_sync_info_t slave_1_syncs[] = {
+    {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
+    {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
+    {2, EC_DIR_OUTPUT, 2, slave_1_pdos + 0, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 2, slave_1_pdos + 2, EC_WD_DISABLE},
     {0xff}
 };
 

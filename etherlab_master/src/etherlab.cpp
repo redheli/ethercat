@@ -122,6 +122,7 @@ fm_auto::DuetflEthercatController::DuetflEthercatController()
       positionControlState(6),hasNewSteeringData(false),PDO_OK(true),restTick(1),controlword_PDO(0xf),velocity_actual_value(0)
 {
     dt=0.0;
+    hasSlaveOne = false;
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
 {
@@ -135,10 +136,10 @@ bool fm_auto::DuetflEthercatController::init()
 {
     FREQUENCY = 300; //hz
 
-    // init ethercat
-    if(!initEthercat())
+    // init ethercat master and slave zero
+    if(!initEthercat_SlaveZero())
     {
-        ROS_ERROR("Failed to init ethercat: %s\n", strerror(errno));
+        ROS_ERROR("Failed to init ethercat slave zero: %s\n", strerror(errno));
         return false;
     }
 
@@ -523,7 +524,7 @@ ROS_INFO("dddd1.2");
     return true;
 }
 
-bool fm_auto::DuetflEthercatController::initSDOs()
+bool fm_auto::DuetflEthercatController::initSDOs_SlaveZero()
 {
     // slave0 sdo
     ROS_INFO("Creating operation mode read SDO requests...\n");
@@ -626,6 +627,107 @@ bool fm_auto::DuetflEthercatController::initSDOs()
 
     return true;
 }
+bool fm_auto::DuetflEthercatController::initSDOs_SlaveOne()
+{
+    // slave1 sdo
+    ROS_INFO("Creating slave1 operation mode read SDO requests...\n");
+    if (!(fm_auto::slave1_sdo_operation_mode_display = ecrt_slave_config_create_sdo_request(fm_auto::slave_one,
+                                                                                            ADDRESS_MODES_OF_OPERATION_DISPLAY,
+                                                                                            0, 1))) // uint8 data size 1
+    {
+        ROS_ERROR("Failed to create slave1 SDO modes_of_operation_display 0x6061 request.\n");
+        return false;
+    }
+    fm_auto::slave1_operation_mode_display_fmsdo = new fm_sdo();
+    fm_auto::slave1_operation_mode_display_fmsdo->sdo = fm_auto::slave1_sdo_operation_mode_display;
+    fm_auto::slave1_operation_mode_display_fmsdo->descrption = "slave1 operation_mode_display 0x6061";
+    fm_auto::slave1_operation_mode_display_fmsdo->controller = this;
+
+    ROS_INFO("Creating slave1 Homing Method read SDO requests...\n");
+    if (!(fm_auto::slave1_sdo_homing_method = ecrt_slave_config_create_sdo_request(fm_auto::slave_one,
+                                                                                            ADDRESS_HOMING_METHOD,
+                                                                                            0, 1))) // uint8 data size 1
+    {
+        ROS_ERROR("Failed to create slave1 SDO slave0_sdo_homing_methiod 0x6098 request.\n");
+        return false;
+    }
+    fm_auto::slave1_homing_method_fmSdo = new fm_sdo();
+    fm_auto::slave1_homing_method_fmSdo->sdo = fm_auto::slave1_sdo_homing_method;
+    fm_auto::slave1_homing_method_fmSdo->descrption = "slave1 homing_method 0x6098";
+    fm_auto::slave1_homing_method_fmSdo->controller = this;
+
+    ROS_INFO( "Creating slave1 operation mode write SDO requests...\n");
+    if (!(fm_auto::slave1_sdo_operation_mode_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_one,
+                                                                                          ADDRESS_MODES_OF_OPERATION,
+                                                                                          0, 1))) // uint8 data size 1
+    {
+        ROS_ERROR("Failed to create slave1 SDO MODES_OF_OPERATION request.\n");
+        return -1;
+    }
+    fm_auto::slave1_operation_mode_write_fmsdo = new fm_sdo();
+    fm_auto::slave1_operation_mode_write_fmsdo->sdo = fm_auto::slave1_sdo_operation_mode_write;
+    fm_auto::slave1_operation_mode_write_fmsdo->descrption = "slave1 operation_mode_ 0x6060";
+    fm_auto::slave1_operation_mode_write_fmsdo->controller = this;
+
+    ROS_INFO("Creating slave1 controlword write SDO requests...\n");
+    if (!(fm_auto::slave1_sdo_controlword_write = ecrt_slave_config_create_sdo_request(fm_auto::slave_one,
+                                                                                       ADDRESS_CONTROLWORD,
+                                                                                       0, 2))) // uint16 data size 2
+    {
+        ROS_ERROR("Failed to slave1 create SDO CONTROLWORD request.\n");
+        return -1;
+    }
+    fm_auto::slave1_controlword_fmsdo = new fm_sdo();
+    fm_auto::slave1_controlword_fmsdo->sdo = fm_auto::slave1_sdo_controlword_write;
+    fm_auto::slave1_controlword_fmsdo->descrption = "slave1 statusword 0x6040";
+    fm_auto::slave1_controlword_fmsdo->controller = this;
+
+    ROS_INFO("Creating slave1 statusword read SDO requests...\n");
+    if (!(fm_auto::slave1_sdo_statusword_read = ecrt_slave_config_create_sdo_request(slave_one, ADDRESS_STATUSWORD,
+                                                                                     0, 2))) // uint16 data size 2
+    {
+        ROS_ERROR("Failed to create slave1 SDO STATUSWORD request.\n");
+        return -1;
+    }
+    fm_auto::slave1_statusword_fmsdo = new fm_sdo();
+    fm_auto::slave1_statusword_fmsdo->sdo = fm_auto::slave1_sdo_statusword_read;
+    fm_auto::slave1_statusword_fmsdo->descrption = "slave1 statusword 0x6041";
+    fm_auto::slave1_statusword_fmsdo->controller = this;
+
+    ROS_INFO("Creating slave1 position_actual_value read SDO requests...\n");
+    if (!(fm_auto::slave1_sdo_position_actual_value_read = ecrt_slave_config_create_sdo_request(slave_one, ADDRESS_POSITION_ACTUAL_VALUE,
+                                                                                     0, 4))) // int32 data size 4
+    {
+        ROS_ERROR("Failed to create slave1 SDO position_actual_value request.\n");
+        return -1;
+    }
+    fm_auto::slave1_position_actual_value_fmsdo = new fm_sdo();
+    fm_auto::slave1_position_actual_value_fmsdo->sdo = fm_auto::slave1_sdo_position_actual_value_read;
+    fm_auto::slave1_position_actual_value_fmsdo->descrption = "slave1 position_actual_value 0x6064";
+    fm_auto::slave1_position_actual_value_fmsdo->controller = this;
+
+    ROS_INFO("Creating slave1 position_actual_value read SDO requests...\n");
+    if (!(fm_auto::slave1_sdo_target_position_read_write = ecrt_slave_config_create_sdo_request(slave_one,
+                                                                                                ADDRESS_TARGET_POSITION,
+                                                                                                0, 4))) // int16 data size 2
+    {
+        ROS_ERROR("Failed to create slave1 SDO position_actual_value request.\n");
+        return -1;
+    }
+    fm_auto::slave1_target_position_fmsdo = new fm_sdo();
+    fm_auto::slave1_target_position_fmsdo->sdo = fm_auto::slave1_sdo_target_position_read_write;
+    fm_auto::slave1_target_position_fmsdo->descrption = "slave1 target position";
+    fm_auto::slave1_target_position_fmsdo->controller = this;
+
+    ecrt_sdo_request_timeout(fm_auto::slave1_sdo_operation_mode_display, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave1_sdo_operation_mode_write, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave1_sdo_controlword_write, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave1_sdo_statusword_read, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave1_sdo_position_actual_value_read, 500); // ms
+    ecrt_sdo_request_timeout(fm_auto::slave1_sdo_target_position_read_write, 500); // ms
+
+    return true;
+}
 bool fm_auto::DuetflEthercatController::initROS()
 {
     ros::NodeHandle n;
@@ -638,7 +740,7 @@ bool fm_auto::DuetflEthercatController::initROS()
     pub_position_cmd = n.advertise<std_msgs::Float64>("position_cmd_receive", 1);
 }
 
-bool fm_auto::DuetflEthercatController::initEthercat()
+bool fm_auto::DuetflEthercatController::initEthercat_SlaveZero()
 {
     // we only have one master,who is g...
     master = ecrt_request_master(0);
@@ -655,7 +757,7 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         return false;
     }
 
-    if(!initSDOs())
+    if(!initSDOs_SlaveZero())
     {
         ROS_ERROR("init sdos failed!\n");
         return false;
@@ -685,6 +787,17 @@ bool fm_auto::DuetflEthercatController::initEthercat()
         fprintf(stderr, "Failed to configure PDOs.\n");
         return -1;
     }
+
+    if(hasSlaveOne == true)
+    {
+        // init ethercat slave one
+        if(!initEthercat_SlaveOne())
+        {
+            ROS_ERROR("Failed to init ethercat slave one: %s\n", strerror(errno));
+            return false;
+        }
+    }
+
     // domain entry list
     if (ecrt_domain_reg_pdo_entry_list(domain_output, fm_auto::domain_output_regs)) {
         ROS_ERROR("Output PDO entry registration failed!\n");
@@ -760,7 +873,32 @@ ROS_INFO_ONCE("debug");
 //    }
     return true;
 }
+bool fm_auto::DuetflEthercatController::initEthercat_SlaveOne()
+{
+    if (!master)
+    {
+        return -1;
+    }
 
+    fm_auto::slave_one = ecrt_master_slave_config(master,SlaveOneAliasAndPosition,VendorID_ProductCode);
+    if(!fm_auto::slave_one)
+    {
+        ROS_ERROR("Failed to get slave one configuration.\n");
+        return false;
+    }
+
+    if(!initSDOs_SlaveOne())
+    {
+        ROS_ERROR("init sdos failed!\n");
+        return false;
+    }
+
+    if (ecrt_slave_config_pdos(fm_auto::slave_one, EC_END, fm_auto::slave_1_syncs)) {
+        fprintf(stderr, "Failed to configure slave_one PDOs.\n");
+        return -1;
+    }
+    return true;
+}
 void fm_auto::DuetflEthercatController::run()
 {
     ros::Rate loop_rate(FREQUENCY);
