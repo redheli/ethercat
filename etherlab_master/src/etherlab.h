@@ -142,6 +142,7 @@ public:
        static void disableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
        bool disableControlSDO_bool(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
        bool disableControlSDO_SlaveZero();
+       bool disableControlSDO_SlaveOne();
 
 
        void check_master_state();

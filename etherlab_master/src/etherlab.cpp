@@ -1386,6 +1386,15 @@ bool fm_auto::DuetflEthercatController::disableControlSDO_SlaveZero()
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::disableControlSDO_SlaveOne()
+{
+    if(!disableControlSDO_bool(slave1_statusword_fmsdo,slave1_controlword_fmsdo))
+    {
+        ROS_ERROR("disableControlSDO_SlaveOne failed");
+        return false;
+    }
+    return true;
+}
 void fm_auto::DuetflEthercatController::disableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo)
 {
     // write controlword 0x0002
