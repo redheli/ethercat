@@ -93,7 +93,7 @@ public:
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
-       bool calculateTargetVelocity(); // use pid calculate target velocity
+       bool calculateTargetVelocity_SlaveZero(); // use pid calculate target velocity
        bool writePDOData_SlaveZero_VelocityControl(); // use velocity mode
        bool writePDOData_SlaveZero3();//only change_set_immediately is set
 

@@ -1840,7 +1840,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
     }
     return true;
 }
-bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
+bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero()
 {
     // good but over a bit
 //    kp = 8.5;
@@ -1891,7 +1891,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 {
 //    uint16_t controlword = 0xf;
 
-    calculateTargetVelocity();
+    calculateTargetVelocity_SlaveZero();
 
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
