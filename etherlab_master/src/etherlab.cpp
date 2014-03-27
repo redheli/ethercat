@@ -1446,8 +1446,12 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
 }
 bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
 {
+    // good but over a bit
+//    kp = 8.5;
+//    ki = 10.0;
+
     kp = 8.5;
-    ki = 2.0;
+    ki = 27.0;
     kd = 0.0;
 
     kp_sat = 10000;
