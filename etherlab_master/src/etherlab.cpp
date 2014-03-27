@@ -1454,10 +1454,12 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
     ki_sat = 1000;
     kd_sat = 1000;
 
-    v_sat = 1000000;
+    v_sat = 10000;
 
     if(dt==0) return true;
-    double cmd = steering_cmd_new;
+
+    std_msgs::Float64 cmd;
+    cmd.data = steering_cmd_new;
     fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
     e_now = steering_cmd_new - position_actual_value_PDO_data;
 
