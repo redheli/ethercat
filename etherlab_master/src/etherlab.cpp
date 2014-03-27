@@ -966,7 +966,7 @@ bool fm_auto::DuetflEthercatController::initROS()
     n.param("has_slave_one", hasSlaveOne, false);
     n.param("need_do_homing_slave_zero", needDoHoming_SlaveZero, true);
     n.param("need_do_homing_slave_one", needDoHoming_SlaveOne, false);
-    n.param("max_steering_angle", maxSteeringCmd, 500);
+    n.param("max_steering_angle", maxSteeringCmd, 4500); // 450 degree
 
     ROS_INFO("has_slave_one %d",hasSlaveOne);
     ROS_INFO("need_do_homing_slave_zero %d",needDoHoming_SlaveZero);
@@ -1848,15 +1848,15 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveZero()
 //    kp = 8.5;
 //    ki = 10.0;
 
-    kp = 8.5;
-    ki = 27.0;
+    kp = 13.5;
+    ki = 0.0;
     kd = 0.0;
 
-    kp_sat = 10000;
-    ki_sat = 1000;
-    kd_sat = 1000;
+    kp_sat = 9000;
+    ki_sat = 900;
+    kd_sat = 900;
 
-    v_sat = 10000;
+    v_sat = 9000;
 
     if(dt==0) return true;
 
