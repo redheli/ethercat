@@ -188,10 +188,11 @@ private:
 private:
        bool checkNeedHal(int32_t las_cmd,int32_t new_cmd);
 
-private:
+public:
        bool hasSlaveOne; // has two motor connected to master
        bool needDoHoming_SlaveZero; // do homing operate , normally do once
        bool needDoHoming_SlaveOne;
+private:
        /// store sdo request
        std::list<fm_sdo*> activeSdoPool;
 
