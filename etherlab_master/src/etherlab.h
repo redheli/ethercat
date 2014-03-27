@@ -90,14 +90,16 @@ public:
        // pdo method
        bool readPDOsData();
        bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
+       bool writeTargetPosition_PDO_SlaveOne(int32_t &value);
        bool writeTargetVelocity_PDO_SlaveZero(int32_t &value);
+       bool writeTargetVelocity_PDO_SlaveOne(int32_t &value);
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
        bool writeControlword_PDO_SlaveOne(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
-       bool calculateTargetVelocity_SlaveZero(int32_t &target_pos); // use pid calculate target velocity
+       bool calculateTargetVelocity_SlaveZero(int32_t &target_pos); // use pid calculate target velocity slave 0
        bool calculateTargetVelocity_SlaveOne(int32_t &target_pos);
-       bool writePDOData_SlaveZero_VelocityControl(); // use velocity mode
+       bool writePDOData_VelocityControl(); // use velocity mode
        bool writePDOData_SlaveZero3();//only change_set_immediately is set
 
 public:
@@ -228,7 +230,7 @@ private:
 
        ros::Subscriber sub, emergency_button_sub,braking_sub;
        ros::Publisher pub;
-       ros::Publisher pub_position_cmd;
+       ros::Publisher pub_position_cmd,pub_braking_cmd;
        int32_t steering_cmd_new;
        int32_t braking_cmd_new;
        int32_t steering_cmd_writing;
@@ -261,6 +263,7 @@ private:
 public:
        fmutil::LowPassFilter vFilter;
        int32_t maxSteeringCmd;
+       int32_t maxBrakingCmd;
        int32_t target_velocity_slave_zero;
        int32_t target_velocity_slave_one;
        double kp;

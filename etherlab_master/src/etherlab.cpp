@@ -970,6 +970,7 @@ bool fm_auto::DuetflEthercatController::initROS()
     n.param("need_do_homing_slave_zero", needDoHoming_SlaveZero, true);
     n.param("need_do_homing_slave_one", needDoHoming_SlaveOne, false);
     n.param("max_steering_angle", maxSteeringCmd, 4500); // 450 degree
+    n.param("max_braking_angle", maxBrakingCmd, 600); // 60 degree
     n.param("steering_slave_number", steering_slave_number, 1); // steering is default salve one
     n.param("braking_slave_number", braking_slave_number, 0); // braking is default salve zero
 
@@ -977,6 +978,7 @@ bool fm_auto::DuetflEthercatController::initROS()
     ROS_INFO("need_do_homing_slave_zero %d\n",needDoHoming_SlaveZero);
     ROS_INFO("need_do_homing_slave_one %d\n",needDoHoming_SlaveOne);
     ROS_INFO("max_steering_angle %f\n",maxSteeringCmd);
+    ROS_INFO("max_braking_angle %f\n",maxBrakingCmd);
     ROS_INFO("steering_slave_number %d\n",steering_slave_number);
     ROS_INFO("braking_slave_number %d\n",braking_slave_number);
 
@@ -986,7 +988,8 @@ bool fm_auto::DuetflEthercatController::initROS()
     emergency_button_sub = n.subscribe("joy", 1, &fm_auto::DuetflEthercatController::callback_joy, this);
     braking_sub = n.subscribe("braking_angle", 1, &fm_auto::DuetflEthercatController::callback_braking, this);
     pub = n.advertise<etherlab_master::EthercatPDO>("pdo_ethercat", 1);
-    pub_position_cmd = n.advertise<std_msgs::Float64>("position_cmd_receive", 1);
+    pub_position_cmd = n.advertise<std_msgs::Float64>("position_cmd_receive", 1); // steering position cmd
+    pub_braking_cmd = n.advertise<std_msgs::Float64>("braking_cmd_receive", 1); // braking position cmd
 
 }
 
@@ -1557,7 +1560,7 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     if(res)
     {
         ROS_INFO_ONCE("PDO_ok");
-        writePDOData_SlaveZero_VelocityControl();
+        writePDOData_VelocityControl();
 //        writePDOData_SlaveZero();
 //        writePDOData_SlaveZero2();
 //        writePDOData_SlaveZero3();
@@ -1654,6 +1657,12 @@ bool fm_auto::DuetflEthercatController::writeTargetVelocity_PDO_SlaveZero(int32_
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
     return true;
 }
+bool fm_auto::DuetflEthercatController::writeTargetVelocity_PDO_SlaveOne(int32_t &value)
+{
+    EC_WRITE_U32(domain_output_pd + fm_auto::OFFSET_TARGET_VELOCITY_SLAVE_ONE, value);
+
+    return true;
+}
 bool fm_auto::DuetflEthercatController::writeTargetPosition_PDO_SlaveZero(int32_t &value)
 {
     // TODO:check boundary
@@ -1664,6 +1673,11 @@ bool fm_auto::DuetflEthercatController::writeTargetPosition_PDO_SlaveZero(int32_
     EC_WRITE_U32(domain_output_pd + fm_auto::OFFSET_TARGET_POSITION, value);
 
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
+    return true;
+}
+bool fm_auto::DuetflEthercatController::writeTargetPosition_PDO_SlaveOne(int32_t &value)
+{
+    EC_WRITE_U32(domain_output_pd + fm_auto::OFFSET_TARGET_POSITION_SLAVE_ONE, value);
     return true;
 }
 bool fm_auto::DuetflEthercatController::writeControlword_PDO_SlaveZero(uint16_t &value)
@@ -1969,13 +1983,18 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity_SlaveOne(int32_t
 
     return true;
 }
-bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
+bool fm_auto::DuetflEthercatController::writePDOData_VelocityControl()
 {
 //    uint16_t controlword = 0xf;
     steering_cmd_new = fmutil::symbound<int32_t>(steering_cmd_new,maxSteeringCmd);
     std_msgs::Float64 cmd;
     cmd.data = steering_cmd_new;
     fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
+
+    braking_cmd_new = fmutil::symbound<int32_t>(braking_cmd_new,maxBrakingCmd);
+    std_msgs::Float64 cmd_braking;
+    cmd_braking.data = steering_cmd_new;
+    fm_auto::DuetflEthercatController::pub_braking_cmd.publish(cmd_braking);
 
 
 
