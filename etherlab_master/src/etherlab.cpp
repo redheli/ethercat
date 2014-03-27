@@ -1253,6 +1253,15 @@ bool fm_auto::DuetflEthercatController::enableControlSDO_SlaveZero()
     }
     return true;
 }
+bool fm_auto::DuetflEthercatController::enableControlSDO_SlaveOne()
+{
+    if(!enableControlSDO(fm_auto::slave1_statusword_fmsdo,fm_auto::slave1_controlword_fmsdo))
+    {
+        ROS_ERROR("enableControlSDO slave one failed");
+        return false;
+    }
+    return true;
+}
 bool fm_auto::DuetflEthercatController::disableControlSDO_SlaveZero()
 {
     if(!disableControlSDO_bool(slave0_statusword_fmsdo,slave0_controlword_fmsdo))

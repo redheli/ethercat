@@ -135,6 +135,7 @@ public:
        /// make sure motor shaft rolling is safe
        bool enableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
        bool enableControlSDO_SlaveZero();
+       bool enableControlSDO_SlaveOne();
        static void disableControlSDO(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
        bool disableControlSDO_bool(fm_sdo *statusword_fmSdo,fm_sdo *controlword_fmSdo);
        bool disableControlSDO_SlaveZero();
