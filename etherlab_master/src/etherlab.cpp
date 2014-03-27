@@ -1446,8 +1446,8 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero3()
 }
 bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
 {
-    kp = 1.5;
-    ki = 0.0;
+    kp = 8.5;
+    ki = 2.0;
     kd = 0.0;
 
     kp_sat = 10000;
@@ -1457,7 +1457,8 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
     v_sat = 1000000;
 
     if(dt==0) return true;
-    fm_auto::DuetflEthercatController::pub_position_cmd.publish(steering_cmd_new);
+    double cmd = steering_cmd_new;
+    fm_auto::DuetflEthercatController::pub_position_cmd.publish(cmd);
     e_now = steering_cmd_new - position_actual_value_PDO_data;
 
     // P
@@ -1474,7 +1475,8 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
     double d_gain = fmutil::symbound<double>(dTerm, kd_sat);
 
     double u = p_gain + i_gain + d_gain;
-
+    ROS_INFO("kp %f ki %f kd %f"
+            ,p_gain,i_gain,d_gain);
     target_velocity = fmutil::symbound<int>(u, v_sat);
     if(abs(target_velocity) < 2)
     {
@@ -1494,7 +1496,7 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
     writeTargetVelocity_PDO_SlaveZero(target_velocity);
     ecrt_domain_queue(domain_output);
 
-    ROS_INFO("steering_cmd_new %d   target_velocity %d"
+    ROS_INFO("steering_cmd_new %d   target_velocity %d "
             ,steering_cmd_new,target_velocity);
 }
 
