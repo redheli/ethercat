@@ -528,6 +528,42 @@ bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2ProfileVe
     ROS_INFO("set profile velocity mode ok");
     return true;
 }
+bool fm_auto::DuetflEthercatController::setSlaveOneMotorOperatingMode2ProfileVelocity()
+{
+    //1. check current operation mode
+    fm_auto::OPERATION_MODE operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(fm_auto::slave1_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveOneMotorOperatingMode2ProfileVelocity: get mode failed");
+        return false;
+    }
+//ROS_INFO("dddd1.1   %d",operation_mode);
+    if(operation_mode != fm_auto::OM_PROFILE_VELOCITY_MODE)
+    {
+        //2. set mode to profile velocity
+        fm_auto::OPERATION_MODE value = fm_auto::OM_PROFILE_VELOCITY_MODE;
+        if(!setMotorOperatingModeSDO(slave1_operation_mode_write_fmsdo,value))
+        {
+            ROS_ERROR("setSlaveOneMotorOperatingMode2ProfileVelocity: set mode failed");
+            return false;
+        }
+    }
+//ROS_INFO("dddd1.2");
+    //3. verify
+    operation_mode = fm_auto::OM_UNKNOW_MODE;
+    if(!getMotorOperatingModeSDO(slave1_operation_mode_display_fmsdo,operation_mode))
+    {
+        ROS_ERROR("setSlaveOneMotorOperatingMode2ProfileVelocity: get mode failed 2");
+        return false;
+    }
+    if(operation_mode != fm_auto::OMD_PROFILE_VELOCITY_MODE)
+    {
+        ROS_ERROR("setSlaveOneMotorOperatingMode2ProfileVelocity: mode is not profile velocity after set %d\n",operation_mode);
+        return false;
+    }
+    ROS_INFO("set profile velocity mode ok");
+    return true;
+}
 bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2ProfilePosition()
 {
     //1. check current operation mode

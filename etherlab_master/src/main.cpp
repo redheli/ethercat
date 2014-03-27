@@ -45,7 +45,8 @@ int main(int argc, char**argv)
             return 0;
         }
     }// if need homing slave zero
-    //
+
+    // profile velocity mode is mandatory
     if(!duetController.setSlaveZeroMotorOperatingMode2ProfileVelocity())
     {
         ROS_ERROR("setSlaveZeroMotorOperatingMode2ProfileVelocity failed");

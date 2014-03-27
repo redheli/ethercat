@@ -130,7 +130,7 @@ public:
 
        //slave one
        bool setSlaveOneMotorOperatingMode2Homing();
-
+       bool setSlaveOneMotorOperatingMode2ProfileVelocity();
        bool doHoming_SlaveOne();
        /* controller */
        /// @brief send SDO to enable control
