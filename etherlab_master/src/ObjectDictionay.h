@@ -133,8 +133,9 @@ static ec_sync_info_t slave_0_syncs[] = {
     {0xff}
 };
 
-// slave
+
 static ec_master_t *master = NULL;
+// slave zero
 static ec_slave_config_t *slave_zero = NULL;
 //static ec_slave_config_state_t sc_ana_in_state = {};
 
@@ -159,6 +160,32 @@ static fm_sdo *slave0_controlword_fmsdo = NULL;
 
 static fm_sdo *slave0_position_actual_value_fmsdo = NULL;
 static fm_sdo *slave0_target_position_fmsdo = NULL;
+
+// slave one
+static ec_slave_config_t *slave_one = NULL;
+//static ec_slave_config_state_t sc_ana_in_state = {};
+
+static ec_sdo_request_t *slave1_sdo_operation_mode_display = NULL;
+static ec_sdo_request_t *slave1_sdo_homing_method = NULL;
+static ec_sdo_request_t *slave1_sdo_statusword_read = NULL;
+static ec_sdo_request_t *slave1_sdo_velocity_demand_value_read = NULL;
+
+static ec_sdo_request_t *slave1_sdo_operation_mode_write = NULL;
+static ec_sdo_request_t *slave1_sdo_controlword_write = NULL;
+
+static ec_sdo_request_t *slave1_sdo_position_actual_value_read = NULL;
+static ec_sdo_request_t *slave1_sdo_target_position_read_write = NULL;
+
+
+static fm_sdo *slave1_operation_mode_display_fmsdo = NULL;
+static fm_sdo *slave1_operation_mode_write_fmsdo = NULL;
+static fm_sdo *slave1_homing_method_fmSdo = NULL;
+
+static fm_sdo *slave1_statusword_fmsdo = NULL;
+static fm_sdo *slave1_controlword_fmsdo = NULL;
+
+static fm_sdo *slave1_position_actual_value_fmsdo = NULL;
+static fm_sdo *slave1_target_position_fmsdo = NULL;
 
 static pthread_mutex_t mutex_PDO = PTHREAD_MUTEX_INITIALIZER;
 }//fm_auto
