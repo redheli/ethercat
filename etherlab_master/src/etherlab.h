@@ -247,7 +247,7 @@ private:
        bool is_TargetReached_Set;
 public:
        fmutil::LowPassFilter vFilter;
-
+       int32_t maxSteeringCmd;
        int32_t target_velocity_slave_zero;
        double kp;
        double ki;
