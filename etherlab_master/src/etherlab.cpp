@@ -983,7 +983,8 @@ bool fm_auto::DuetflEthercatController::initROS()
     ROS_INFO("asdfd");
 //    sub = n.subscribe(str,10,&fm_auto::DuetflEthercatController::callback_steering,this);
     sub = n.subscribe("steer_angle", 1, &fm_auto::DuetflEthercatController::callback_steering2, this);
-    brake_sub = n.subscribe("joy", 1, &fm_auto::DuetflEthercatController::callback_joy, this);
+    emergency_button_sub = n.subscribe("joy", 1, &fm_auto::DuetflEthercatController::callback_joy, this);
+    braking_sub = n.subscribe("braking_angle", 1, &fm_auto::DuetflEthercatController::callback_braking, this);
     pub = n.advertise<etherlab_master::EthercatPDO>("pdo_ethercat", 1);
     pub_position_cmd = n.advertise<std_msgs::Float64>("position_cmd_receive", 1);
 
@@ -1546,6 +1547,7 @@ bool fm_auto::DuetflEthercatController::cyclic_task()
     current_time = ros::Time::now();
 
     writeControlword_PDO_SlaveZero(controlword_PDO);
+    writeControlword_PDO_SlaveOne(controlword_PDO);
     // read PDO data
     bool res = readPDOsData();
     if(!PDO_OK)
@@ -1632,6 +1634,14 @@ void fm_auto::DuetflEthercatController::callback_steering2(std_msgs::Float64 ste
 
 //    ROS_INFO("callback_steering: %f",steering_cmd.data);
 }
+void fm_auto::DuetflEthercatController::callback_braking(std_msgs::Float64 braking_cmd)
+{
+
+    int32_t v = static_cast<int32_t>(braking_cmd.data);
+
+    braking_cmd_new = v * 10;
+
+}
 bool fm_auto::DuetflEthercatController::writeTargetVelocity_PDO_SlaveZero(int32_t &value)
 {
     // TODO:check boundary
@@ -1662,6 +1672,16 @@ bool fm_auto::DuetflEthercatController::writeControlword_PDO_SlaveZero(uint16_t 
 //    pthread_mutex_lock( &fm_auto::mutex_PDO );
 
     EC_WRITE_U16(domain_output_pd + fm_auto::OFFSET_CONTROLWORD, value);
+
+//    pthread_mutex_unlock( &fm_auto::mutex_PDO );
+    return true;
+}
+bool fm_auto::DuetflEthercatController::writeControlword_PDO_SlaveOne(uint16_t &value)
+{
+//    std::unique_lock<std::mutex> lock(counter_mutex);
+//    pthread_mutex_lock( &fm_auto::mutex_PDO );
+
+    EC_WRITE_U16(domain_output_pd + fm_auto::OFFSET_CONTROLWORD_SLAVE_ONE, value);
 
 //    pthread_mutex_unlock( &fm_auto::mutex_PDO );
     return true;
@@ -1969,13 +1989,13 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
         if(braking_slave_number == 1)
         {
             calculateTargetVelocity_SlaveOne(braking_cmd_new);
-            writeTargetVelocity_PDO_SlaveOne(target_velocity_slave_One);
+            writeTargetVelocity_PDO_SlaveOne(target_velocity_slave_one);
         }
     }
     else if(steering_slave_number == 1)
     {
         calculateTargetVelocity_SlaveOne(steering_cmd_new);
-        writeTargetVelocity_PDO_SlaveOne(target_velocity_slave_One);
+        writeTargetVelocity_PDO_SlaveOne(target_velocity_slave_one);
 
         if(steering_slave_number == 0)  // slave zero
         {
@@ -1988,6 +2008,9 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 
     ROS_INFO("steering_cmd_new %d   target_velocity_slave_zero %d "
             ,steering_cmd_new,target_velocity_slave_zero);
+
+    ROS_INFO("braking_cmd_new %d   target_velocity_slave_one %d "
+            ,braking_cmd_new,target_velocity_slave_one);
 }
 
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()
@@ -2388,6 +2411,14 @@ bool fm_auto::DuetflEthercatController::readPDOsData()
     pdo_msg.current = current_actual_value_PDO_data;
     pdo_msg.torque = torque_actual_value_PDO_data;
     fm_auto::DuetflEthercatController::pub.publish(pdo_msg);
+
+    // slave one
+    position_actual_value_PDO_data_slave_one = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_POSITION_ACTURAL_VALUE_SLAVE_ONE);
+    velocity_actual_value_PDO_data_slave_one = EC_READ_S32(domain_input_pd + fm_auto::OFFSET_VELOCITY_ACTUAL_VALUE_SLAVE_ONE);
+    current_actual_value_PDO_data_slave_one = EC_READ_S16(domain_input_pd + fm_auto::OFFSET_CURRENT_ACTURAL_VALUE_SLAVE_ONE);
+    printf("slave one pdo pos: %04d  vel: %04d cur: %04d \n",
+            position_actual_value_PDO_data_slave_one, velocity_actual_value_PDO_data_slave_one, current_actual_value_PDO_data_slave_one);
+
 //    printf("pdo statusword value: %04x offset %u\n",
 //            EC_READ_U16(domain_input_pd + OFFSET_STATUSWORD),OFFSET_STATUSWORD);
     

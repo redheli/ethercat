@@ -66,6 +66,7 @@ public:
        /* ROS callback */
 //       void callback_steering(const etherlab_master::steering::ConstPtr& steering_cmd);
        void callback_steering2(std_msgs::Float64 steering_cmd);
+       void callback_braking(std_msgs::Float64 braking_cmd);
        void callback_joy(sensor_msgs::Joy joy_cmd);
 public:
        /* homing */
@@ -91,6 +92,7 @@ public:
        bool writeTargetPosition_PDO_SlaveZero(int32_t &value);
        bool writeTargetVelocity_PDO_SlaveZero(int32_t &value);
        bool writeControlword_PDO_SlaveZero(uint16_t &value);
+       bool writeControlword_PDO_SlaveOne(uint16_t &value);
        bool writePDOData_SlaveZero();
        bool writePDOData_SlaveZero2();//only 3 state
        bool calculateTargetVelocity_SlaveZero(int32_t &target_pos); // use pid calculate target velocity
@@ -224,7 +226,7 @@ private:
        uint8_t *domain_output_target_velocity_pd;
        uint8_t *domain_input_pd;
 
-       ros::Subscriber sub, brake_sub;
+       ros::Subscriber sub, emergency_button_sub,braking_sub;
        ros::Publisher pub;
        ros::Publisher pub_position_cmd;
        int32_t steering_cmd_new;
@@ -244,6 +246,8 @@ private:
        uint32_t velocity_actual_value;
        // slave one PDO data
        int32_t position_actual_value_PDO_data_slave_one;
+       int32_t velocity_actual_value_PDO_data_slave_one;
+       int16_t current_actual_value_PDO_data_slave_one;
 
        bool PDO_OK;
 
@@ -258,6 +262,7 @@ public:
        fmutil::LowPassFilter vFilter;
        int32_t maxSteeringCmd;
        int32_t target_velocity_slave_zero;
+       int32_t target_velocity_slave_one;
        double kp;
        double ki;
        double kd;
