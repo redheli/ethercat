@@ -69,8 +69,7 @@ int main(int argc, char**argv)
         }
     }
 
-
-
+    // enable the controller
     if(!duetController.enableControlSDO_SlaveZero())
     {
         ROS_ERROR("enableControlSDO_SlaveZero failed");
@@ -80,6 +79,16 @@ int main(int argc, char**argv)
     {
         ROS_INFO_ONCE("enableControlSDO_SlaveZero ok\n");
     }
+    if(!duetController.enableControlSDO_SlaveOne())
+    {
+        ROS_ERROR("enableControlSDO_SlaveOne failed");
+        return 0;
+    }
+    else
+    {
+        ROS_INFO_ONCE("enableControlSDO_SlaveOne ok\n");
+    }
+
     duetController.run();
     return 0;
 }
