@@ -490,6 +490,49 @@ bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2ProfilePo
     ROS_INFO("set profile position mode ok");
     return true;
 }
+bool fm_auto::DuetflEthercatController::doHoming_SlaveZero()
+{
+    if(!setSlaveZeroMotorOperatingMode2Homing())
+    {
+        ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("setSlaveZeroMotorOperatingMode2Homing ok\n");
+    }
+//    duetController.testEnableControllerSDO();
+    if(!enableControlSDO_SlaveZero())
+    {
+        ROS_ERROR("enableControlSDO_SlaveZero failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("enableControlSDO_SlaveZero ok\n");
+    }
+    if(!operateSteeringMotorHomingMethod_SlaveZero())
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("operateSteeringMotorHomingMethod ok\n");
+    }
+    if(!disableControlSDO_SlaveZero())
+    {
+        ROS_ERROR("disableControlSDO_SlaveZero failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("disableControlSDO_SlaveZero ok\n");
+    }
+
+    return true;
+}
+
 bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2Homing()
 {
     //1. check current operation mode

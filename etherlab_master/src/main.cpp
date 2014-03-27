@@ -31,42 +31,10 @@ int main(int argc, char**argv)
 
     if(duetController.needDoHoming_SlaveOne)
     {
-        if(!duetController.setSlaveZeroMotorOperatingMode2Homing())
+        if(!duetController.doHoming_SlaveZero())
         {
-            ROS_ERROR("setSlaveZeroMotorOperatingMode2Homing failed");
+            ROS_ERROR("doHoming_SlaveZero failed");
             return 0;
-        }
-        else
-        {
-            ROS_INFO_ONCE("setSlaveZeroMotorOperatingMode2Homing ok\n");
-        }
-    //    duetController.testEnableControllerSDO();
-        if(!duetController.enableControlSDO_SlaveZero())
-        {
-            ROS_ERROR("enableControlSDO_SlaveZero failed");
-            return 0;
-        }
-        else
-        {
-            ROS_INFO_ONCE("enableControlSDO_SlaveZero ok\n");
-        }
-        if(!duetController.operateSteeringMotorHomingMethod_SlaveZero())
-        {
-            ROS_ERROR("operateSteeringMotorHomingMethod failed");
-            return 0;
-        }
-        else
-        {
-            ROS_INFO_ONCE("operateSteeringMotorHomingMethod ok\n");
-        }
-        if(!duetController.disableControlSDO_SlaveZero())
-        {
-            ROS_ERROR("disableControlSDO_SlaveZero failed");
-            return 0;
-        }
-        else
-        {
-            ROS_INFO_ONCE("disableControlSDO_SlaveZero ok\n");
         }
     }// if need homing slave zero
     //

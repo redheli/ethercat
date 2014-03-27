@@ -125,6 +125,8 @@ public:
        bool setSlaveZeroMotorOperatingMode2ProfileVelocity();
        bool setSlaveZeroMotorOperatingMode2Homing();
 
+       bool doHoming_SlaveZero();
+
        /* controller */
        /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor
