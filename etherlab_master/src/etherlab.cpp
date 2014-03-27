@@ -968,7 +968,7 @@ bool fm_auto::DuetflEthercatController::initROS()
     ros::NodeHandle n;
     n.param("has_slave_one", hasSlaveOne, false);
     n.param("need_do_homing_slave_zero", needDoHoming_SlaveZero, true);
-    n.param("need_do_homing_slave_one", needDoHoming_SlaveOne, false);
+    n.param("need_do_homing_slave_one", needDoHoming_SlaveOne, true);
     n.param("max_steering_angle", maxSteeringCmd, 4500); // 450 degree
     n.param("max_braking_angle", maxBrakingCmd, 600); // 60 degree
     n.param("steering_slave_number", steering_slave_number, 1); // steering is default salve one
