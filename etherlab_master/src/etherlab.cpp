@@ -201,7 +201,7 @@ bool fm_auto::DuetflEthercatController::setHomingMethod2CurrentPosition(fm_sdo *
     return true;
 }
 
-bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod()
+bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod_SlaveZero()
 {
     // TODO: check operating mode , is homging
     //
@@ -2076,7 +2076,7 @@ ROS_INFO("dddd2");
         return ;
     }
     // 3. trigger homing operation
-    if(!operateSteeringMotorHomingMethod())
+    if(!operateSteeringMotorHomingMethod_SlaveZero())
     {
         ROS_ERROR("init: operateSteeringMotorHomingMethod failed");
         return ;

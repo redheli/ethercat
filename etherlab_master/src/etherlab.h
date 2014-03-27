@@ -69,7 +69,7 @@ public:
        /* homing */
        bool setHomingMethod2CurrentPosition(fm_sdo* homing_method_fmSdo);
        /// trigger home position,shall be current position
-       bool operateSteeringMotorHomingMethod();
+       bool operateSteeringMotorHomingMethod_SlaveZero();
 
 public:
        // sdo method

@@ -48,7 +48,7 @@ int main(int argc, char**argv)
     {
         ROS_INFO_ONCE("enableControlSDO_SlaveZero ok\n");
     }
-    if(!duetController.operateSteeringMotorHomingMethod())
+    if(!duetController.operateSteeringMotorHomingMethod_SlaveZero())
     {
         ROS_ERROR("operateSteeringMotorHomingMethod failed");
         return 0;
