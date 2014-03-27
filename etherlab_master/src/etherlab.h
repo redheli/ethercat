@@ -190,6 +190,8 @@ private:
 
 private:
        bool hasSlaveOne; // has two motor connected to master
+       bool needDoHoming_SlaveZero; // do homing operate , normally do once
+       bool needDoHoming_SlaveOne;
        /// store sdo request
        std::list<fm_sdo*> activeSdoPool;
 

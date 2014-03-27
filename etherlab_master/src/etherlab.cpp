@@ -123,6 +123,9 @@ fm_auto::DuetflEthercatController::DuetflEthercatController()
 {
     dt=0.0;
     hasSlaveOne = false;
+
+    needDoHoming_SlaveZero = false;
+    needDoHoming_SlaveOne = false;
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
 {
@@ -731,13 +734,21 @@ bool fm_auto::DuetflEthercatController::initSDOs_SlaveOne()
 bool fm_auto::DuetflEthercatController::initROS()
 {
     ros::NodeHandle n;
-    std::string str = "steering";
+    n.param("has_slave_one", hasSlaveOne, false);
+    n.param("need_do_homing_slave_zero", needDoHoming_SlaveZero, true);
+    n.param("need_do_homing_slave_one", needDoHoming_SlaveOne, false);
+
+    ROS_INFO("has_slave_one %d",hasSlaveOne);
+    ROS_INFO("need_do_homing_slave_zero %d",needDoHoming_SlaveZero);
+    ROS_INFO("need_do_homing_slave_one %d",needDoHoming_SlaveOne);
+
     ROS_INFO("asdfd");
 //    sub = n.subscribe(str,10,&fm_auto::DuetflEthercatController::callback_steering,this);
     sub = n.subscribe("steer_angle", 1, &fm_auto::DuetflEthercatController::callback_steering2, this);
     brake_sub = n.subscribe("joy", 1, &fm_auto::DuetflEthercatController::callback_joy, this);
     pub = n.advertise<etherlab_master::EthercatPDO>("pdo_ethercat", 1);
     pub_position_cmd = n.advertise<std_msgs::Float64>("position_cmd_receive", 1);
+
 }
 
 bool fm_auto::DuetflEthercatController::initEthercat_SlaveZero()
