@@ -301,6 +301,80 @@ bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod_SlaveZe
     //
     return is_success;
 }
+bool fm_auto::DuetflEthercatController::operateSteeringMotorHomingMethod_SlaveOne()
+{
+    // TODO: check operating mode , is homging
+    //
+    // set homing_method to current position
+    if(!setHomingMethod2CurrentPosition(slave1_homing_method_fmSdo))
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod_SlaveOne: set homing method failed");
+        return false;
+    }
+
+    // 2.0 set controlword bit 4: 1, start homing operation
+    uint16_t c = 0x1f;
+    if(!setControlwordSDO(slave1_controlword_fmsdo,c))
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod_SlaveOne: set controlword failed 0x04x",c);
+        return false;
+    }
+    uint16_t statusword_value;
+    if(!getStatuswordSDO(slave1_statusword_fmsdo,statusword_value))
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod_SlaveOne: get statusword failed ");
+        return false;
+    }
+    // 2.1 check statusword bit 13 has homing_error
+    if(Int16Bits(statusword_value).test(13))
+    {
+        //has error
+        //TODO handle error
+        ROS_ERROR("operateSteeringMotorHomingMethod_SlaveOne: set controlword 0x10 has error");
+        return false;
+    }
+    // 2.2 check statusword bit 12 =1 , executed successfully
+    ros::Time time_begin = ros::Time::now();
+    bool is_success=false;
+    while(!is_success)
+    {
+        ROS_INFO("operateSteeringMotorHomingMethod_SlaveOne: check homing operation successful");
+        uint16_t statusword_value = 0x0000;
+        if(!getStatuswordSDO(slave1_statusword_fmsdo,statusword_value))
+        {
+            ROS_ERROR("get statusword failed");
+            return false;
+        }
+        if(Int16Bits(statusword_value).test(12) && !Int16Bits(statusword_value).test(13)) //p106
+        {
+            is_success = true;
+            ROS_INFO("homing operation success!");
+            break;
+        }
+        ros::Time time_now = ros::Time::now();
+        if( (time_now.toSec() - time_begin.toSec()) > 10 ) // 10 sec
+        {
+            ROS_ERROR("homing operation timeout");
+            break;
+        }
+    }
+    if(is_success)
+    {
+        //check actual position value 0x6064 ,shall be zero
+        int32_t positionValue=0xff;
+        if(getPositionActualValue(slave1_position_actual_value_fmsdo,positionValue))
+        {
+            ROS_INFO("operateSteeringMotorHomingMethod_SlaveOne: position actual value 0x%08x %d",positionValue,positionValue);
+        }
+        else
+        {
+            ROS_ERROR("operateSteeringMotorHomingMethod_SlaveOne: get position_actual_value failed");
+            return false;
+        }
+    }
+    //
+    return is_success;
+}
 bool fm_auto::DuetflEthercatController::getStatuswordSDO(fm_auto::fm_sdo *statusword_fmsdo,uint16_t &value)
 {
 //    uint16_t method_value=0x0000;
@@ -532,7 +606,48 @@ bool fm_auto::DuetflEthercatController::doHoming_SlaveZero()
 
     return true;
 }
+bool fm_auto::DuetflEthercatController::doHoming_SlaveOne()
+{
+    if(!setSlaveOneMotorOperatingMode2Homing())
+    {
+        ROS_ERROR("setSlaveOneMotorOperatingMode2Homing failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("setSlaveOneMotorOperatingMode2Homing ok\n");
+    }
+//    duetController.testEnableControllerSDO();
+    if(!enableControlSDO_SlaveOne())
+    {
+        ROS_ERROR("enableControlSDO_SlaveOne failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("enableControlSDO_SlaveOne ok\n");
+    }
+    if(!operateSteeringMotorHomingMethod_SlaveOne())
+    {
+        ROS_ERROR("operateSteeringMotorHomingMethod_SlaveOne failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("operateSteeringMotorHomingMethod_SlaveOne ok\n");
+    }
+    if(!disableControlSDO_SlaveOne())
+    {
+        ROS_ERROR("disableControlSDO_SlaveOne failed");
+        return false;
+    }
+    else
+    {
+        ROS_INFO_ONCE("disableControlSDO_SlaveOne ok\n");
+    }
 
+    return true;
+}
 bool fm_auto::DuetflEthercatController::setSlaveZeroMotorOperatingMode2Homing()
 {
     //1. check current operation mode

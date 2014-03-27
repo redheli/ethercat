@@ -72,6 +72,7 @@ public:
        bool setHomingMethod2CurrentPosition(fm_sdo* homing_method_fmSdo);
        /// trigger home position,shall be current position
        bool operateSteeringMotorHomingMethod_SlaveZero();
+       bool operateSteeringMotorHomingMethod_SlaveOne();
 
 public:
        // sdo method
@@ -129,6 +130,8 @@ public:
 
        //slave one
        bool setSlaveOneMotorOperatingMode2Homing();
+
+       bool doHoming_SlaveOne();
        /* controller */
        /// @brief send SDO to enable control
        /// do check target velocity ,check target position before trigger the motor
