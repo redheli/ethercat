@@ -136,7 +136,7 @@ static ec_sync_info_t slave_0_syncs[] = {
 // slave
 static ec_master_t *master = NULL;
 static ec_slave_config_t *slave_zero = NULL;
-static ec_slave_config_state_t sc_ana_in_state = {};
+//static ec_slave_config_state_t sc_ana_in_state = {};
 
 static ec_sdo_request_t *slave0_sdo_operation_mode_display = NULL;
 static ec_sdo_request_t *slave0_sdo_homing_method = NULL;

@@ -2070,7 +2070,7 @@ ROS_INFO("dddd1");
     }
 ROS_INFO("dddd2");
     // 2. enable controller
-    if(!enableControlSDO(slave0_statusword_fmsdo,slave0_controlword_fmsdo))
+    if(!enableControlSDO(fm_auto::slave0_statusword_fmsdo,fm_auto::slave0_controlword_fmsdo))
     {
         ROS_ERROR("init: enableControlSDO failed");
         return ;
