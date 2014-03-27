@@ -29,11 +29,19 @@ int main(int argc, char**argv)
 //    duetController.test_goToPositionNewSetPoint_SDO_SlaveZero();//  <----- tested ok
 //    duetController.test_goToPositionChangeSetImt_SDO_SlaveZero();//  <----- how test?
 
-    if(duetController.needDoHoming_SlaveOne)
+    if(duetController.needDoHoming_SlaveZero)
     {
         if(!duetController.doHoming_SlaveZero())
         {
             ROS_ERROR("doHoming_SlaveZero failed");
+            return 0;
+        }
+    }// if need homing slave zero
+    if(duetController.needDoHoming_SlaveOne)
+    {
+        if(!duetController.doHoming_SlaveOne())
+        {
+            ROS_ERROR("doHoming_SlaveOne failed");
             return 0;
         }
     }// if need homing slave zero
