@@ -1879,10 +1879,10 @@ bool fm_auto::DuetflEthercatController::calculateTargetVelocity()
     double u = p_gain + i_gain + d_gain;
     ROS_INFO("kp %f ki %f kd %f"
             ,p_gain,i_gain,d_gain);
-    target_velocity = fmutil::symbound<int>(u, v_sat);
-    if(abs(target_velocity) < 2)
+    target_velocity_slave_zero = fmutil::symbound<int>(u, v_sat);
+    if(abs(target_velocity_slave_zero) < 2)
     {
-        target_velocity = 0;
+        target_velocity_slave_zero = 0;
     }
 
     e_pre = e_now;
@@ -1895,11 +1895,11 @@ bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero_VelocityControl()
 
     ecrt_domain_process(domain_output);
 //    writeControlword_PDO_SlaveZero(controlword);
-    writeTargetVelocity_PDO_SlaveZero(target_velocity);
+    writeTargetVelocity_PDO_SlaveZero(target_velocity_slave_zero);
     ecrt_domain_queue(domain_output);
 
-    ROS_INFO("steering_cmd_new %d   target_velocity %d "
-            ,steering_cmd_new,target_velocity);
+    ROS_INFO("steering_cmd_new %d   target_velocity_slave_zero %d "
+            ,steering_cmd_new,target_velocity_slave_zero);
 }
 
 bool fm_auto::DuetflEthercatController::writePDOData_SlaveZero2()

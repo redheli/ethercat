@@ -248,7 +248,7 @@ private:
 public:
        fmutil::LowPassFilter vFilter;
 
-       int32_t target_velocity;
+       int32_t target_velocity_slave_zero;
        double kp;
        double ki;
        double kd;
