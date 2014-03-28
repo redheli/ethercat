@@ -129,6 +129,9 @@ fm_auto::DuetflEthercatController::DuetflEthercatController()
 
     steering_slave_number = 1;
     braking_slave_number = 0;
+
+    target_velocity_slave_one = 0;
+    target_velocity_slave_zero = 0;
 }
 fm_auto::DuetflEthercatController::~DuetflEthercatController()
 {
@@ -2030,9 +2033,9 @@ bool fm_auto::DuetflEthercatController::writePDOData_VelocityControl()
         calculateTargetVelocity_SlaveOne(steering_cmd_new);
         writeTargetVelocity_PDO_SlaveOne(target_velocity_slave_one);
 
-        if(steering_slave_number == 0)  // slave zero
+        if(braking_slave_number == 0)  // slave zero
         {
-            calculateTargetVelocity_SlaveZero(steering_cmd_new);
+            calculateTargetVelocity_SlaveZero(braking_cmd_new);
             writeTargetVelocity_PDO_SlaveZero(target_velocity_slave_zero);
         }
     }
